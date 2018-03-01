@@ -138,7 +138,7 @@ public class Main : MonoBehaviour {
 			//TODO 初期設定
 		}*/
 
-		BPCanvas.titlePanel.show (true);
+		GameCanvas.titlePanel.show (true);
 	}
 
 	void Update () {
@@ -147,7 +147,7 @@ public class Main : MonoBehaviour {
 			screenShot ();
 		} else if (Input.GetKeyDown (KeyCode.Escape)) {
 			if (playingmap != null) {
-				if (!BPCanvas.settingPanel.isShowing () && !BPCanvas.titleBackPanel.isShowing ())
+				if (!GameCanvas.settingPanel.isShowing () && !GameCanvas.titleBackPanel.isShowing ())
 					setPause (!pause);
 			}
 		}
@@ -223,8 +223,8 @@ public class Main : MonoBehaviour {
 		if (playingmap != null) {
 			closeMap ();
 		}
-		BPCanvas.titlePanel.show (false);
-		BPCanvas.loadingMapPanel.show (true);
+		GameCanvas.titlePanel.show (false);
+		GameCanvas.loadingMapPanel.show (true);
 
 		//一回だとフレーム等のズレによってTipsが表示されない
 		yield return null;
@@ -234,11 +234,11 @@ public class Main : MonoBehaviour {
 		yield return null;
 		if (map == null) {
 			//マップが対応していない
-			BPCanvas.loadingMapPanel.show (false);
-			BPCanvas.titlePanel.show (true);
-			BPCanvas.selectMapPanel.setOpenMap ();
-			BPCanvas.selectMapPanel.show (true);
-			BPCanvas.unsupportedMapPanel.show (true);
+			GameCanvas.loadingMapPanel.show (false);
+			GameCanvas.titlePanel.show (true);
+			GameCanvas.selectMapPanel.setOpenMap ();
+			GameCanvas.selectMapPanel.show (true);
+			GameCanvas.unsupportedMapPanel.show (true);
 		} else {
 			playingmap = map;
 			pause = false;
@@ -247,8 +247,8 @@ public class Main : MonoBehaviour {
 			main.reloadLighting ();
 
 			main.mainCamera.GetComponent<PostProcessingBehaviour> ().enabled = true;
-			BPCanvas.loadingMapPanel.show (false);
-			BPCanvas.playingPanel.show (true);
+			GameCanvas.loadingMapPanel.show (false);
+			GameCanvas.playingPanel.show (true);
 
 			print (DateTime.Now + " マップを開きました: " + map.mapname);
 		}
@@ -269,8 +269,8 @@ public class Main : MonoBehaviour {
 
 	public static void setPause (bool pause) {
 		Main.pause = pause;
-		BPCanvas.playingPanel.show (!pause);
-		BPCanvas.pausePanel.show (pause);
+		GameCanvas.playingPanel.show (!pause);
+		GameCanvas.pausePanel.show (pause);
 	}
 
 	public void reloadLighting () {

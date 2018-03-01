@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class SelectMapPanel : BPPanel, ScrollController.Listener {
+public class SelectMapPanel : GamePanel, ScrollController.Listener {
 	public static string selectedMap; //最後に選択されたマップ
 	private static bool openMap = false;
 	public Button addMapButton;
@@ -21,9 +21,9 @@ public class SelectMapPanel : BPPanel, ScrollController.Listener {
 	void Update () {
 		//TODO Window(Panel)のフォーカス機能を追加し、一番手前に出ているWindowでのみ操作が機能するようにする。そのためにはCanvasに各WindowやPanelをまとめる。
 		if (Input.GetKeyDown (KeyCode.Escape) &&
-		    !BPCanvas.addMapPanel.gameObject.activeInHierarchy &&
-		    !BPCanvas.unsupportedMapPanel.gameObject.activeInHierarchy &&
-		    !BPCanvas.deleteMapPanel.gameObject.activeInHierarchy) {
+		    !GameCanvas.addMapPanel.gameObject.activeInHierarchy &&
+		    !GameCanvas.unsupportedMapPanel.gameObject.activeInHierarchy &&
+		    !GameCanvas.deleteMapPanel.gameObject.activeInHierarchy) {
 			show (false);
 		}
 	}
@@ -86,7 +86,7 @@ public class SelectMapPanel : BPPanel, ScrollController.Listener {
 	}
 
 	public void DeleteButton () {
-		BPCanvas.deleteMapPanel.show (true);
+		GameCanvas.deleteMapPanel.show (true);
 	}
 
 	public void Delete () {

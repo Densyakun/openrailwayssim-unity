@@ -6,7 +6,7 @@ public class ControlText : MonoBehaviour {
 
 	void Update () {
 		string text = "";
-		if (Main.playingmap != null && !BPCanvas.pausePanel.isShowing ()) {
+		if (Main.playingmap != null && !GameCanvas.pausePanel.isShowing ()) {
 			//text += "E: メニューを開く ";
 		}
 

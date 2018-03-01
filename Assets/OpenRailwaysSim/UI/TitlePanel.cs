@@ -1,4 +1,4 @@
-﻿public class TitlePanel : BPPanel {
+﻿public class TitlePanel : GamePanel {
 
 	public void quitButton () {
 		Main.quit ();

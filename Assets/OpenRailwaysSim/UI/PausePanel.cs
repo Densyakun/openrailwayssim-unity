@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PausePanel : BPPanel {
+public class PausePanel : GamePanel {
 
 	public void ResumeButton () {
 		Main.setPause (false);

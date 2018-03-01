@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingPanel : BPPanel {
+public class SettingPanel : GamePanel {
 	//TODO 多言語対応化
 	public static string drawDistanceText_DEF = "描画距離";
 	public static string bgmVolumeText_DEF = "BGM音量";

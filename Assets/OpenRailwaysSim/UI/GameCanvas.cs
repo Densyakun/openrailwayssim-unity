@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class BPCanvas : MonoBehaviour {
+public class GameCanvas : MonoBehaviour {
 	public static TitlePanel titlePanel;
 	public static SelectMapPanel selectMapPanel;
 	public static SettingPanel settingPanel;

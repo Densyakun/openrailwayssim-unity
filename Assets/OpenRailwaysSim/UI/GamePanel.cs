@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class BPPanel : MonoBehaviour {
+public class GamePanel : MonoBehaviour {
 	
 	public void show (bool show) {
 		gameObject.SetActive (show);

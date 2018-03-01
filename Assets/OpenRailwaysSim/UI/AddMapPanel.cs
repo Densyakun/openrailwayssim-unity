@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class AddMapPanel : BPPanel {
+public class AddMapPanel : GamePanel {
 	public InputField mapnameInput;
     
 	void OnEnable () {
@@ -32,7 +32,7 @@ public class AddMapPanel : BPPanel {
 			MapManager.saveMap (new Map (mapname));
 			//BPCanvas.selectMapPanel.reloadContents ();
 			show (false);
-			BPCanvas.selectMapPanel.show (false);
+			GameCanvas.selectMapPanel.show (false);
 			Main.main.StartCoroutine (Main.openMap (mapname));
 		}
 	}

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class DeleteMapPanel : BPPanel {
+public class DeleteMapPanel : GamePanel {
 
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape))
@@ -8,7 +8,7 @@ public class DeleteMapPanel : BPPanel {
 	}
 
 	public void OKButton () {
-		BPCanvas.selectMapPanel.Delete ();
+		GameCanvas.selectMapPanel.Delete ();
 		show (false);
 	}
 }

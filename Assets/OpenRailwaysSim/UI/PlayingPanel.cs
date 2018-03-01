@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayingPanel : BPPanel {
+public class PlayingPanel : GamePanel {
 	//public Sprite normalSpeedImage;
 	//public Sprite fastForwardingImage;
 	//public Button fastButton;

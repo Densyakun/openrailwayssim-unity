@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class TitleBackPanel : BPPanel {
+public class TitleBackPanel : GamePanel {
 
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape))
@@ -11,8 +11,8 @@ public class TitleBackPanel : BPPanel {
 		//TODO マルチプレイ対応予定
 
 		show (false);
-		BPCanvas.pausePanel.show (false);
+		GameCanvas.pausePanel.show (false);
 		Main.closeMap ();
-		BPCanvas.titlePanel.show (true);
+		GameCanvas.titlePanel.show (true);
 	}
 }
