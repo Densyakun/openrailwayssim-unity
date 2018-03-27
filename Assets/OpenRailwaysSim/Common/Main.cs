@@ -16,7 +16,11 @@ public class Main : MonoBehaviour {
 	public const string KEY_SE_VOLUME = "SE_VOL";
 	public const string KEY_CAMERA_MOVE_SPEED = "CAMERA_MOVE_SPEED";
 	public const string KEY_DRAG_ROT_SPEED = "DRAG_ROT_SPEED";
+	public const string KEY_ANTIALIASING = "ANTIALIASING";
+	public const string KEY_AO = "AO";
+	public const string KEY_MOTIONBLUR = "MOTIONBLUR";
 	public const string KEY_BLOOM = "BLOOM";
+	public const string KEY_VIGNETTE = "VIGNETTE";
 
 	public const int MIN_DRAW_DISTANCE = 1;
 	public const int MAX_DRAW_DISTANCE = 8;
@@ -33,7 +37,11 @@ public class Main : MonoBehaviour {
 	public const float MIN_DRAG_ROT_SPEED = 0.1f;
 	public const float MAX_DRAG_ROT_SPEED = 3f;
 	public const float DEFAULT_DRAG_ROT_SPEED = 0.5f;
+	public const bool DEFAULT_ANTIALIASING = true;
+	public const bool DEFAULT_AO = true;
+	public const bool DEFAULT_MOTIONBLUR = true;
 	public const bool DEFAULT_BLOOM = true;
+	public const bool DEFAULT_VIGNETTE = true;
 
 	public static Main main;
 	public static Map playingmap { get; private set; }
@@ -53,7 +61,11 @@ public class Main : MonoBehaviour {
 	public static float seVolume = DEFAULT_SE_VOLUME;
 	public static float cameraMoveSpeed = DEFAULT_CAMERA_MOVE_SPEED;
 	public static float dragRotSpeed = DEFAULT_DRAG_ROT_SPEED;
+	public static bool antialiasing = DEFAULT_ANTIALIASING;
+	public static bool ao = DEFAULT_AO;
+	public static bool motionBlur = DEFAULT_MOTIONBLUR;
 	public static bool bloom = DEFAULT_BLOOM;
+	public static bool vignette = DEFAULT_VIGNETTE;
 
 	public static bool _pause = false;
 	public static bool pause { get; private set; } //ポーズ
@@ -126,7 +138,11 @@ public class Main : MonoBehaviour {
 		seVolume = PlayerPrefs.GetFloat (KEY_SE_VOLUME, DEFAULT_SE_VOLUME);
 		cameraMoveSpeed = PlayerPrefs.GetFloat (KEY_CAMERA_MOVE_SPEED, DEFAULT_CAMERA_MOVE_SPEED);
 		dragRotSpeed = PlayerPrefs.GetFloat (KEY_DRAG_ROT_SPEED, DEFAULT_DRAG_ROT_SPEED);
+		antialiasing = PlayerPrefs.GetInt (KEY_ANTIALIASING, DEFAULT_ANTIALIASING ? 1 : 0) == 1;
+		ao = PlayerPrefs.GetInt (KEY_AO, DEFAULT_AO ? 1 : 0) == 1;
+		motionBlur = PlayerPrefs.GetInt (KEY_MOTIONBLUR, DEFAULT_MOTIONBLUR ? 1 : 0) == 1;
 		bloom = PlayerPrefs.GetInt (KEY_BLOOM, DEFAULT_BLOOM ? 1 : 0) == 1;
+		vignette = PlayerPrefs.GetInt (KEY_VIGNETTE, DEFAULT_VIGNETTE ? 1 : 0) == 1;
 		reflectSettings ();
 		saveSettings ();
 	}
@@ -207,7 +223,11 @@ public class Main : MonoBehaviour {
 	public static void reflectSettings () {
 		main.bgmSource.volume = bgmVolume;
 		main.seSource.volume = seVolume;
+		main.mainCamera.GetComponent<PostProcessingBehaviour> ().profile.antialiasing.enabled = antialiasing;
+		main.mainCamera.GetComponent<PostProcessingBehaviour> ().profile.ambientOcclusion.enabled = ao;
+		main.mainCamera.GetComponent<PostProcessingBehaviour> ().profile.motionBlur.enabled = motionBlur;
 		main.mainCamera.GetComponent<PostProcessingBehaviour> ().profile.bloom.enabled = bloom;
+		main.mainCamera.GetComponent<PostProcessingBehaviour> ().profile.vignette.enabled = vignette;
 	}
 
 	public static void saveSettings () {
@@ -216,7 +236,11 @@ public class Main : MonoBehaviour {
 		PlayerPrefs.SetFloat (KEY_SE_VOLUME, seVolume);
 		PlayerPrefs.SetFloat (KEY_CAMERA_MOVE_SPEED, cameraMoveSpeed);
 		PlayerPrefs.SetFloat (KEY_DRAG_ROT_SPEED, dragRotSpeed);
+		PlayerPrefs.SetInt (KEY_ANTIALIASING, antialiasing ? 1 : 0);
+		PlayerPrefs.SetInt (KEY_AO, ao ? 1 : 0);
+		PlayerPrefs.SetInt (KEY_MOTIONBLUR, motionBlur ? 1 : 0);
 		PlayerPrefs.SetInt (KEY_BLOOM, bloom ? 1 : 0);
+		PlayerPrefs.SetInt (KEY_VIGNETTE, vignette ? 1 : 0);
 	}
 
 	public static IEnumerator openMap (string mapname) {
