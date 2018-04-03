@@ -77,6 +77,7 @@ public class Main : MonoBehaviour {
 	public AudioClip[] titleClips;
 	public AudioSource bgmSource;
 	public AudioSource seSource;
+	public Material line_mat;
 
 	void Awake () {
 		main = this;

@@ -289,6 +289,7 @@ MonoBehaviour:
   - {fileID: 0}
   bgmSource: {fileID: 2107079515}
   seSource: {fileID: 933053664}
+  line_mat: {fileID: 2100000, guid: 585dd19b54084fb4aaf580b59a878937, type: 2}
 --- !u!4 &51358973
 Transform:
   m_ObjectHideFlags: 0

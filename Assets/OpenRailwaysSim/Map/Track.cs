@@ -94,14 +94,16 @@ public class Track : ISerializable {
 		entity.transform.rotation = rot;
 
 		LineRenderer renderer = entity.GetComponent<LineRenderer> ();
-		BoxCollider collider = entity.GetComponent<BoxCollider> ();
 		if (renderer == null)
 			renderer = entity.gameObject.AddComponent<LineRenderer> ();
+		renderer.endWidth = renderer.startWidth = 0.1f;
+		renderer.endColor = renderer.startColor = Color.red;
+		renderer.material = Main.main.line_mat;
+		renderer.SetPositions (new Vector3[]{ pos, pos + rot * Vector3.forward * length });
+
+		/*BoxCollider collider = entity.GetComponent<BoxCollider> ();
 		if (collider == null)
 			collider = entity.gameObject.AddComponent<BoxCollider> ();
-
-		collider.isTrigger = false;
-
-		renderer.SetPositions (new Vector3[]{ pos, pos + rot * Vector3.forward * length });
+		collider.isTrigger = false;*/
 	}
 }
