@@ -38,60 +38,59 @@ public class CameraMover : MonoBehaviour {
 				if (Input.GetKey (KeyCode.Space))
 					move += Vector3.up;
 				transform.Translate (move * Main.cameraMoveSpeed * Time.deltaTime);
+			}
 
-			}/* else {
-				float h = Input.GetAxis ("Horizontal");
-				float v = Input.GetAxis ("Vertical");
+			float h = Input.GetAxis ("Horizontal");
+			float v = Input.GetAxis ("Vertical");
 
-				if (Input.GetMouseButton (0)) {
-					if (Input.GetMouseButtonDown (0)) {
-						Cursor.lockState = CursorLockMode.Confined;
-						lastMousePos = Input.mousePosition;
-						rotStartEuler = rot.eulerAngles;
-						a = false;
-						f = 0;
-					}
-					Vector3 m = (Input.mousePosition - lastMousePos) * Main.dragRotSpeed; //カメラの移動量
-					//x,y軸を「xをz、yをx、zをy、zを0にする」工程で交換しながら、カメラがひっくり返らないよう新しいx軸の範囲を固定
-					m.z = m.x;
-					m.y = -m.y;
-					float rx = Mathf.Repeat (rotStartEuler.x - m.y + 180f, 360f) + m.y - 180f + CAMERA_ANGLE.x;
-					m.x = Mathf.Clamp (rx + m.y, -60f, 60f) - rx;
-					m.y = m.z;
-					m.z = 0f;
-					rot = Quaternion.Euler (rotStartEuler + m);
+			if (Input.GetMouseButton (0)) {
+				if (Input.GetMouseButtonDown (0)) {
+					Cursor.lockState = CursorLockMode.Confined;
+					lastMousePos = Input.mousePosition;
+					rotStartEuler = rot.eulerAngles;
+					a = false;
+					f = 0;
+				}
+				Vector3 m = (Input.mousePosition - lastMousePos) * Main.dragRotSpeed; //カメラの移動量
+				//x,y軸を「xをz、yをx、zをy、zを0にする」工程で交換しながら、カメラがひっくり返らないよう新しいx軸の範囲を固定
+				m.z = m.x;
+				m.y = -m.y;
+				float rx = Mathf.Repeat (rotStartEuler.x - m.y + 180f, 360f) + m.y - 180f + CAMERA_ANGLE.x;
+				m.x = Mathf.Clamp (rx + m.y, -60f, 60f) - rx;
+				m.y = m.z;
+				m.z = 0f;
+				rot = Quaternion.Euler (rotStartEuler + m);
+			} else {
+				if (h == 0.0f && (lv < 0.0f) != (v < 0.0f)) {
+					a = false;
+					f = 0;
 				} else {
-					if (h == 0.0f && (lv < 0.0f) != (v < 0.0f)) {
-						a = false;
-						f = 0;
-					} else {
-						a = true;
-					}
+					a = true;
 				}
+			}
 
-				if (f >= free_time) {
-					if (v < 0.0f) {
-						rot = Quaternion.Euler (new Vector3 (target.rotation.eulerAngles.x, Mathf.Repeat (target.rotation.eulerAngles.y, 360f) - 180f, target.rotation.eulerAngles.z));
-					} else {
-						rot = target.rotation;
-					}
-				} else if (a) {
-					f += Time.deltaTime;
+			/*if (f >= free_time) {
+				if (v < 0.0f) {
+					rot = Quaternion.Euler (new Vector3 (target.rotation.eulerAngles.x, Mathf.Repeat (target.rotation.eulerAngles.y, 360f) - 180f, target.rotation.eulerAngles.z));
+				} else {
+					rot = target.rotation;
 				}
+			} else if (a) {
+				f += Time.deltaTime;
+			}
 
-				pos = target.position + rot * CAMERA_POS;
+			pos = target.position + rot * CAMERA_POS;*/
 
-				float x = pos.x - transform.position.x;
-				float y = pos.y - transform.position.y;
-				float z = pos.z - transform.position.z;
-				float t = Mathf.Max (min_t, 1f - maxDistance / Mathf.Sqrt (x * x + y * y + z * z));
-				transform.position = new Vector3 (Mathf.Lerp (transform.position.x, pos.x, t), Mathf.Lerp (transform.position.y, pos.y, t), Mathf.Lerp (transform.position.z, pos.z, t));
-				transform.eulerAngles = new Vector3 (Mathf.Repeat (transform.eulerAngles.x + CAMERA_ANGLE.x + (Mathf.Repeat (rot.eulerAngles.x - transform.eulerAngles.x - CAMERA_ANGLE.x + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
-					Mathf.Repeat (transform.eulerAngles.y + CAMERA_ANGLE.y + (Mathf.Repeat (rot.eulerAngles.y - transform.eulerAngles.y - CAMERA_ANGLE.y + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
-					Mathf.Repeat (transform.eulerAngles.z + CAMERA_ANGLE.z + (Mathf.Repeat (rot.eulerAngles.z - transform.eulerAngles.z - CAMERA_ANGLE.z + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f);
+			/*float x = pos.x - transform.position.x;
+			float y = pos.y - transform.position.y;
+			float z = pos.z - transform.position.z;
+			float t = Mathf.Max (min_t, 1f - maxDistance / Mathf.Sqrt (x * x + y * y + z * z));
+			transform.position = new Vector3 (Mathf.Lerp (transform.position.x, pos.x, t), Mathf.Lerp (transform.position.y, pos.y, t), Mathf.Lerp (transform.position.z, pos.z, t));*/
+			transform.eulerAngles = new Vector3 (Mathf.Repeat (transform.eulerAngles.x + CAMERA_ANGLE.x + (Mathf.Repeat (rot.eulerAngles.x - transform.eulerAngles.x - CAMERA_ANGLE.x + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
+				Mathf.Repeat (transform.eulerAngles.y + CAMERA_ANGLE.y + (Mathf.Repeat (rot.eulerAngles.y - transform.eulerAngles.y - CAMERA_ANGLE.y + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
+				Mathf.Repeat (transform.eulerAngles.z + CAMERA_ANGLE.z + (Mathf.Repeat (rot.eulerAngles.z - transform.eulerAngles.z - CAMERA_ANGLE.z + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f);
 
-				lv = v;
-			}*/
+			lv = v;
 
 			/*if (Input.GetMouseButtonUp (0)) {
 				Cursor.lockState = CursorLockMode.None;
