@@ -169,6 +169,18 @@ public class Main : MonoBehaviour {
 		}
 
 		if (playingmap != null) {
+			if (Input.GetMouseButtonUp (0)) {
+				//if (EventSystem.current.IsPointerOverGameObject ())
+				//	return;
+
+				RaycastHit hit;
+				if (Physics.Raycast (mainCamera.ScreenPointToRay (Input.mousePosition), out hit)) {
+					Track track = new Track (playingmap, hit.point);
+					track.length = 10;
+					playingmap.addTrack (track);
+				}
+			}
+
 			if (bgmSource.isPlaying)
 				bgmSource.Stop ();
 		} else if (!bgmSource.isPlaying) {
