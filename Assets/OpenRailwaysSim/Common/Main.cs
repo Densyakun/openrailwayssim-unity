@@ -77,7 +77,6 @@ public class Main : MonoBehaviour {
 	public AudioClip[] titleClips;
 	public AudioSource bgmSource;
 	public AudioSource seSource;
-	//TODO セーブ中の画面
 
 	void Awake () {
 		main = this;
