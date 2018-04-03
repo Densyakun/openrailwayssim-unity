@@ -32,7 +32,7 @@ public class Main : MonoBehaviour {
 	public const float MAX_SE_VOLUME = 1f;
 	public const float DEFAULT_SE_VOLUME = 1f;
 	public const float MIN_CAMERA_MOVE_SPEED = 0.5f;
-	public const float MAX_CAMERA_MOVE_SPEED = 3f;
+	public const float MAX_CAMERA_MOVE_SPEED = 100f;
 	public const float DEFAULT_CAMERA_MOVE_SPEED = 1f;
 	public const float MIN_DRAG_ROT_SPEED = 0.1f;
 	public const float MAX_DRAG_ROT_SPEED = 3f;

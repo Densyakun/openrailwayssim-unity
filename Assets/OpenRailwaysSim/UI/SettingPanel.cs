@@ -6,6 +6,7 @@ public class SettingPanel : GamePanel {
 	public static string drawDistanceText_DEF = "描画距離";
 	public static string bgmVolumeText_DEF = "BGM音量";
 	public static string seVolumeText_DEF = "SE音量";
+	public static string cameraMoveSpeedText_DEF = "カメラ移動速度";
 	public static string dragRotSpeedText_DEF = "マウスでのカメラ回転速度";
 	public static string antialiasingText_DEF = "アンチエイリアシング";
 	public static string aoText_DEF = "アンビエントオクルージョン(AO)";
@@ -18,6 +19,8 @@ public class SettingPanel : GamePanel {
 	public Slider bgmVolumeSlider;
 	public Text seVolumeText;
 	public Slider seVolumeSlider;
+	public Text cameraMoveSpeedText;
+	public Slider cameraMoveSpeedSlider;
 	public Text dragRotSpeedText;
 	public Slider dragRotSpeedSlider;
 	public Text antialiasingText;
@@ -34,6 +37,7 @@ public class SettingPanel : GamePanel {
 	private int lastDrawDistance;
 	private float lastBgmVolume;
 	private float lastSeVolume;
+	private float lastCameraMoveSpeed;
 	private float lastDragRotSpeed;
 	private bool lastAntialiasing;
 	private bool lastAO;
@@ -45,6 +49,7 @@ public class SettingPanel : GamePanel {
 		drawDistanceText.text = drawDistanceText_DEF + ": " + (int)drawDistanceSlider.value + " ";
 		bgmVolumeText.text = bgmVolumeText_DEF + ": " + (int)(bgmVolumeSlider.value * 100f) + " ";
 		seVolumeText.text = seVolumeText_DEF + ": " + (int)(seVolumeSlider.value * 100f) + " ";
+		cameraMoveSpeedText.text = cameraMoveSpeedText_DEF + ": " + Mathf.Round (cameraMoveSpeedSlider.value * 100f) / 100f + " ";
 		dragRotSpeedText.text = dragRotSpeedText_DEF + ": " + Mathf.Round (dragRotSpeedSlider.value * 100f) / 100f + " ";
 		antialiasingText.text = antialiasingText_DEF + ": ";
 		aoText.text = aoText_DEF + ": ";
@@ -66,6 +71,8 @@ public class SettingPanel : GamePanel {
 		bgmVolumeSlider.maxValue = Main.MAX_BGM_VOLUME;
 		seVolumeSlider.minValue = Main.MIN_SE_VOLUME;
 		seVolumeSlider.maxValue = Main.MAX_SE_VOLUME;
+		cameraMoveSpeedSlider.minValue = Main.MIN_CAMERA_MOVE_SPEED;
+		cameraMoveSpeedSlider.maxValue = Main.MAX_CAMERA_MOVE_SPEED;
 		dragRotSpeedSlider.minValue = Main.MIN_DRAG_ROT_SPEED;
 		dragRotSpeedSlider.maxValue = Main.MAX_DRAG_ROT_SPEED;
 		reload ();
@@ -75,6 +82,7 @@ public class SettingPanel : GamePanel {
 		drawDistanceSlider.value = lastDrawDistance = Main.drawDistance;
 		bgmVolumeSlider.value = lastBgmVolume = Main.bgmVolume;
 		seVolumeSlider.value = lastSeVolume = Main.seVolume;
+		cameraMoveSpeedSlider.value = lastCameraMoveSpeed = Main.cameraMoveSpeed;
 		dragRotSpeedSlider.value = lastDragRotSpeed = Main.dragRotSpeed;
 		antialiasingToggle.isOn = lastAntialiasing = Main.antialiasing;
 		aoToggle.isOn = lastAO = Main.ao;
@@ -97,6 +105,7 @@ public class SettingPanel : GamePanel {
 		Main.drawDistance = (int)drawDistanceSlider.value;
 		Main.bgmVolume = bgmVolumeSlider.value;
 		Main.seVolume = seVolumeSlider.value;
+		Main.cameraMoveSpeed = Mathf.Round (cameraMoveSpeedSlider.value * 100f) / 100f;
 		Main.dragRotSpeed = Mathf.Round (dragRotSpeedSlider.value * 100f) / 100f;
 		Main.antialiasing = antialiasingToggle.isOn;
 		Main.ao = aoToggle.isOn;
@@ -117,6 +126,7 @@ public class SettingPanel : GamePanel {
 		drawDistanceSlider.value = lastDrawDistance;
 		bgmVolumeSlider.value = lastBgmVolume;
 		seVolumeSlider.value = lastSeVolume;
+		cameraMoveSpeedSlider.value = lastCameraMoveSpeed;
 		dragRotSpeedSlider.value = lastDragRotSpeed;
 		antialiasingToggle.isOn = lastAntialiasing;
 		aoToggle.isOn = lastAO;
@@ -132,6 +142,7 @@ public class SettingPanel : GamePanel {
 		drawDistanceSlider.value = Main.DEFAULT_DRAW_DISTANCE;
 		bgmVolumeSlider.value = Main.DEFAULT_BGM_VOLUME;
 		seVolumeSlider.value = Main.DEFAULT_SE_VOLUME;
+		cameraMoveSpeedSlider.value = Main.DEFAULT_CAMERA_MOVE_SPEED;
 		dragRotSpeedSlider.value = Main.DEFAULT_DRAG_ROT_SPEED;
 		antialiasingToggle.isOn = Main.DEFAULT_ANTIALIASING;
 		aoToggle.isOn = Main.DEFAULT_AO;
