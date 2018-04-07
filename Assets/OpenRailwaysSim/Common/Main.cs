@@ -169,17 +169,15 @@ public class Main : MonoBehaviour {
 		}
 
 		if (playingmap != null) {
-			if (!GameCanvas.pausePanel.isShowing ()) {
-				if (Input.GetMouseButtonUp (0)) {
-					//if (EventSystem.current.IsPointerOverGameObject ())
-					//	return;
+			if (Input.GetMouseButtonUp (0) && !GameCanvas.pausePanel.isShowing () && !CameraMover.INSTANCE.dragging) {
+				//if (EventSystem.current.IsPointerOverGameObject ())
+				//	return;
 
-					RaycastHit hit;
-					if (Physics.Raycast (mainCamera.ScreenPointToRay (Input.mousePosition), out hit)) {
-						Track track = new Track (playingmap, hit.point);
-						track.length = 200;
-						playingmap.addTrack (track);
-					}
+				RaycastHit hit;
+				if (Physics.Raycast (mainCamera.ScreenPointToRay (Input.mousePosition), out hit)) {
+					Track track = new Track (playingmap, hit.point);
+					track.length = 200;
+					playingmap.addTrack (track);
 				}
 			}
 

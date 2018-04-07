@@ -6,6 +6,7 @@ public class CameraMover : MonoBehaviour {
 	public static float maxDistance = 5f; //カメラの追跡が遅れたときに対象から離れない距離
 	public static float min_t = 1f / 5f; //カメラの追跡力(0=動かない、1=瞬時に追跡)
 	public static float free_time = 0.8f; //手動回転後に自動回転するまでの時間
+	public static CameraMover INSTANCE;
 
 	Transform target;
 	Vector3 pos;
@@ -15,6 +16,11 @@ public class CameraMover : MonoBehaviour {
 	Vector3 rotStartEuler = Vector3.zero;
 	bool a = true;
 	float lv = 0f;
+	public bool dragging { get; private set; }
+
+	void Start () {
+		INSTANCE = this;
+	}
 
 	//カメラは後からついてくる挙動になっており、カメラが一定距離以上離れないようになっているため、乗り物向けなカメラになっている。
 	void LateUpdate () {
@@ -51,22 +57,23 @@ public class CameraMover : MonoBehaviour {
 					a = false;
 					f = 0;
 				}
+
 				Vector3 m = (Input.mousePosition - lastMousePos) * Main.dragRotSpeed; //カメラの移動量
-				//x,y軸を「xをz、yをx、zをy、zを0にする」工程で交換しながら、カメラがひっくり返らないよう新しいx軸の範囲を固定
-				m.z = m.x;
-				m.y = -m.y;
-				float rx = Mathf.Repeat (rotStartEuler.x - m.y + 180f, 360f) + m.y - 180f + CAMERA_ANGLE.x;
-				m.x = Mathf.Clamp (rx + m.y, -60f, 60f) - rx;
-				m.y = m.z;
-				m.z = 0f;
-				rot = Quaternion.Euler (rotStartEuler + m);
+				if (m != Vector3.zero) {
+					dragging = true;
+
+					Quaternion r = Quaternion.Euler (new Vector3 (Mathf.Clamp (Mathf.Repeat (rotStartEuler.x + 180, 360) - m.y, 90, 270) - 180, rotStartEuler.y + m.x));
+					if (r.eulerAngles.z == 0)
+						rot = r;
+				}
 			} else {
-				if (h == 0.0f && (lv < 0.0f) != (v < 0.0f)) {
+				dragging = false;
+				/*if (h == 0.0f && (lv < 0.0f) != (v < 0.0f)) {
 					a = false;
 					f = 0;
 				} else {
 					a = true;
-				}
+				}*/
 			}
 
 			/*if (f >= free_time) {
@@ -79,18 +86,22 @@ public class CameraMover : MonoBehaviour {
 				f += Time.deltaTime;
 			}
 
-			pos = target.position + rot * CAMERA_POS;*/
+			pos = target.position + rot * CAMERA_POS;
 
-			/*float x = pos.x - transform.position.x;
+			float x = pos.x - transform.position.x;
 			float y = pos.y - transform.position.y;
 			float z = pos.z - transform.position.z;
 			float t = Mathf.Max (min_t, 1f - maxDistance / Mathf.Sqrt (x * x + y * y + z * z));
-			transform.position = new Vector3 (Mathf.Lerp (transform.position.x, pos.x, t), Mathf.Lerp (transform.position.y, pos.y, t), Mathf.Lerp (transform.position.z, pos.z, t));*/
+			transform.position = new Vector3 (Mathf.Lerp (transform.position.x, pos.x, t), Mathf.Lerp (transform.position.y, pos.y, t), Mathf.Lerp (transform.position.z, pos.z, t));
 			transform.eulerAngles = new Vector3 (Mathf.Repeat (transform.eulerAngles.x + CAMERA_ANGLE.x + (Mathf.Repeat (rot.eulerAngles.x - transform.eulerAngles.x - CAMERA_ANGLE.x + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
 				Mathf.Repeat (transform.eulerAngles.y + CAMERA_ANGLE.y + (Mathf.Repeat (rot.eulerAngles.y - transform.eulerAngles.y - CAMERA_ANGLE.y + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
 				Mathf.Repeat (transform.eulerAngles.z + CAMERA_ANGLE.z + (Mathf.Repeat (rot.eulerAngles.z - transform.eulerAngles.z - CAMERA_ANGLE.z + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f);
 
-			lv = v;
+			lv = v;*/
+
+			transform.eulerAngles = new Vector3 (Mathf.Repeat (transform.eulerAngles.x + (Mathf.Repeat (rot.eulerAngles.x - transform.eulerAngles.x + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
+				Mathf.Repeat (transform.eulerAngles.y + (Mathf.Repeat (rot.eulerAngles.y - transform.eulerAngles.y + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
+				Mathf.Repeat (transform.eulerAngles.z + (Mathf.Repeat (rot.eulerAngles.z - transform.eulerAngles.z + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f);
 
 			/*if (Input.GetMouseButtonUp (0)) {
 				Cursor.lockState = CursorLockMode.None;
