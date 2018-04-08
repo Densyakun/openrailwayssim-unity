@@ -16,13 +16,13 @@ public class Map : ISerializable {
 
 	//・複数のマップを同時に読み込んではいけない。
 
-	public string mapname { get; }
+	public string mapname { get; private set; }
 
 	//TODO マップ全体を読み込まなくてもファイルヘッダにマップの基本情報を書き込む。
 	//マップの基本情報にはマップのチャンクやプレイヤーデータを除いたマップの作成日時などがある。
-	public DateTime created { get; }
-	public List<Track> tracks { get; private set; }
-	public List<MapObject> objs { get; private set; }
+	public DateTime created { get; private set; }
+	public List<Track> tracks { get; private set; } //軌道データ
+	public List<MapObject> objs { get; private set; } //その他オブジェクト（現在未使用）
 	public long time { get; private set; } //マップの時間。0時から始まり1tickが1msである。
 	public bool fastForwarding { get; private set; } //早送り
 
@@ -63,14 +63,6 @@ public class Map : ISerializable {
 		info.AddValue (KEY_FAST_FORWARDING, fastForwarding);
 	}
 
-	public void addObject (MapObject obj) {
-		objs.Add (obj);
-	}
-
-	public bool removeObject (MapObject obj) {
-		return objs.Remove (obj);
-	}
-
 	public void addTrack (Track track) {
 		tracks.Add (track);
 	}
@@ -79,11 +71,24 @@ public class Map : ISerializable {
 		return tracks.Remove (track);
 	}
 
+	public void addObject (MapObject obj) {
+		objs.Add (obj);
+	}
+
+	public bool removeObject (MapObject obj) {
+		return objs.Remove (obj);
+	}
+
+	public virtual void generate () {
+		foreach (Track track in tracks)
+			track.generate ();
+		foreach (MapObject obj in objs)
+			obj.generate ();
+	}
+
 	public void DestroyAll () {
 		foreach (MapEntity e in GameObject.FindObjectsOfType<MapEntity> ())
 			e.Destroy ();
-		foreach (TrackEntity e in GameObject.FindObjectsOfType<TrackEntity> ())
-			GameObject.Destroy (e.gameObject);
 	}
 
 	//時間が経過するメソッド。ticksには経過時間を指定。

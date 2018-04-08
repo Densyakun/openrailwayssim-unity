@@ -4,98 +4,42 @@ using System.Runtime.Serialization;
 using UnityEngine;
 
 [Serializable]
-public class Track : ISerializable {
-	public const string KEY_POS = "POS";
-	public const string KEY_ROTATION = "ROT";
+public class Track : MapObject {
+	public const string KEY_LENGTH = "LENGTH";
 
-	public TrackEntity entity { get; protected set; }
+	public float length = 0;
 
-	[NonSerialized]
-	private Map _map;
-	public Map map {
-		get {
-			return _map;
-		}
-		set {
-			if (_map == null)
-				_map = value;
-		}
+	public Track (Map map, Vector3 pos) : base (map, pos) {
 	}
 
-	[NonSerialized]
-	private Vector3 _pos;
-	public Vector3 pos {
-		get {
-			return _pos;
-		}
-		set {
-			_pos = value;
-			if (entity != null)
-				entity.transform.position = pos;
-		}
+	public Track (Map map, Vector3 pos, Quaternion rot) : base (map, pos, rot) {
 	}
 
-	[NonSerialized]
-	private Quaternion _rot;
-	public Quaternion rot {
-		get {
-			return _rot;
-		}
-		set {
-			_rot = value;
-			if (entity != null)
-				entity.transform.rotation = rot;
-		}
+	protected Track (SerializationInfo info, StreamingContext context) : base (info, context) {
+		length = info.GetSingle (KEY_LENGTH);
 	}
 
-	[NonSerialized]
-	private float _length = 0;
-	public float length {
-		get {
-			return _length;
-		}
-		set {
-			this._length = value;
+	public override void GetObjectData (SerializationInfo info, StreamingContext context) {
+		base.GetObjectData (info, context);
+		info.AddValue (KEY_LENGTH, length);
+	}
+
+	public override void generate () {
+		if (entity == null)
+			(entity = new GameObject ("track").AddComponent<MapEntity> ()).init (this);
+		else
 			reloadEntity ();
-		}
 	}
 
-	public Track (Map map) : this (map, new Vector3 (), new Quaternion ()) {
-	}
-
-	public Track (Map map, Vector3 pos) : this (map, pos, new Quaternion ()) {
-	}
-
-	public Track (Map map, Vector3 pos, Quaternion rot) {
-		_map = map;
-		_pos = pos;
-		_rot = rot;
-		(entity = new GameObject ("track").AddComponent<TrackEntity> ()).init (this);
-	}
-
-	protected Track (SerializationInfo info, StreamingContext context) {
-		if (info == null)
-			throw new ArgumentNullException ("info");
-		_pos = ((SerializableVector3)info.GetValue (KEY_POS, typeof(SerializableVector3))).toVector3 ();
-		_rot = ((SerializableQuaternion)info.GetValue (KEY_ROTATION, typeof(SerializableQuaternion))).toQuaternion ();
-	}
-
-	public void GetObjectData (SerializationInfo info, StreamingContext context) {
-		if (info == null)
-			throw new ArgumentNullException ("info");
-		info.AddValue (KEY_POS, new SerializableVector3 (_pos));
-		info.AddValue (KEY_ROTATION, new SerializableQuaternion (_rot));
-	}
-
-	public void reloadEntity () {
+	public override void reloadEntity () {
 		if (entity == null)
 			return;
-		entity.transform.position = pos;
-		entity.transform.rotation = rot;
-
+		
 		LineRenderer renderer = entity.GetComponent<LineRenderer> ();
 		if (renderer == null)
 			renderer = entity.gameObject.AddComponent<LineRenderer> ();
+		renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+		renderer.receiveShadows = false;
 		renderer.endWidth = renderer.startWidth = 0.1f;
 		renderer.endColor = renderer.startColor = Color.red;
 		renderer.material = Main.main.line_mat;
@@ -105,5 +49,7 @@ public class Track : ISerializable {
 		if (collider == null)
 			collider = entity.gameObject.AddComponent<BoxCollider> ();
 		collider.isTrigger = false;*/
+
+		base.reloadEntity ();
 	}
 }

@@ -72,6 +72,9 @@ public class Main : MonoBehaviour {
 
 	private static float lasttick = 0; //時間を進ませた時の余り
 	private static float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
+	private static Track editingTrack;
+	private static int editingMode = 0;
+
 	public Light sun; //太陽
 	public Camera mainCamera;
 	public AudioClip[] titleClips;
@@ -169,15 +172,29 @@ public class Main : MonoBehaviour {
 		}
 
 		if (playingmap != null) {
-			if (Input.GetMouseButtonUp (0) && !GameCanvas.pausePanel.isShowing () && !CameraMover.INSTANCE.dragging) {
+			if (!GameCanvas.pausePanel.isShowing () && !CameraMover.INSTANCE.dragging) {
 				//if (EventSystem.current.IsPointerOverGameObject ())
 				//	return;
 
 				RaycastHit hit;
 				if (Physics.Raycast (mainCamera.ScreenPointToRay (Input.mousePosition), out hit)) {
-					Track track = new Track (playingmap, hit.point);
-					track.length = 200;
-					playingmap.addTrack (track);
+					if (editingTrack != null) {
+						editingTrack.entity.transform.LookAt (hit.point);
+						editingTrack.SyncFromEntity ();
+						editingTrack.length = Vector3.Distance (editingTrack.pos, hit.point);
+						editingTrack.reloadEntity ();
+					}
+					if (Input.GetMouseButtonUp (0)) {
+						if (editingTrack == null)
+							(editingTrack = new Track (playingmap, hit.point)).generate ();
+						else {
+							if (editingTrack.length == 0)
+								editingTrack.entity.Destroy ();
+							else
+								playingmap.addTrack (editingTrack);
+							editingTrack = null;
+						}
+					}
 				}
 			}
 
@@ -280,6 +297,7 @@ public class Main : MonoBehaviour {
 			pause = false;
 			lasttick = 0;
 			lasttick_few = 0;
+			playingmap.generate ();
 			main.reloadLighting ();
 
 			main.mainCamera.GetComponent<PostProcessingBehaviour> ().enabled = true;

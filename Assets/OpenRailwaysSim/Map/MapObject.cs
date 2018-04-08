@@ -32,7 +32,6 @@ public class MapObject : ISerializable {
 		this.map = map;
 		this.pos = pos;
 		this.rot = rot;
-		(entity = new GameObject ("mapobj").AddComponent<MapEntity> ()).init (this);
 	}
 
 	protected MapObject (SerializationInfo info, StreamingContext context) {
@@ -48,6 +47,13 @@ public class MapObject : ISerializable {
 		SyncFromEntity ();
 		info.AddValue (KEY_POS, new SerializableVector3 (pos));
 		info.AddValue (KEY_ROTATION, new SerializableQuaternion (rot));
+	}
+
+	public virtual void generate () {
+		if (entity == null)
+			(entity = new GameObject ("mapobj").AddComponent<MapEntity> ()).init (this);
+		else
+			reloadEntity ();
 	}
 
 	public virtual void teleport (Vector3 pos) {
