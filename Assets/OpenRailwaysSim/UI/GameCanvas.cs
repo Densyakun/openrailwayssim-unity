@@ -11,6 +11,8 @@ public class GameCanvas : MonoBehaviour {
 	public static TitleBackPanel titleBackPanel;
 	public static UnsupportedMapPanel unsupportedMapPanel;
 	public static DeleteMapPanel deleteMapPanel;
+	public static TrackInfoPanel trackInfoPanel;
+	public static TrackSettingPanel selectingInfoPanel;
 
 	void Awake () {
 		titlePanel = GetComponentInChildren<TitlePanel> (true);
@@ -23,5 +25,7 @@ public class GameCanvas : MonoBehaviour {
 		titleBackPanel = GetComponentInChildren<TitleBackPanel> (true);
 		unsupportedMapPanel = GetComponentInChildren<UnsupportedMapPanel> (true);
 		deleteMapPanel = GetComponentInChildren<DeleteMapPanel> (true);
+		trackInfoPanel = GetComponentInChildren<TrackInfoPanel> (true);
+		selectingInfoPanel = GetComponentInChildren<TrackSettingPanel> (true);
 	}
 }

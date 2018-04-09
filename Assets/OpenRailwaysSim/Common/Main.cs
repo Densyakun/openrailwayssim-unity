@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.PostProcessing;
 
@@ -42,6 +43,7 @@ public class Main : MonoBehaviour {
 	public const bool DEFAULT_MOTIONBLUR = true;
 	public const bool DEFAULT_BLOOM = true;
 	public const bool DEFAULT_VIGNETTE = true;
+	public const float MIN_TRACK_LENGTH = 0.001f;
 
 	public static Main main;
 	public static Map playingmap { get; private set; }
@@ -72,8 +74,7 @@ public class Main : MonoBehaviour {
 
 	private static float lasttick = 0; //時間を進ませた時の余り
 	private static float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
-	private static Track editingTrack;
-	private static int editingMode = 0;
+	public static Track editingTrack;
 
 	public Light sun; //太陽
 	public Camera mainCamera;
@@ -165,33 +166,36 @@ public class Main : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.F2)) {
 			screenShot ();
 		} else if (Input.GetKeyDown (KeyCode.Escape)) {
-			if (playingmap != null) {
-				if (!GameCanvas.settingPanel.isShowing () && !GameCanvas.titleBackPanel.isShowing ())
+			if (playingmap != null && !GameCanvas.settingPanel.isShowing () && !GameCanvas.titleBackPanel.isShowing ()) {
+				if (editingTrack == null)
 					setPause (!pause);
+				else {
+					GameCanvas.trackInfoPanel.show (false);
+					editingTrack.entity.Destroy ();
+					editingTrack = null;
+				}
 			}
 		}
 
 		if (playingmap != null) {
-			if (!GameCanvas.pausePanel.isShowing () && !CameraMover.INSTANCE.dragging) {
-				//if (EventSystem.current.IsPointerOverGameObject ())
-				//	return;
-
+			if (!GameCanvas.pausePanel.isShowing () && !CameraMover.INSTANCE.dragging && !EventSystem.current.IsPointerOverGameObject ()) {
 				RaycastHit hit;
 				if (Physics.Raycast (mainCamera.ScreenPointToRay (Input.mousePosition), out hit)) {
 					if (editingTrack != null) {
 						editingTrack.entity.transform.LookAt (hit.point);
 						editingTrack.SyncFromEntity ();
-						editingTrack.length = Vector3.Distance (editingTrack.pos, hit.point);
+						editingTrack.length = Mathf.Max (MIN_TRACK_LENGTH, Vector3.Distance (editingTrack.pos, hit.point));
 						editingTrack.reloadEntity ();
+						GameCanvas.trackInfoPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackInfoPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackInfoPanel.transform).rect.height));
 					}
 					if (Input.GetMouseButtonUp (0)) {
-						if (editingTrack == null)
+						if (editingTrack == null) {
 							(editingTrack = new Track (playingmap, hit.point)).generate ();
-						else {
-							if (editingTrack.length == 0)
-								editingTrack.entity.Destroy ();
-							else
-								playingmap.addTrack (editingTrack);
+							GameCanvas.trackInfoPanel.show (true);
+							GameCanvas.trackInfoPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackInfoPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackInfoPanel.transform).rect.height));
+						} else {
+							GameCanvas.trackInfoPanel.show (false);
+							playingmap.addTrack (editingTrack);
 							editingTrack = null;
 						}
 					}
