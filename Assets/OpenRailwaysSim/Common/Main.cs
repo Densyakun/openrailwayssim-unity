@@ -230,6 +230,9 @@ public class Main : MonoBehaviour {
 
 			if (ticks != 0)
 				playingmap.TimePasses (ticks);
+
+			playingmap.cameraPos = main.mainCamera.transform.position;
+			playingmap.cameraRot = main.mainCamera.transform.eulerAngles;
 		}
 	}
 
@@ -304,6 +307,8 @@ public class Main : MonoBehaviour {
 			playingmap.generate ();
 			main.reloadLighting ();
 
+			main.mainCamera.transform.position = map.cameraPos;
+			main.mainCamera.transform.eulerAngles = map.cameraRot;
 			main.mainCamera.GetComponent<PostProcessingBehaviour> ().enabled = true;
 			GameCanvas.loadingMapPanel.show (false);
 			GameCanvas.playingPanel.show (true);

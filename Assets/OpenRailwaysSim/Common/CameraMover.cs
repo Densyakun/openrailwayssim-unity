@@ -3,8 +3,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CameraMover : MonoBehaviour {
-	public static Vector3 CAMERA_POS = new Vector3 (0f, 2f, -2.5f);
-	public static Vector3 CAMERA_ANGLE = new Vector3 (15f, 0f, 0f);
 	public static float maxDistance = 5f; //カメラの追跡が遅れたときに対象から離れない距離
 	public static float min_t = 1f / 5f; //カメラの追跡力(0=動かない、1=瞬時に追跡)
 	public static float free_time = 0.8f; //手動回転後に自動回転するまでの時間
@@ -20,7 +18,7 @@ public class CameraMover : MonoBehaviour {
 	float lv = 0f;
 	public bool dragging { get; private set; }
 
-	void Start () {
+	void Awake () {
 		INSTANCE = this;
 	}
 

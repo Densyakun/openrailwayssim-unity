@@ -11,10 +11,13 @@ public class Map : ISerializable {
 	public const string KEY_OBJECTS = "OBJS";
 	public const string KEY_TIME = "TIME";
 	public const string KEY_FAST_FORWARDING = "FASTFORWARDING";
+	public const string KEY_CAMERA_POS = "CAMERA_POS";
+	public const string KEY_CAMERA_ROT = "CAMERA_ROT";
 	public const float ABYSS_HEIGHT = -100f;
 	public const float FAST_FORWARDING_SPEED = 72f; //早送り中の速度。実時間20分でゲームが1日進む
 
-	//・複数のマップを同時に読み込んではいけない。
+	public static Vector3 DEFAULT_CAMERA_POS = new Vector3 (0f, 10f, -20f);
+	public static Vector3 DEFAULT_CAMERA_ROT = new Vector3 (30f, 0f, 0f);
 
 	public string mapname { get; private set; }
 
@@ -25,8 +28,8 @@ public class Map : ISerializable {
 	public List<MapObject> objs { get; private set; } //その他オブジェクト（現在未使用）
 	public long time { get; private set; } //マップの時間。0時から始まり1tickが1msである。
 	public bool fastForwarding { get; private set; } //早送り
-
-	//TODO マップに変更があるかどうかの判定（自動セーブ用）
+	public Vector3 cameraPos; //カメラの位置（マップ読み込み時用）
+	public Vector3 cameraRot; //カメラの角度（マップ読み込み時用）
 
 	public Map (string mapname) {
 		this.mapname = mapname;
@@ -35,6 +38,8 @@ public class Map : ISerializable {
 		objs = new List<MapObject> ();
 		time = 6 * 60 * 60000; //朝6時からスタート
 		fastForwarding = false;
+		cameraPos = DEFAULT_CAMERA_POS;
+		cameraRot = DEFAULT_CAMERA_ROT;
 	}
 
 	protected Map (SerializationInfo info, StreamingContext context) {
@@ -50,6 +55,8 @@ public class Map : ISerializable {
 			obj.map = this;
 		time = info.GetInt64 (KEY_TIME);
 		fastForwarding = info.GetBoolean (KEY_FAST_FORWARDING);
+		cameraPos = ((SerializableVector3)info.GetValue (KEY_CAMERA_POS, typeof(SerializableVector3))).toVector3 ();
+		cameraRot = ((SerializableVector3)info.GetValue (KEY_CAMERA_ROT, typeof(SerializableVector3))).toVector3 ();
 	}
 
 	public virtual void GetObjectData (SerializationInfo info, StreamingContext context) {
@@ -61,6 +68,8 @@ public class Map : ISerializable {
 		info.AddValue (KEY_OBJECTS, objs);
 		info.AddValue (KEY_TIME, time);
 		info.AddValue (KEY_FAST_FORWARDING, fastForwarding);
+		info.AddValue (KEY_CAMERA_POS, new SerializableVector3 (cameraPos));
+		info.AddValue (KEY_CAMERA_ROT, new SerializableVector3 (cameraRot));
 	}
 
 	public void addTrack (Track track) {
