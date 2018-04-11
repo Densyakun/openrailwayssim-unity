@@ -6,8 +6,10 @@ using UnityEngine;
 [Serializable]
 public class Track : MapObject {
 	public const string KEY_LENGTH = "LENGTH";
+	public const float MIN_TRACK_LENGTH = 0.01f;
 
-	public float length = 0;
+	private float _length = MIN_TRACK_LENGTH;
+	public float length { get { return _length; } set { _length = Mathf.Max (MIN_TRACK_LENGTH, value); } }
 
 	public Track (Map map, Vector3 pos) : base (map, pos) {
 	}
@@ -16,12 +18,12 @@ public class Track : MapObject {
 	}
 
 	protected Track (SerializationInfo info, StreamingContext context) : base (info, context) {
-		length = info.GetSingle (KEY_LENGTH);
+		_length = info.GetSingle (KEY_LENGTH);
 	}
 
 	public override void GetObjectData (SerializationInfo info, StreamingContext context) {
 		base.GetObjectData (info, context);
-		info.AddValue (KEY_LENGTH, length);
+		info.AddValue (KEY_LENGTH, _length);
 	}
 
 	public override void generate () {
@@ -43,7 +45,7 @@ public class Track : MapObject {
 		renderer.endWidth = renderer.startWidth = 0.1f;
 		renderer.endColor = renderer.startColor = Color.red;
 		renderer.material = Main.main.line_mat;
-		renderer.SetPositions (new Vector3[]{ pos, pos + rot * Vector3.forward * length });
+		renderer.SetPositions (new Vector3[]{ pos, pos + rot * Vector3.forward * _length });
 
 		/*BoxCollider collider = entity.GetComponent<BoxCollider> ();
 		if (collider == null)

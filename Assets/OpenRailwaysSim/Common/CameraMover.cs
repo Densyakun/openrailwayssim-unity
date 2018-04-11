@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CameraMover : MonoBehaviour {
 	public static Vector3 CAMERA_POS = new Vector3 (0f, 2f, -2.5f);
@@ -25,11 +27,16 @@ public class CameraMover : MonoBehaviour {
 	//カメラは後からついてくる挙動になっており、カメラが一定距離以上離れないようになっているため、乗り物向けなカメラになっている。
 	void LateUpdate () {
 		bool c = Main.playingmap != null && !Main.pause; //操作可能か
+		if (c && EventSystem.current.currentSelectedGameObject != null) {
+			InputField input = EventSystem.current.currentSelectedGameObject.GetComponent<InputField> ();
+			if (input != null && input.isFocused)
+				c = false;
+		}
 		if (c) {
 			if (target == null) {
-				/*if (Main.masterPlayer != null && Main.masterPlayer.playerEntity != null) {
-					target = Main.masterPlayer.playerEntity.transform;
-				}*/
+				/*if (Main.masterPlayer != null && Main.masterPlayer.playerEntity != null)
+					target = Main.masterPlayer.playerEntity.transform;*/
+				
 				Vector3 move = Vector3.zero;
 				if (Input.GetKey (KeyCode.A))
 					move += Vector3.left;

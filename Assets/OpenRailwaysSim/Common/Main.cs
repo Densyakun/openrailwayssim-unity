@@ -43,7 +43,6 @@ public class Main : MonoBehaviour {
 	public const bool DEFAULT_MOTIONBLUR = true;
 	public const bool DEFAULT_BLOOM = true;
 	public const bool DEFAULT_VIGNETTE = true;
-	public const float MIN_TRACK_LENGTH = 0.001f;
 
 	public static Main main;
 	public static Map playingmap { get; private set; }
@@ -170,7 +169,7 @@ public class Main : MonoBehaviour {
 				if (editingTrack == null)
 					setPause (!pause);
 				else {
-					GameCanvas.trackInfoPanel.show (false);
+					GameCanvas.trackSettingPanel.show (false);
 					editingTrack.entity.Destroy ();
 					editingTrack = null;
 				}
@@ -184,17 +183,18 @@ public class Main : MonoBehaviour {
 					if (editingTrack != null) {
 						editingTrack.entity.transform.LookAt (hit.point);
 						editingTrack.SyncFromEntity ();
-						editingTrack.length = Mathf.Max (MIN_TRACK_LENGTH, Vector3.Distance (editingTrack.pos, hit.point));
+						editingTrack.length = Vector3.Distance (editingTrack.pos, hit.point);
 						editingTrack.reloadEntity ();
-						GameCanvas.trackInfoPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackInfoPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackInfoPanel.transform).rect.height));
+						GameCanvas.trackSettingPanel.load ();
+						GameCanvas.trackSettingPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height));
 					}
 					if (Input.GetMouseButtonUp (0)) {
 						if (editingTrack == null) {
 							(editingTrack = new Track (playingmap, hit.point)).generate ();
-							GameCanvas.trackInfoPanel.show (true);
-							GameCanvas.trackInfoPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackInfoPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackInfoPanel.transform).rect.height));
+							GameCanvas.trackSettingPanel.show (true);
+							GameCanvas.trackSettingPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height));
 						} else {
-							GameCanvas.trackInfoPanel.show (false);
+							GameCanvas.trackSettingPanel.show (false);
 							playingmap.addTrack (editingTrack);
 							editingTrack = null;
 						}
