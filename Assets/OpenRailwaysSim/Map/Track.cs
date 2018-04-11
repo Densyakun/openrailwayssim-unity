@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public class Track : MapObject {
 	public const string KEY_LENGTH = "LENGTH";
-	public const float MIN_TRACK_LENGTH = 0.01f;
+	public const float MIN_TRACK_LENGTH = 1f;
 
 	private float _length = MIN_TRACK_LENGTH;
 	public float length { get { return _length; } set { _length = Mathf.Max (MIN_TRACK_LENGTH, value); } }
@@ -42,7 +42,7 @@ public class Track : MapObject {
 			renderer = entity.gameObject.AddComponent<LineRenderer> ();
 		renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 		renderer.receiveShadows = false;
-		renderer.endWidth = renderer.startWidth = 0.1f;
+		renderer.endWidth = renderer.startWidth = 1f;
 		renderer.endColor = renderer.startColor = Color.red;
 		renderer.material = Main.main.line_mat;
 		renderer.SetPositions (new Vector3[]{ pos, pos + rot * Vector3.forward * _length });
