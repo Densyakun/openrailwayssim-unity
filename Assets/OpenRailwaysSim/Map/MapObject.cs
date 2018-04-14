@@ -18,8 +18,28 @@ public class MapObject : ISerializable {
 				_map = value;
 		}
 	}
-	public Vector3 pos { get; protected set; }
-	public Quaternion rot { get; protected set; }
+	private Vector3 _pos;
+	public Vector3 pos {
+		get {
+			return _pos;
+		}
+		set {
+			_pos = value;
+			if (entity != null)
+				entity.transform.position = pos;
+		}
+	}
+	private Quaternion _rot;
+	public Quaternion rot {
+		get {
+			return _rot;
+		}
+		set {
+			_rot = value;
+			if (entity != null)
+				entity.transform.rotation = rot;
+		}
+	}
 
 	public MapObject (Map map) : this (map, new Vector3 (), new Quaternion ()) {
 	}
@@ -29,23 +49,23 @@ public class MapObject : ISerializable {
 	
 	public MapObject (Map map, Vector3 pos, Quaternion rot) {
 		this.map = map;
-		this.pos = pos;
-		this.rot = rot;
+		this._pos = pos;
+		this._rot = rot;
 	}
 
 	protected MapObject (SerializationInfo info, StreamingContext context) {
 		if (info == null)
 			throw new ArgumentNullException ("info");
-		pos = ((SerializableVector3)info.GetValue (KEY_POS, typeof(SerializableVector3))).toVector3 ();
-		rot = ((SerializableQuaternion)info.GetValue (KEY_ROTATION, typeof(SerializableQuaternion))).toQuaternion ();
+		_pos = ((SerializableVector3)info.GetValue (KEY_POS, typeof(SerializableVector3))).toVector3 ();
+		_rot = ((SerializableQuaternion)info.GetValue (KEY_ROTATION, typeof(SerializableQuaternion))).toQuaternion ();
 	}
 
 	public virtual void GetObjectData (SerializationInfo info, StreamingContext context) {
 		if (info == null)
 			throw new ArgumentNullException ("info");
 		SyncFromEntity ();
-		info.AddValue (KEY_POS, new SerializableVector3 (pos));
-		info.AddValue (KEY_ROTATION, new SerializableQuaternion (rot));
+		info.AddValue (KEY_POS, new SerializableVector3 (_pos));
+		info.AddValue (KEY_ROTATION, new SerializableQuaternion (_rot));
 	}
 
 	public virtual void generate () {
@@ -55,26 +75,11 @@ public class MapObject : ISerializable {
 			reloadEntity ();
 	}
 
-	public virtual void teleport (Vector3 pos) {
-		this.pos = pos;
-		if (entity != null) {
-			entity.transform.position = pos;
-		}
-	}
-
-	public virtual void teleport (Vector3 pos, Quaternion rot) {
-		teleport (pos);
-		this.rot = rot;
-		if (entity != null) {
-			entity.transform.rotation = rot;
-		}
-	}
-
 	public virtual void reloadEntity () {
 		if (entity == null)
 			return;
-		entity.transform.position = pos;
-		entity.transform.rotation = rot;
+		entity.transform.position = _pos;
+		entity.transform.rotation = _rot;
 	}
 
 	//時間が経過するメソッド。ticksには経過時間を指定。
@@ -83,8 +88,8 @@ public class MapObject : ISerializable {
 
 	public virtual void SyncFromEntity () {
 		if (entity != null) {
-			pos = entity.transform.position;
-			rot = entity.transform.rotation;
+			_pos = entity.transform.position;
+			_rot = entity.transform.rotation;
 		}
 	}
 }

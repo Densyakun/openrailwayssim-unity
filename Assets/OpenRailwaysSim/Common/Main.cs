@@ -74,6 +74,7 @@ public class Main : MonoBehaviour {
 	private static float lasttick = 0; //時間を進ませた時の余り
 	private static float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
 	public static Track editingTrack;
+	public static Quaternion? editingRot;
 
 	public Light sun; //太陽
 	public Camera mainCamera;
@@ -172,6 +173,7 @@ public class Main : MonoBehaviour {
 					GameCanvas.trackSettingPanel.show (false);
 					editingTrack.entity.Destroy ();
 					editingTrack = null;
+					editingRot = null;
 				}
 			}
 		}
@@ -181,23 +183,48 @@ public class Main : MonoBehaviour {
 				RaycastHit hit;
 				if (Physics.Raycast (mainCamera.ScreenPointToRay (Input.mousePosition), out hit)) {
 					if (editingTrack != null) {
-						editingTrack.entity.transform.LookAt (hit.point);
-						editingTrack.SyncFromEntity ();
-						editingTrack.length = Vector3.Distance (editingTrack.pos, hit.point);
+						if (editingRot == null) {
+							editingTrack.entity.transform.LookAt (hit.point);
+							editingTrack.SyncFromEntity ();
+						}
+
+						if (editingTrack is Curve) {
+
+							/*editingTrack.length = Vector3.Distance (editingTrack.pos, hit.point);
+							((Curve)editingTrack).radius = Vector3.Distance (editingTrack.pos, hit.point);*/
+						} else
+							editingTrack.length = Vector3.Distance (editingTrack.pos, hit.point);
 						editingTrack.reloadEntity ();
 						GameCanvas.trackSettingPanel.load ();
 						GameCanvas.trackSettingPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height));
 					}
 					if (Input.GetMouseButtonUp (0)) {
-						if (editingTrack == null) {
-							(editingTrack = new Track (playingmap, hit.point)).generate ();
-							GameCanvas.trackSettingPanel.show (true);
-							GameCanvas.trackSettingPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height));
-						} else {
+						if (editingTrack != null) {
 							GameCanvas.trackSettingPanel.show (false);
 							playingmap.addTrack (editingTrack);
-							editingTrack = null;
 						}
+
+						if (editingTrack != null) {
+							if (editingTrack as Curve) {
+								//TODO
+								float a = ((Curve)editingTrack).length / ((Curve)editingTrack).radius;
+								editingRot = editingTrack.rot;
+							} else {
+								editingRot = editingTrack.rot;
+							}
+						}
+						
+						if (editingTrack != null && editingTrack.GetType () == typeof(Track))
+							editingTrack = new Curve (playingmap, hit.point);
+						else
+							editingTrack = new Track (playingmap, hit.point);
+						
+						if (editingRot != null)
+							editingTrack.rot = (Quaternion)editingRot;
+						editingTrack.generate ();
+						
+						GameCanvas.trackSettingPanel.show (true);
+						GameCanvas.trackSettingPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height));
 					}
 				}
 			}
