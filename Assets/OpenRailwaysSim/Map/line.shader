@@ -3,7 +3,7 @@
 		_Color ("Color", Color) = (1,1,1,1)
 	}
 	SubShader {
-	    Tags { "Queue" = "Geometry+1" }
+	    Tags { "Queue" = "Transparent" }
         ZTest Always
         Pass {
             Color [_Color]
