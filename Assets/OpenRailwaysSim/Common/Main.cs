@@ -179,7 +179,7 @@ public class Main : MonoBehaviour {
 		}
 
 		if (playingmap != null) {
-			if (!GameCanvas.pausePanel.isShowing () && !CameraMover.INSTANCE.dragging && !EventSystem.current.IsPointerOverGameObject ()) {
+			if (!GameCanvas.pausePanel.isShowing () && !CameraMover.INSTANCE.dragging && !EventSystem.current.IsPointerOverGameObject () && !(EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.GetComponent<InputField> () != null)) {
 				RaycastHit hit;
 				if (Physics.Raycast (mainCamera.ScreenPointToRay (Input.mousePosition), out hit)) {
 					if (editingTrack != null) {
@@ -189,14 +189,21 @@ public class Main : MonoBehaviour {
 						}
 
 						if (editingTrack is Curve) {
-
-							/*editingTrack.length = Vector3.Distance (editingTrack.pos, hit.point);
-							((Curve)editingTrack).radius = Vector3.Distance (editingTrack.pos, hit.point);*/
+							//TODO 直線になっている場合に直線にする
+							Vector3 v = Quaternion.Inverse (editingTrack.rot) * (hit.point - editingTrack.pos);
+							if (v != Vector3.zero) {
+								float a = Mathf.Atan (Mathf.Abs (v.x) / v.z);
+								if (v.x < 0)
+									a = -a;
+								Vector2? i = GetIntersectionPointCoordinatesXZ (Vector3.zero, Vector3.right * v.x, v, v + Quaternion.Euler (new Vector3 (0, a * 2 * Mathf.Rad2Deg)) * Vector3.right * v.z);
+								if (i != null)
+									editingTrack.length = Mathf.Abs (a * 2 * (((Curve)editingTrack).radius = ((Vector2)i).x));
+							}
 						} else
 							editingTrack.length = Vector3.Distance (editingTrack.pos, hit.point);
 						editingTrack.reloadEntity ();
 						GameCanvas.trackSettingPanel.load ();
-						GameCanvas.trackSettingPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height));
+						GameCanvas.trackSettingPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height, Screen.height));
 					}
 					if (Input.GetMouseButtonUp (0)) {
 						if (editingTrack != null) {
@@ -205,18 +212,16 @@ public class Main : MonoBehaviour {
 						}
 
 						if (editingTrack != null) {
-							if (editingTrack as Curve) {
-								//TODO
-								float a = ((Curve)editingTrack).length / ((Curve)editingTrack).radius;
+							if (editingTrack is Curve)
+								editingRot = ((Curve)editingTrack).getRotation (1);
+							else
 								editingRot = editingTrack.rot;
-							} else {
-								editingRot = editingTrack.rot;
-							}
-						}
-						
-						if (editingTrack != null && editingTrack.GetType () == typeof(Track))
-							editingTrack = new Curve (playingmap, hit.point);
-						else
+							
+							if (editingTrack.GetType () == typeof(Track))
+								editingTrack = new Curve (playingmap, editingTrack.getPoint (1));
+							else
+								editingTrack = new Track (playingmap, editingTrack.getPoint (1));
+						} else
 							editingTrack = new Track (playingmap, hit.point);
 						
 						if (editingRot != null)
@@ -224,7 +229,7 @@ public class Main : MonoBehaviour {
 						editingTrack.generate ();
 						
 						GameCanvas.trackSettingPanel.show (true);
-						GameCanvas.trackSettingPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, 0, Screen.height - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height));
+						GameCanvas.trackSettingPanel.transform.position = new Vector3 (Mathf.Clamp (Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp (Input.mousePosition.y, ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height, Screen.height));
 					}
 				}
 			}
@@ -370,5 +375,23 @@ public class Main : MonoBehaviour {
 
 		//頻繁に変更すると重くなる
 		sun.intensity = Mathf.Max (1f - Mathf.Abs ((r + 90f) / 180f - 1f), min_reflectionIntensity);
+	}
+	
+	//2直線の交点を求める関数
+	public Vector2? GetIntersectionPointCoordinates(float a1x, float a1y, float a2x, float a2y, float b1x, float b1y, float b2x, float b2y) {
+		float tmp = (b2x - b1x) * (a2y - a1y) - (b2y - b1y) * (a2x - a1x);
+		if (tmp == 0)
+			return null;
+		
+		float mu = ((a1x - b1x) * (a2y - a1y) - (a1y - b1y) * (a2x - a1x)) / tmp;
+		return new Vector2(b1x + (b2x - b1x) * mu, b1y + (b2y - b1y) * mu);
+	}
+
+	public Vector2? GetIntersectionPointCoordinates(Vector2 A1, Vector2 A2, Vector2 B1, Vector2 B2) {
+		return GetIntersectionPointCoordinates (A1.x, A1.y, A2.x, A2.y, B1.x, B1.y, B2.x, B2.y);
+	}
+
+	public Vector2? GetIntersectionPointCoordinatesXZ(Vector3 A1, Vector3 A2, Vector3 B1, Vector3 B2) {
+		return GetIntersectionPointCoordinates (A1.x, A1.z, A2.x, A2.z, B1.x, B1.z, B2.x, B2.z);
 	}
 }

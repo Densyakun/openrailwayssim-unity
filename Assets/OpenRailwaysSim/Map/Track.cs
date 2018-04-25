@@ -47,14 +47,22 @@ public class Track : MapObject {
 		renderer.endWidth = renderer.startWidth = 1f;
 		renderer.endColor = renderer.startColor = Color.white;
 		renderer.material = Main.main.line_mat;
-		renderer.SetPositions (new Vector3[]{ pos, pos + rot * Vector3.forward * _length });
-
+		reloadLineRendererPositions (renderer);
+		
 		/*BoxCollider collider = entity.GetComponent<BoxCollider> ();
 		if (collider == null)
 			collider = entity.gameObject.AddComponent<BoxCollider> ();
 		collider.isTrigger = false;*/
 
 		base.reloadEntity ();
+	}
+
+	public virtual void reloadLineRendererPositions (LineRenderer renderer) {
+		renderer.SetPositions (new Vector3[]{ pos, getPoint (1) });
+	}
+
+	public virtual Vector3 getPoint (float a) {
+		return pos + rot * Vector3.forward * _length * a;
 	}
 
 	/*public void setNextTrack (Track track) {
