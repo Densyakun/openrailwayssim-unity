@@ -364,6 +364,7 @@ MonoBehaviour:
   bgmSource: {fileID: 2107079515}
   seSource: {fileID: 933053664}
   line_mat: {fileID: 2100000, guid: 585dd19b54084fb4aaf580b59a878937, type: 2}
+  point: {fileID: 133609050}
 --- !u!4 &51358973
 Transform:
   m_ObjectHideFlags: 0
@@ -845,6 +846,57 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 93764352}
+--- !u!1001 &133609049
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4213510482871174, guid: e15baadecffca5241af9c62308a93261, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213510482871174, guid: e15baadecffca5241af9c62308a93261, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213510482871174, guid: e15baadecffca5241af9c62308a93261, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213510482871174, guid: e15baadecffca5241af9c62308a93261, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0.000001809995
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213510482871174, guid: e15baadecffca5241af9c62308a93261, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213510482871174, guid: e15baadecffca5241af9c62308a93261, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213510482871174, guid: e15baadecffca5241af9c62308a93261, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213510482871174, guid: e15baadecffca5241af9c62308a93261, type: 2}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1633749068227294, guid: e15baadecffca5241af9c62308a93261, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: e15baadecffca5241af9c62308a93261, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1 &133609050 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1633749068227294, guid: e15baadecffca5241af9c62308a93261,
+    type: 2}
+  m_PrefabInternal: {fileID: 133609049}
 --- !u!1 &135012708
 GameObject:
   m_ObjectHideFlags: 0
@@ -4608,7 +4660,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 100000
-  field of view: 95
+  field of view: 90
   orthographic: 0
   orthographic size: 5
   m_Depth: -1

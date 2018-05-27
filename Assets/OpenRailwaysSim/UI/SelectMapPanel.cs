@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//マップを選択する画面
 public class SelectMapPanel : GamePanel, ScrollController.Listener {
 	public static string selectedMap; //最後に選択されたマップ
 	private static bool openMap = false;

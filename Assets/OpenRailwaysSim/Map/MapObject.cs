@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using UnityEngine;
 
+//マップ上に存在するオブジェクトを管理するクラス
 [Serializable]
 public class MapObject : ISerializable {
 	public const string KEY_POS = "POS";

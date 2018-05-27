@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+//ScrollItemに表示する要素や、選択した要素を管理するコンポーネント
 public class ScrollController : MonoBehaviour {
 	public interface Listener
 	{

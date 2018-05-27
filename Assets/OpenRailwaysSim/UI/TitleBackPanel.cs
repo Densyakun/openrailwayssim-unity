@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+//タイトルに戻るときに表示される確認画面
 public class TitleBackPanel : GamePanel {
 
 	void Update () {

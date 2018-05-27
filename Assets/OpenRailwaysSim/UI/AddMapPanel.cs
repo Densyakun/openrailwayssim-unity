@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//マップを追加する画面
 public class AddMapPanel : GamePanel {
 	public InputField mapnameInput;
     
@@ -28,9 +29,7 @@ public class AddMapPanel : GamePanel {
 				}
 			}
 
-			//TODO マップ追加を非同期に対応させる
 			MapManager.saveMap (new Map (mapname));
-			//BPCanvas.selectMapPanel.reloadContents ();
 			show (false);
 			GameCanvas.selectMapPanel.show (false);
 			Main.main.StartCoroutine (Main.openMap (mapname));

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//豆知識を表示するスクリプト。TextコンポーネントのあるGameObjectに追加して使用する
 public class TipsText : MonoBehaviour {
 	public static string[] tips = new string[] { "メニューはEscキーで戻ることが出来ます", "ポーズメニューはEscキーで開きます", "F2でスクリーンショットを撮ることが出来ます", "保存したスクリーンショットは設定から見ることが出来ます" };
 	//TODO Tipsを定期的に更新する

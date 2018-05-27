@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//ゲーム中に表示される画面
 public class PlayingPanel : GamePanel {
 	//public Sprite normalSpeedImage;
 	//public Sprite fastForwardingImage;

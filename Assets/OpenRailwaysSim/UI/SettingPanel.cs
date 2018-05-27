@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//設定画面
 public class SettingPanel : GamePanel {
 	//TODO 多言語対応化
 	public static string drawDistanceText_DEF = "描画距離";

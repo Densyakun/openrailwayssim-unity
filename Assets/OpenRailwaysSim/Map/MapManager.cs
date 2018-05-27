@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
+//マップを読み書きするクラス
 public class MapManager {
 	public const string mapfilename = "map.bin";
 	public static string dir; //マップファイルを格納するフォルダ

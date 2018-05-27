@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//ゲーム内の時間を表示するスクリプト。TextコンポーネントのあるGameObjectに追加して使用する
 public class TimeText : MonoBehaviour {
 	Text text;
 

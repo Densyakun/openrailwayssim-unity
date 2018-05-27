@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+//GamePanelを管理するスクリプト
 public class GameCanvas : MonoBehaviour {
 	public static TitlePanel titlePanel;
 	public static SelectMapPanel selectMapPanel;

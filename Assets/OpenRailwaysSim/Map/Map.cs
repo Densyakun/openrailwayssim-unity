@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
+//マップ
 [Serializable]
 public class Map : ISerializable {
 	public const string KEY_MAPNAME = "MAPNAME";
@@ -13,7 +14,7 @@ public class Map : ISerializable {
 	public const string KEY_FAST_FORWARDING = "FASTFORWARDING";
 	public const string KEY_CAMERA_POS = "CAMERA_POS";
 	public const string KEY_CAMERA_ROT = "CAMERA_ROT";
-	public const float ABYSS_HEIGHT = -100f;
+	//public const float ABYSS_HEIGHT = -100f;
 	public const float FAST_FORWARDING_SPEED = 72f; //早送り中の速度。実時間20分でゲームが1日進む
 
 	public static Vector3 DEFAULT_CAMERA_POS = new Vector3 (0f, 10f, -20f);

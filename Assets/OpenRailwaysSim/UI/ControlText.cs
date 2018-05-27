@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+//操作方法を表示するスクリプト
 public class ControlText : MonoBehaviour {
 	public RectTransform bgImage;
 
