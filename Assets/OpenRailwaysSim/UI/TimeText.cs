@@ -14,8 +14,8 @@ public class TimeText : MonoBehaviour {
 			text.text = "---";
 		} else {
 			text.text = "現在時刻: " + (Main.playingmap.getDays () + 1) + "日目 " +
-			Main.playingmap.getHours () + ":" + Main.playingmap.getMinutes () +
-			":" + Main.playingmap.getSeconds ();
+			Main.playingmap.getHours () + ":" + string.Format("{0:00}", Main.playingmap.getMinutes ()) +
+			":" + string.Format("{0:00}", Main.playingmap.getSeconds ());
 		}
 	}
 }

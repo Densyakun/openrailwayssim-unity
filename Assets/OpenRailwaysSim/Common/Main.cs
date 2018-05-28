@@ -50,7 +50,6 @@ public class Main : MonoBehaviour
     public static Map playingmap { get; private set; }
     public static string ssdir { get; private set; }
     public static int min_fps = 15;
-    public static float min_reflectionIntensity = 1f / 32;
 
     private static bool firstStart = false;
     public static bool isFirstStart
@@ -80,6 +79,7 @@ public class Main : MonoBehaviour
     public static Quaternion? editingRot;
     public static Track mainTrack;
 
+    public Gradient sunGradient;
     public Light sun; //太陽
     public Camera mainCamera;
     public AudioClip[] titleClips;
@@ -201,6 +201,34 @@ public class Main : MonoBehaviour
 
         if (playingmap != null)
         {
+            if (pause)
+            {
+                playingmap.cameraPos = main.mainCamera.transform.position;
+                playingmap.cameraRot = main.mainCamera.transform.eulerAngles;
+            }
+            else
+            {
+                //時間を進ませる
+                lasttick += Time.deltaTime * 1000f;
+                lasttick_few += Time.deltaTime;
+                if (playingmap.fastForwarding)
+                {
+                    lasttick *= Map.FAST_FORWARDING_SPEED;
+                    lasttick_few *= Map.FAST_FORWARDING_SPEED;
+                }
+
+                int ticks = Mathf.FloorToInt(lasttick);
+                lasttick -= ticks;
+
+                int ticks_few = Mathf.FloorToInt(lasttick_few);
+                lasttick_few -= ticks_few;
+                if (ticks_few != 0)
+                    reloadLighting();
+
+                if (ticks != 0)
+                    playingmap.TimePasses(ticks);
+            }
+
             if (!GameCanvas.pausePanel.isShowing() && !CameraMover.INSTANCE.dragging && !EventSystem.current.IsPointerOverGameObject() && !(EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null))
             {
                 RaycastHit hit;
@@ -330,40 +358,6 @@ public class Main : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        if (playingmap != null)
-        {
-            if (pause)
-            {
-                playingmap.cameraPos = main.mainCamera.transform.position;
-                playingmap.cameraRot = main.mainCamera.transform.eulerAngles;
-            }
-            else
-            {
-                //時間を進ませる
-                lasttick += Time.deltaTime * 1000f;
-                lasttick_few += Time.deltaTime;
-                if (playingmap.fastForwarding)
-                {
-                    lasttick *= Map.FAST_FORWARDING_SPEED;
-                    lasttick_few *= Map.FAST_FORWARDING_SPEED;
-                }
-
-                int ticks = Mathf.FloorToInt(lasttick);
-                lasttick -= ticks;
-
-                int ticks_few = Mathf.FloorToInt(lasttick_few);
-                lasttick_few -= ticks_few;
-                if (ticks_few != 0)
-                    reloadLighting();
-
-                if (ticks != 0)
-                    playingmap.TimePasses(ticks);
-            }
-        }
-    }
-
     public static void quit()
     {
 #if UNITY_EDITOR
@@ -481,11 +475,11 @@ public class Main : MonoBehaviour
     public void reloadLighting()
     {
         float t = Mathf.Repeat(playingmap.time, 86400000f); //86400000ms = 1日
-        float r = t * 360f / 86400000f - 75f;
+        float r = t * 360f / 86400000f - 90f;
         sun.transform.localEulerAngles = new Vector3(r, -90f, 0f);
 
         //頻繁に変更すると重くなる
-        sun.intensity = Mathf.Max(1f - Mathf.Abs((r + 90f) / 180f - 1f), min_reflectionIntensity);
+        sun.shadowStrength = sun.intensity = sunGradient.Evaluate(1f - Mathf.Abs((r + 90f) / 180f - 1)).grayscale;
     }
 
     //2直線の交点を求める関数
