@@ -15,7 +15,7 @@ public class TipsText : MonoBehaviour
         tipsIndex = UnityEngine.Random.Range(0, tips.Length);
     }
 
-    void Update()
+    void LateUpdate()
     {
         if (nextUpdate <= Time.time)
         {

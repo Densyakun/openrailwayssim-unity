@@ -415,12 +415,8 @@ public class Main : MonoBehaviour
         GameCanvas.titlePanel.show(false);
         GameCanvas.loadingMapPanel.show(true);
 
-        //一回だとフレーム等のズレによってTipsが表示されない
-        yield return null;
-        yield return null;
-        yield return null;
+        yield return null; //読み込み画面を表示する
         Map map = MapManager.loadMap(mapname);
-        yield return null;
         if (map == null)
         {
             //マップが対応していない
