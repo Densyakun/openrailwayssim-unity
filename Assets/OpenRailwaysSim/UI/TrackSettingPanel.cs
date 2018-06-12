@@ -94,9 +94,8 @@ public class TrackSettingPanel : GamePanel
                 ((Curve)Main.editingTrack).radius = float.Parse(radiusInput.text);
             Main.editingTrack.reloadEntity();
         }
-        catch (FormatException)
-        {
-        }
+        catch (FormatException) { }
+        catch (OverflowException) { }
     }
 
     public void save()
@@ -105,8 +104,10 @@ public class TrackSettingPanel : GamePanel
         Main.trackEdited0();
         Main.mainTrack = null;
         Main.editingTrack = null;
+        Main.editingRot = null;
 
-        show(false);
+        if (!Input.GetKeyDown(KeyCode.Escape))
+            show(false);
     }
 
     public void cancel()

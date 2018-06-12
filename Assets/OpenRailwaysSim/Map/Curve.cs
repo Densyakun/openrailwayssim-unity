@@ -71,7 +71,7 @@ public class Curve : Track
         if (colliders.Length != l)
         {
             for (int a = 0; a < colliders.Length; a++)
-                GameObject.Destroy(colliders[a]);
+                GameObject.Destroy(colliders[a].gameObject);
             colliders = new BoxCollider[l];
         }
         for (int a = 0; a < l; a++)
@@ -83,7 +83,7 @@ public class Curve : Track
                 o.transform.parent = entity.transform;
             }
             colliders[a].isTrigger = true;
-            
+
             Quaternion b = Quaternion.Inverse(rot);
             Vector3 c = b * (getPoint((float)a / (float)l) - pos);
             Vector3 d = b * (getPoint(((float)a + 1) / (float)l) - pos);
@@ -103,5 +103,10 @@ public class Curve : Track
     public virtual Quaternion getRotation(float a)
     {
         return rot * Quaternion.Euler(new Vector3(0, _length * a * Mathf.Rad2Deg / _radius));
+    }
+
+    public virtual bool isLinear()
+    {
+        return length / radius <= Mathf.PI * 2 && rot == getRotation(1);
     }
 }
