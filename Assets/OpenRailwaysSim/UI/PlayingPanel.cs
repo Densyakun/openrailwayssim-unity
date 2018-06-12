@@ -2,26 +2,24 @@
 using UnityEngine.UI;
 
 //ゲーム中に表示される画面
-public class PlayingPanel : GamePanel {
-	//public Sprite normalSpeedImage;
-	//public Sprite fastForwardingImage;
-	//public Button fastButton;
+public class PlayingPanel : GamePanel
+{
+    public Button constTrackButton;
+    public Button removeTrackButton;
 
-	/*new public void show (bool show) {
-		base.show (show);
-		if (show)
-			reloadFastForwarding ();
-	}
+    public void ConstTrackButton()
+    {
+        if (Main.mode == Main.MODE_CONSTRUCT_TRACK)
+            Main.mode = 0;
+        else
+            Main.mode = Main.MODE_CONSTRUCT_TRACK;
+    }
 
-	public void reloadFastForwarding () {
-		if (Main.playingmap.fastForwarding)
-			fastButton.image.sprite = fastForwardingImage;
-		else
-			fastButton.image.sprite = normalSpeedImage;
-	}
-
-	public void FastButton () {
-		Main.playingmap.setFastForwarding (!Main.playingmap.fastForwarding);
-		reloadFastForwarding ();
-	}*/
+    public void RemoveTrackButton()
+    {
+        if (Main.mode == Main.MODE_REMOVE_TRACK)
+            Main.mode = 0;
+        else
+            Main.mode = Main.MODE_REMOVE_TRACK;
+    }
 }

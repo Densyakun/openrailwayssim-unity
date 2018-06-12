@@ -64,7 +64,10 @@ public class Track : MapObject
         renderer.receiveShadows = false;
         renderer.endWidth = renderer.startWidth = RENDER_WIDTH;
         renderer.endColor = renderer.startColor = Color.white;
-        renderer.material = Main.main.line_mat;
+        if (Main.selection == this)
+            renderer.material = Main.main.selection_line_mat;
+        else
+            renderer.material = Main.main.line_mat;
         reloadLineRendererPositions(renderer);
 
         reloadCollider();
