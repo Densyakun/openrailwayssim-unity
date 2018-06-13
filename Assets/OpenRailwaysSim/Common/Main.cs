@@ -272,14 +272,20 @@ public class Main : MonoBehaviour
                             if (selection is Curve)
                             {
                                 Vector3 a = Quaternion.Inverse(selection.rot) * (hit.point - selection.pos);
-                                float r = Vector3.Distance(a, Vector3.right * ((Curve)selection).radius);
-                                float A = Mathf.Atan(a.z / (r - a.x));
+                                float r1 = ((Curve)selection).radius;
+                                if (r1 < 0)
+                                {
+                                    r1 = -r1;
+                                    a.x = -a.x;
+                                }
+                                float r2 = Vector3.Distance(a, Vector3.right * r1);
+                                float A = Mathf.Atan(a.z / (r2 - a.x));
                                 if (A < 0)
                                     A = Mathf.PI + A;
                                 if (a.z < 0)
                                     A += Mathf.PI;
-                                selectionDist = A * ((Curve)selection).radius;
-                                if (selectionDist < Track.MIN_TRACK_LENGTH || selectionDist > Mathf.PI * 2 * ((Curve)selection).radius - Track.MIN_TRACK_LENGTH)
+                                selectionDist = A * r1;
+                                if (selectionDist < Track.MIN_TRACK_LENGTH || selectionDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
                                     selectionDist = 0;
                                 else if (selectionDist > selection.length - Track.MIN_TRACK_LENGTH)
                                     selectionDist = selection.length;
