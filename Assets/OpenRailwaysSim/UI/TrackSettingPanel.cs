@@ -101,7 +101,7 @@ public class TrackSettingPanel : GamePanel
     public void save()
     {
         reflect();
-        Main.trackEdited0();
+        Main.main.trackEdited0();
         Main.mainTrack = null;
         Main.editingTrack = null;
         Main.editingRot = null;

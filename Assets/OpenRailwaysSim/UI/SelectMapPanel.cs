@@ -82,7 +82,7 @@ public class SelectMapPanel : GamePanel, ScrollController.Listener {
 
 		if (openMap) {
 			show (false);
-			Main.main.StartCoroutine (Main.openMap (SelectMapPanel.selectedMap));
+			Main.main.StartCoroutine (Main.main.openMap (SelectMapPanel.selectedMap));
 		}
 	}
 

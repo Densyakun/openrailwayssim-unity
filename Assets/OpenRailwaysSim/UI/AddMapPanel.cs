@@ -32,7 +32,7 @@ public class AddMapPanel : GamePanel {
 			MapManager.saveMap (new Map (mapname));
 			show (false);
 			GameCanvas.selectMapPanel.show (false);
-			Main.main.StartCoroutine (Main.openMap (mapname));
+			Main.main.StartCoroutine (Main.main.openMap (mapname));
 		}
 	}
 }

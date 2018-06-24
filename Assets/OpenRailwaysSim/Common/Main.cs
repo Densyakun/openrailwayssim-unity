@@ -12,8 +12,6 @@ using UnityEngine.PostProcessing;
 public class Main : MonoBehaviour
 {
     public const string VERSION = "0.001alpha";
-    public const string KEY_FIRSTSTART = "FIRSTSTART";
-    public const string KEY_SETUPPED = "SETUPPED";
     public const string KEY_DRAW_DISTANCE = "DRAWDISTANCE";
     public const string KEY_BGM_VOLUME = "BGM_VOL";
     public const string KEY_SE_VOLUME = "SE_VOL";
@@ -48,37 +46,29 @@ public class Main : MonoBehaviour
 
     public static Main main;
     public static Map playingmap { get; private set; }
-    public static string ssdir { get; private set; }
-    public static int min_fps = 15;
+    string ssdir;
+    static int min_fps = 15;
 
-    private static bool firstStart = false;
-    public static bool isFirstStart
-    {
-        get { return firstStart; }
-        private set { firstStart = value; }
-    }
-    public static DateTime[] firstStartTimes { get; private set; }
-    public static bool isSetupped = false;
-    public static int drawDistance = DEFAULT_DRAW_DISTANCE;
-    public static float bgmVolume = DEFAULT_BGM_VOLUME;
-    public static float seVolume = DEFAULT_SE_VOLUME;
-    public static float cameraMoveSpeed = DEFAULT_CAMERA_MOVE_SPEED;
-    public static float dragRotSpeed = DEFAULT_DRAG_ROT_SPEED;
-    public static bool antialiasing = DEFAULT_ANTIALIASING;
-    public static bool ao = DEFAULT_AO;
-    public static bool motionBlur = DEFAULT_MOTIONBLUR;
-    public static bool bloom = DEFAULT_BLOOM;
-    public static bool vignette = DEFAULT_VIGNETTE;
+    public int drawDistance = DEFAULT_DRAW_DISTANCE;
+    public float bgmVolume = DEFAULT_BGM_VOLUME;
+    public float seVolume = DEFAULT_SE_VOLUME;
+    public float cameraMoveSpeed = DEFAULT_CAMERA_MOVE_SPEED;
+    public float dragRotSpeed = DEFAULT_DRAG_ROT_SPEED;
+    public bool antialiasing = DEFAULT_ANTIALIASING;
+    public bool ao = DEFAULT_AO;
+    public bool motionBlur = DEFAULT_MOTIONBLUR;
+    public bool bloom = DEFAULT_BLOOM;
+    public bool vignette = DEFAULT_VIGNETTE;
 
-    public static bool _pause = false;
-    public static bool pause { get; private set; } //ポーズ
+    public bool pause { get; private set; } //ポーズ
 
-    private static float lasttick = 0; //時間を進ませた時の余り
-    private static float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
-    public static int mode = 0; //操作モード 0=なし 1=軌道敷設 2=軌道削除 11=車両設置
+    private float lasttick = 0; //時間を進ませた時の余り
+    private float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
+    public int mode = 0; //操作モード 0=なし 1=軌道敷設 2=軌道削除 11=車両設置
     public static int MODE_CONSTRUCT_TRACK = 1;
     public static int MODE_REMOVE_TRACK = 2;
     public static int MODE_PLACE_CAR = 11;
+    
     public static Track editingTrack;
     public static Quaternion? editingRot;
     public static float selectionDist;
@@ -98,65 +88,7 @@ public class Main : MonoBehaviour
     void Awake()
     {
         main = this;
-
-        //ゲーム起動日時の取得
-        string a = PlayerPrefs.GetString(KEY_FIRSTSTART);//変数aは使いまわしているので注意
-        bool b = false;
-        List<DateTime> c = new List<DateTime>();
-        try
-        {
-            String[] d = a.Split(',');
-            for (int e = 0; e < d.Length; e++)
-            {
-                c.Add(new DateTime(long.Parse(d[e].Trim())));
-            }
-            if (d.Length == 0)
-            {
-                b = true;
-            }
-        }
-        catch (FormatException)
-        {
-            b = true;
-        }
-
-        //初回起動かどうか（初期設定などをせずに一度ゲームを終了した場合などに対応できないため、あまり使えない）
-        if (b)
-        {
-            firstStart = true;
-        }
-
-        //今回の起動日時を追加
-        c.Add(DateTime.Now);
-        firstStartTimes = c.ToArray();
-        a = "";
-        for (int f = 0; f < firstStartTimes.Length; f++)
-        {
-            if (f != 0)
-            {
-                a += ", ";
-            }
-            a += firstStartTimes[f].Ticks;
-        }
-        PlayerPrefs.SetString(KEY_FIRSTSTART, a);
-
-        //ゲーム起動日時及び、ゲーム初回起動情報をコンソールに出力
-        //print ("firstStart: " + firstStart);
-        /*a = "{ ";
-		for (int f = 0; f < firstStartTimes.Length; f++) {
-			if (f != 0) {
-				a += ", ";
-			}
-			a += firstStartTimes [f].Year + "/" + firstStartTimes [f].Month + "/" + firstStartTimes [f].Day + "-" + firstStartTimes [f].Hour + ":" + firstStartTimes [f].Minute + ":" + firstStartTimes [f].Second;
-		}
-		a += " }";
-		print ("firstStartTimes: " + a);*/
-
         ssdir = Path.Combine(Application.persistentDataPath, "screenshots");
-
-        //初期設定を行っているかどうか
-        isSetupped = PlayerPrefs.GetInt(KEY_SETUPPED, 0) == 1;
-        //print ("isSetupped: " + isSetupped);
 
         drawDistance = PlayerPrefs.GetInt(KEY_DRAW_DISTANCE, DEFAULT_DRAW_DISTANCE);
         bgmVolume = PlayerPrefs.GetFloat(KEY_BGM_VOLUME, DEFAULT_BGM_VOLUME);
@@ -185,10 +117,14 @@ public class Main : MonoBehaviour
 
     void Update()
     {
+#if UNITY_EDITOR
+        main = this;
+#endif
         //操作（カメラを除く）
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            screenShot();
+            Directory.CreateDirectory(ssdir);
+            ScreenCapture.CaptureScreenshot(Path.Combine(ssdir, DateTime.Now.Ticks + ".png"));
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -404,6 +340,139 @@ public class Main : MonoBehaviour
                             playingmap.removeTrack((Track)entity.obj);
                         }
                     }
+                    else if (mode == MODE_PLACE_CAR)
+                    {
+                        Vector3 p = hit.point;
+                        p.y = 0;
+
+                        if (selection != null)
+                        {
+                            if (selection is Curve)
+                            {
+                                Vector3 a = Quaternion.Inverse(selection.rot) * (hit.point - selection.pos);
+                                float r1 = ((Curve)selection).radius;
+                                if (r1 < 0)
+                                {
+                                    r1 = -r1;
+                                    a.x = -a.x;
+                                }
+                                float r2 = Vector3.Distance(a, Vector3.right * r1);
+                                float A = Mathf.Atan(a.z / (r2 - a.x));
+                                if (A < 0)
+                                    A = Mathf.PI + A;
+                                if (a.z < 0)
+                                    A += Mathf.PI;
+                                selectionDist = A * r1;
+                                if (selectionDist < Track.MIN_TRACK_LENGTH || selectionDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
+                                    selectionDist = 0;
+                                else if (selectionDist > selection.length - Track.MIN_TRACK_LENGTH)
+                                    selectionDist = selection.length;
+                                p = selection.getPoint(selectionDist / selection.length);
+                            }
+                            else
+                            {
+                                selection = (Track)entity.obj;
+                                selectionDist = (Quaternion.Inverse(selection.rot) * (hit.point - selection.pos)).z;
+                                if (selectionDist < Track.MIN_TRACK_LENGTH)
+                                    selectionDist = 0;
+                                else if (selectionDist > selection.length - Track.MIN_TRACK_LENGTH)
+                                    selectionDist = selection.length;
+                                p = selection.pos + selection.rot * Vector3.forward * selectionDist;
+                            }
+                        }
+
+                        point.transform.position = p;
+                        point.SetActive(true);
+                        if (editingTrack != null)
+                        {
+                            if (editingRot == null)
+                            {
+                                editingTrack.entity.transform.LookAt(p);
+                                editingTrack.SyncFromEntity();
+                            }
+
+                            if (editingTrack is Curve)
+                            {
+                                Vector3 v = Quaternion.Inverse(editingTrack.rot) * (p - editingTrack.pos);
+                                if (v.z != 0)
+                                {
+                                    float a = Mathf.Atan(Mathf.Abs(v.x) / v.z);
+                                    if (v.x < 0)
+                                        a = -a;
+
+                                    if (v.z < 0)
+                                    {
+                                        Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero, Vector3.right * v.x, v, v + Quaternion.Euler(new Vector3(0, a * 2 * Mathf.Rad2Deg)) * Vector3.right * v.z);
+                                        if (i != null)
+                                        {
+                                            editingTrack.rot = Quaternion.Euler(0, editingTrack.rot.eulerAngles.y - 180, 0);
+                                            editingTrack.length = Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = -((Vector2)i).x));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero, Vector3.right * v.x, v, v + Quaternion.Euler(new Vector3(0, a * 2 * Mathf.Rad2Deg)) * Vector3.right * v.z);
+                                        if (i != null)
+                                            editingTrack.length = Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = ((Vector2)i).x));
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Vector3 v = Quaternion.Inverse(editingTrack.rot) * (p - editingTrack.pos);
+                                if (v.z < 0)
+                                    editingTrack.rot = Quaternion.Euler(0, editingTrack.rot.eulerAngles.y - 180, 0);
+                                editingTrack.length = Mathf.Abs(v.z);
+                            }
+                            editingTrack.reloadEntity();
+                            GameCanvas.trackSettingPanel.load();
+                            GameCanvas.trackSettingPanel.transform.position = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp(Input.mousePosition.y, ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height, Screen.height));
+                        }
+                        if (Input.GetMouseButtonUp(0))
+                        {
+                            if (editingTrack != null)
+                            {
+                                trackEdited0();
+
+                                if (editingTrack is Curve)
+                                    editingRot = ((Curve)editingTrack).getRotation(1);
+                                else
+                                    editingRot = editingTrack.rot;
+
+                                Track newTrack;
+
+                                if (editingTrack.GetType() == typeof(Track))
+                                    newTrack = new Curve(playingmap, editingTrack.getPoint(1));
+                                else
+                                    newTrack = new Track(playingmap, editingTrack.getPoint(1));
+
+                                editingTrack = newTrack;
+                            }
+                            else if (selection != null)
+                            {
+                                if ((mainTrack = selection) is Curve)
+                                {
+                                    editingRot = ((Curve)mainTrack).getRotation(selectionDist / mainTrack.length);
+                                    editingTrack = new Track(playingmap, p);
+                                }
+                                else
+                                {
+                                    editingRot = mainTrack.rot;
+                                    editingTrack = new Curve(playingmap, p);
+                                }
+                            }
+                            else
+                                editingTrack = new Track(playingmap, p);
+
+                            if (editingRot != null)
+                                editingTrack.rot = (Quaternion)editingRot;
+                            editingTrack.enableCollider = false;
+                            editingTrack.generate();
+
+                            GameCanvas.trackSettingPanel.show(true);
+                            GameCanvas.trackSettingPanel.transform.position = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0, Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width), Mathf.Clamp(Input.mousePosition.y, ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height, Screen.height));
+                        }
+                    }
                     else
                         point.SetActive(false);
                 }
@@ -436,32 +505,24 @@ public class Main : MonoBehaviour
 #endif
     }
 
-    public static void screenShot()
-    {
-        Directory.CreateDirectory(ssdir);
-        string fileName = DateTime.Now.Ticks + ".png";
-        ScreenCapture.CaptureScreenshot(Path.Combine(ssdir, fileName));
-        print(DateTime.Now + " ScreenShot: " + fileName);
-    }
-
-    public static void openSSDir()
+    public void openSSDir()
     {
         Directory.CreateDirectory(ssdir);
         Process.Start(ssdir);
     }
 
-    public static void reflectSettings()
+    public void reflectSettings()
     {
-        main.bgmSource.volume = bgmVolume;
-        main.seSource.volume = seVolume;
-        main.mainCamera.GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = antialiasing;
-        main.mainCamera.GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = ao;
-        main.mainCamera.GetComponent<PostProcessingBehaviour>().profile.motionBlur.enabled = motionBlur;
-        main.mainCamera.GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = bloom;
-        main.mainCamera.GetComponent<PostProcessingBehaviour>().profile.vignette.enabled = vignette;
+        bgmSource.volume = bgmVolume;
+        seSource.volume = seVolume;
+        mainCamera.GetComponent<PostProcessingBehaviour>().profile.antialiasing.enabled = antialiasing;
+        mainCamera.GetComponent<PostProcessingBehaviour>().profile.ambientOcclusion.enabled = ao;
+        mainCamera.GetComponent<PostProcessingBehaviour>().profile.motionBlur.enabled = motionBlur;
+        mainCamera.GetComponent<PostProcessingBehaviour>().profile.bloom.enabled = bloom;
+        mainCamera.GetComponent<PostProcessingBehaviour>().profile.vignette.enabled = vignette;
     }
 
-    public static void saveSettings()
+    public void saveSettings()
     {
         PlayerPrefs.SetInt(KEY_DRAW_DISTANCE, drawDistance);
         PlayerPrefs.SetFloat(KEY_BGM_VOLUME, bgmVolume);
@@ -475,12 +536,11 @@ public class Main : MonoBehaviour
         PlayerPrefs.SetInt(KEY_VIGNETTE, vignette ? 1 : 0);
     }
 
-    public static IEnumerator openMap(string mapname)
+    public IEnumerator openMap(string mapname)
     {
         if (playingmap != null)
-        {
             closeMap();
-        }
+        
         GameCanvas.titlePanel.show(false);
         GameCanvas.loadingMapPanel.show(true);
 
@@ -505,13 +565,11 @@ public class Main : MonoBehaviour
             playingmap.generate();
             main.reloadLighting();
 
-            main.mainCamera.transform.position = map.cameraPos;
-            main.mainCamera.transform.eulerAngles = map.cameraRot;
-            main.mainCamera.GetComponent<PostProcessingBehaviour>().enabled = true;
+            mainCamera.transform.position = map.cameraPos;
+            mainCamera.transform.eulerAngles = map.cameraRot;
+            mainCamera.GetComponent<PostProcessingBehaviour>().enabled = true;
             GameCanvas.loadingMapPanel.show(false);
             GameCanvas.playingPanel.show(true);
-
-            print(DateTime.Now + " マップを開きました: " + map.mapname);
         }
     }
 
@@ -531,9 +589,9 @@ public class Main : MonoBehaviour
         return 1 / Time.deltaTime <= Main.min_fps;
     }
 
-    public static void setPause(bool pause)
+    public void setPause(bool pause)
     {
-        Main.pause = pause;
+        this.pause = pause;
         GameCanvas.playingPanel.show(!pause);
         GameCanvas.pausePanel.show(pause);
     }
@@ -569,7 +627,7 @@ public class Main : MonoBehaviour
         return GetIntersectionPointCoordinates(A1.x, A1.z, A2.x, A2.z, B1.x, B1.z, B2.x, B2.z);
     }
 
-    public static void trackEdited0()
+    public void trackEdited0()
     {
         if (editingTrack is Curve && ((Curve)editingTrack).isLinear())
             print("!"); //TODO 作成する曲線が直線である場合、直線が作成されるようにする

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-//軌道(直線)
 [Serializable]
-public class Track : MapObject
-{
-    public const string KEY_LENGTH = "LENGTH";
+public class Car : MapObject {
+
+	public const string KEY_LENGTH = "LENGTH";
     public const string KEY_NEXT_TRACKS = "NEXT_TRACKS";
     public const string KEY_PREV_TRACKS = "PREV_TRACKS";
     public const float MIN_TRACK_LENGTH = 1f;
@@ -21,21 +20,19 @@ public class Track : MapObject
     public List<Track> nextTracks;
     public List<Track> prevTracks;
 
-    public Track(Map map, Vector3 pos) : this(map, pos, new Quaternion())
+    public Car(Map map, Vector3 pos) : this(map, pos, new Quaternion())
     {
     }
 
-    public Track(Map map, Vector3 pos, Quaternion rot) : base(map, pos, rot)
+    public Car(Map map, Vector3 pos, Quaternion rot) : base(map, pos, rot)
     {
         nextTracks = new List<Track>();
         prevTracks = new List<Track>();
     }
 
-    protected Track(SerializationInfo info, StreamingContext context) : base(info, context)
+    protected Car(SerializationInfo info, StreamingContext context) : base(info, context)
     {
         _length = info.GetSingle(KEY_LENGTH);
-        nextTracks = (List<Track>) info.GetValue(KEY_NEXT_TRACKS, typeof(List<Track>));
-        prevTracks = (List<Track>) info.GetValue(KEY_PREV_TRACKS, typeof(List<Track>));
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -66,10 +63,10 @@ public class Track : MapObject
         renderer.receiveShadows = false;
         renderer.endWidth = renderer.startWidth = RENDER_WIDTH;
         renderer.endColor = renderer.startColor = Color.white;
-        if (Main.selection == this)
+        /*if (Main.main.selection == this)
             renderer.material = Main.main.selection_line_mat;
         else
-            renderer.material = Main.main.line_mat;
+            renderer.material = Main.main.line_mat;*/
         reloadLineRendererPositions(renderer);
 
         reloadCollider();

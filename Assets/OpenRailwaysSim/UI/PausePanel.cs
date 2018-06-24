@@ -4,7 +4,7 @@
 public class PausePanel : GamePanel {
 
 	public void ResumeButton () {
-		Main.setPause (false);
+		Main.main.setPause (false);
 	}
 
 	public void SaveButton () {

@@ -62,7 +62,7 @@ public class SettingPanel : GamePanel {
 	}
 
 	public void openSSDir () {
-		Main.openSSDir ();
+		Main.main.openSSDir ();
 	}
 
 	public void load () {
@@ -80,16 +80,16 @@ public class SettingPanel : GamePanel {
 	}
 
 	private void reload () {
-		drawDistanceSlider.value = lastDrawDistance = Main.drawDistance;
-		bgmVolumeSlider.value = lastBgmVolume = Main.bgmVolume;
-		seVolumeSlider.value = lastSeVolume = Main.seVolume;
-		cameraMoveSpeedSlider.value = lastCameraMoveSpeed = Main.cameraMoveSpeed;
-		dragRotSpeedSlider.value = lastDragRotSpeed = Main.dragRotSpeed;
-		antialiasingToggle.isOn = lastAntialiasing = Main.antialiasing;
-		aoToggle.isOn = lastAO = Main.ao;
-		motionBlurToggle.isOn = lastMotionBlur = Main.motionBlur;
-		bloomToggle.isOn = lastBloom = Main.bloom;
-		vignetteToggle.isOn = lastVignette = Main.vignette;
+		drawDistanceSlider.value = lastDrawDistance = Main.main.drawDistance;
+		bgmVolumeSlider.value = lastBgmVolume = Main.main.bgmVolume;
+		seVolumeSlider.value = lastSeVolume = Main.main.seVolume;
+		cameraMoveSpeedSlider.value = lastCameraMoveSpeed = Main.main.cameraMoveSpeed;
+		dragRotSpeedSlider.value = lastDragRotSpeed = Main.main.dragRotSpeed;
+		antialiasingToggle.isOn = lastAntialiasing = Main.main.antialiasing;
+		aoToggle.isOn = lastAO = Main.main.ao;
+		motionBlurToggle.isOn = lastMotionBlur = Main.main.motionBlur;
+		bloomToggle.isOn = lastBloom = Main.main.bloom;
+		vignetteToggle.isOn = lastVignette = Main.main.vignette;
 	}
 
 	new public void show (bool show) {
@@ -103,22 +103,22 @@ public class SettingPanel : GamePanel {
 		if (!isShowing ())
 			return;
 		
-		Main.drawDistance = (int)drawDistanceSlider.value;
-		Main.bgmVolume = bgmVolumeSlider.value;
-		Main.seVolume = seVolumeSlider.value;
-		Main.cameraMoveSpeed = Mathf.Round (cameraMoveSpeedSlider.value * 100f) / 100f;
-		Main.dragRotSpeed = Mathf.Round (dragRotSpeedSlider.value * 100f) / 100f;
-		Main.antialiasing = antialiasingToggle.isOn;
-		Main.ao = aoToggle.isOn;
-		Main.motionBlur = motionBlurToggle.isOn;
-		Main.bloom = bloomToggle.isOn;
-		Main.vignette = vignetteToggle.isOn;
-		Main.reflectSettings ();
+		Main.main.drawDistance = (int)drawDistanceSlider.value;
+		Main.main.bgmVolume = bgmVolumeSlider.value;
+		Main.main.seVolume = seVolumeSlider.value;
+		Main.main.cameraMoveSpeed = Mathf.Round (cameraMoveSpeedSlider.value * 100f) / 100f;
+		Main.main.dragRotSpeed = Mathf.Round (dragRotSpeedSlider.value * 100f) / 100f;
+		Main.main.antialiasing = antialiasingToggle.isOn;
+		Main.main.ao = aoToggle.isOn;
+		Main.main.motionBlur = motionBlurToggle.isOn;
+		Main.main.bloom = bloomToggle.isOn;
+		Main.main.vignette = vignetteToggle.isOn;
+		Main.main.reflectSettings ();
 	}
 
 	public void save () {
 		reflect ();
-		Main.saveSettings ();
+		Main.main.saveSettings ();
 
 		show (false);
 	}

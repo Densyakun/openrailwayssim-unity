@@ -28,7 +28,7 @@ public class CameraMover : MonoBehaviour
     //カメラは後からついてくる挙動になっており、カメラが一定距離以上離れないようになっているため、乗り物向けなカメラになっている。
     void LateUpdate()
     {
-        bool c = Main.playingmap != null && !Main.pause; //操作可能か
+        bool c = Main.playingmap != null && !Main.main.pause; //操作可能か
         if (c && EventSystem.current.currentSelectedGameObject != null)
         {
             InputField input = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>();
@@ -54,7 +54,7 @@ public class CameraMover : MonoBehaviour
                 move += Vector3.down;
             if (Input.GetKey(KeyCode.Space))
                 move += Vector3.up;
-            transform.Translate(move * Main.cameraMoveSpeed * Time.deltaTime);
+            transform.Translate(move * Main.main.cameraMoveSpeed * Time.deltaTime);
             //}
 
             //float h = Input.GetAxis ("Horizontal");
@@ -71,7 +71,7 @@ public class CameraMover : MonoBehaviour
                     //f = 0;
                 }
 
-                Vector3 m = (Input.mousePosition - lastMousePos) * Main.dragRotSpeed; //カメラの移動量
+                Vector3 m = (Input.mousePosition - lastMousePos) * Main.main.dragRotSpeed; //カメラの移動量
                 if (m != Vector3.zero)
                 {
                     dragging = true;
