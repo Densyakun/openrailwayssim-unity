@@ -54,15 +54,45 @@ public class Curve : Track
             reloadEntity();
     }
 
-    public override void reloadLineRendererPositions(LineRenderer renderer)
+    public override void reloadTrackRendererPositions()
     {
         int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
         Vector3[] p = new Vector3[l + 1];
         p[0] = pos;
         for (int a = 1; a <= l; a++)
             p[a] = getPoint((float)a / (float)l);
-        renderer.positionCount = p.Length;
-        renderer.SetPositions(p);
+        trackRenderer.positionCount = p.Length;
+        trackRenderer.SetPositions(p);
+    }
+
+    public override void reloadRailRenderers()
+    {
+        if (railRenderers != null)
+            foreach (var r in railRenderers)
+                GameObject.Destroy(r.gameObject);
+        railRenderers = new LineRenderer[rails.Count];
+        for (int a = 0; a < rails.Count; a++)
+        {
+            GameObject o = new GameObject();
+            railRenderers[a] = o.AddComponent<LineRenderer>();
+            o.transform.parent = entity.transform;
+            railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            railRenderers[a].receiveShadows = false;
+            railRenderers[a].endWidth = railRenderers[a].startWidth = RENDER_WIDTH;
+            railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
+            if (Main.selection == this)
+                railRenderers[a].material = Main.main.selection_track_mat;
+            else
+                railRenderers[a].material = Main.main.rail_mat;
+
+            int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+            Vector3[] p = new Vector3[l + 1];
+            p[0] = pos + rot * Vector3.right * rails[a];
+            for (int b = 1; b <= l; b++)
+                p[b] = getPoint((float) b / (float) l) + getRotation((float) b / (float) l) * Vector3.right * rails[a];
+            railRenderers[a].positionCount = p.Length;
+            railRenderers[a].SetPositions(p);
+        }
     }
 
     public override void reloadCollider()

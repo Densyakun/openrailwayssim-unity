@@ -8,6 +8,18 @@ public class MapEntity : MonoBehaviour {
 		obj.reloadEntity ();
 	}
 
+	void Update()
+	{
+		if (!Main.main.pause && obj is Bogie)
+			obj.reloadEntity();
+	}
+
+	void FixedUpdate()
+	{
+		if (!Main.main.pause && obj is Bogie)
+			((Bogie) obj).fixedUpdate();
+	}
+
 	//Startメソッドが実行される前に、MapObjectを設定する
 	public virtual void init (MapObject obj) {
 		this.obj = obj;

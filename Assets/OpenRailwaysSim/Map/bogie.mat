@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: line
+  m_Name: bogie
   m_Shader: {fileID: 4800000, guid: e8149a30f430ea842ab1fa8d9fc333ae, type: 3}
   m_ShaderKeywords: _ALPHABLEND_ON _EMISSION
   m_LightmapFlags: 1
@@ -72,5 +72,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 0
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 0.5019608}
+    - _Color: {r: 0.7490196, g: 0.7490196, b: 0.7490196, a: 0.5019608}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}

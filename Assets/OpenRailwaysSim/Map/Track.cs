@@ -8,18 +8,81 @@ using UnityEngine;
 public class Track : MapObject
 {
     public const string KEY_LENGTH = "LENGTH";
+    public const string KEY_RAILS = "RAILS";
     public const string KEY_NEXT_TRACKS = "NEXT_TRACKS";
     public const string KEY_PREV_TRACKS = "PREV_TRACKS";
+    public const string KEY_CONNECTING_NEXT_TRACKS = "CONNECTING_NEXT_TRACKS";
+    public const string KEY_CONNECTING_PREV_TRACKS = "CONNECTING_PREV_TRACKS";
+
     public const float MIN_TRACK_LENGTH = 1f;
-    public const float RENDER_WIDTH = 1f;
+    public const float RENDER_WIDTH = 0.25f;
     public const float COLLIDER_WIDTH = 2f;
     public const float COLLIDER_HEIGHT = 1f / 8;
 
     protected float _length = MIN_TRACK_LENGTH;
-    public float length { get { return _length; } set { _length = Mathf.Max(MIN_TRACK_LENGTH, value); } }
+
+    public float length
+    {
+        get { return _length; }
+        set { _length = Mathf.Max(MIN_TRACK_LENGTH, value); }
+    }
+
+    public LineRenderer trackRenderer;
+    public LineRenderer[] railRenderers;
     public bool enableCollider = true;
-    public List<Track> nextTracks;
-    public List<Track> prevTracks;
+    public List<float> rails;
+
+    private List<Track> _nextTracks;
+
+    public List<Track> nextTracks
+    {
+        get { return _nextTracks; }
+        set
+        {
+            if ((_nextTracks = value).Count <= _connectingNextTrack)
+                _connectingNextTrack = -1;
+        }
+    }
+
+    private List<Track> _prevTracks;
+
+    public List<Track> prevTracks
+    {
+        get { return _prevTracks; }
+        set
+        {
+            if ((_prevTracks = value).Count <= _connectingPrevTrack)
+                _connectingPrevTrack = -1;
+        }
+    }
+
+    private int _connectingNextTrack;
+
+    public int connectingNextTrack
+    {
+        get { return _connectingNextTrack; }
+        set
+        {
+            _connectingNextTrack = value <
+                                   -1 || nextTracks.Count <= value
+                ? -1
+                : value;
+        }
+    }
+
+    private int _connectingPrevTrack;
+
+    public int connectingPrevTrack
+    {
+        get { return _connectingNextTrack; }
+        set
+        {
+            _connectingPrevTrack = value <
+                                   -1 || prevTracks.Count <= value
+                ? -1
+                : value;
+        }
+    }
 
     public Track(Map map, Vector3 pos) : this(map, pos, new Quaternion())
     {
@@ -27,23 +90,49 @@ public class Track : MapObject
 
     public Track(Map map, Vector3 pos, Quaternion rot) : base(map, pos, rot)
     {
-        nextTracks = new List<Track>();
-        prevTracks = new List<Track>();
+        rails = new List<float>();
+        _nextTracks = new List<Track>();
+        _prevTracks = new List<Track>();
+        _connectingPrevTrack = _connectingNextTrack = -1;
     }
 
     protected Track(SerializationInfo info, StreamingContext context) : base(info, context)
     {
         _length = info.GetSingle(KEY_LENGTH);
-        nextTracks = (List<Track>) info.GetValue(KEY_NEXT_TRACKS, typeof(List<Track>));
-        prevTracks = (List<Track>) info.GetValue(KEY_PREV_TRACKS, typeof(List<Track>));
+        try
+        {
+            rails = (List<float>) info.GetValue(KEY_RAILS, typeof(List<float>));
+        }
+        catch (SerializationException e)
+        {
+            rails = new List<float>();
+            rails.Add(-Main.main.gauge / 2);
+            rails.Add(Main.main.gauge / 2);
+        }
+
+        _nextTracks = (List<Track>) info.GetValue(KEY_NEXT_TRACKS, typeof(List<Track>));
+        _prevTracks = (List<Track>) info.GetValue(KEY_PREV_TRACKS, typeof(List<Track>));
+        try
+        {
+            _connectingNextTrack = info.GetInt32(KEY_CONNECTING_NEXT_TRACKS);
+            _connectingPrevTrack = info.GetInt32(KEY_CONNECTING_PREV_TRACKS);
+        }
+        catch (SerializationException e)
+        {
+            _connectingNextTrack = -1;
+            _connectingPrevTrack = -1;
+        }
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
         info.AddValue(KEY_LENGTH, _length);
-        info.AddValue(KEY_NEXT_TRACKS, nextTracks);
-        info.AddValue(KEY_PREV_TRACKS, prevTracks);
+        info.AddValue(KEY_RAILS, rails);
+        info.AddValue(KEY_NEXT_TRACKS, _nextTracks);
+        info.AddValue(KEY_PREV_TRACKS, _prevTracks);
+        info.AddValue(KEY_CONNECTING_NEXT_TRACKS, _connectingNextTrack);
+        info.AddValue(KEY_CONNECTING_PREV_TRACKS, _connectingPrevTrack);
     }
 
     public override void generate()
@@ -59,27 +148,52 @@ public class Track : MapObject
         if (entity == null)
             return;
 
-        LineRenderer renderer = entity.GetComponent<LineRenderer>();
-        if (renderer == null)
-            renderer = entity.gameObject.AddComponent<LineRenderer>();
-        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        renderer.receiveShadows = false;
-        renderer.endWidth = renderer.startWidth = RENDER_WIDTH;
-        renderer.endColor = renderer.startColor = Color.white;
+        if (trackRenderer == null)
+            trackRenderer = entity.gameObject.AddComponent<LineRenderer>();
+        trackRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        trackRenderer.receiveShadows = false;
+        trackRenderer.endWidth = trackRenderer.startWidth = RENDER_WIDTH;
+        trackRenderer.endColor = trackRenderer.startColor = Color.white;
         if (Main.selection == this)
-            renderer.material = Main.main.selection_line_mat;
+            trackRenderer.material = Main.main.selection_track_mat;
         else
-            renderer.material = Main.main.line_mat;
-        reloadLineRendererPositions(renderer);
+            trackRenderer.material = Main.main.track_mat;
 
+        reloadTrackRendererPositions();
+        reloadRailRenderers();
         reloadCollider();
 
         base.reloadEntity();
     }
 
-    public virtual void reloadLineRendererPositions(LineRenderer renderer)
+    public virtual void reloadTrackRendererPositions()
     {
-        renderer.SetPositions(new Vector3[] { pos, getPoint(1) });
+        trackRenderer.SetPositions(new Vector3[] {pos, getPoint(1)});
+    }
+
+    public virtual void reloadRailRenderers()
+    {
+        if (railRenderers != null)
+            foreach (var r in railRenderers)
+                GameObject.Destroy(r.gameObject);
+        railRenderers = new LineRenderer[rails.Count];
+        for (int a = 0; a < rails.Count; a++)
+        {
+            GameObject o = new GameObject();
+            railRenderers[a] = o.AddComponent<LineRenderer>();
+            o.transform.parent = entity.transform;
+            railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            railRenderers[a].receiveShadows = false;
+            railRenderers[a].endWidth = railRenderers[a].startWidth = RENDER_WIDTH;
+            railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
+            if (Main.selection == this)
+                railRenderers[a].material = Main.main.selection_track_mat;
+            else
+                railRenderers[a].material = Main.main.rail_mat;
+
+            Vector3 b = rot * Vector3.right * rails[a];
+            railRenderers[a].SetPositions(new Vector3[] {pos + b, getPoint(1) + b});
+        }
     }
 
     public virtual void reloadCollider()
