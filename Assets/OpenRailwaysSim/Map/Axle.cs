@@ -4,14 +4,14 @@ using System.Runtime.Serialization;
 using UnityEngine;
 
 [Serializable]
-public class Bogie : MapObject
+public class Axle : MapObject
 {
 
     public const string KEY_ON_TRACK = "ON_TRACK";
     public const string KEY_ON_DIST = "ON_DIST";
     public const string KEY_SPEED = "SPEED";
-
-    public const float RENDER_WIDTH = 2.5f;
+    public const string KEY_WHEEL_DIA = "WHEEL_DIA";
+    public const string KEY_ROT_X = "ROT_X";
 
     public Track onTrack { get; protected set; }
 
@@ -78,19 +78,34 @@ public class Bogie : MapObject
 
     public float speed;
 
-    public Bogie(Map map, Track onTrack, float onDist) : base(map, onTrack.getPoint(onDist / onTrack.length),
-        onTrack is Curve ? ((Curve) onTrack).getRotation(onDist / onTrack.length) : onTrack.rot)
+    public float wheelDia;
+    
+    public float rotX;
+
+    public GameObject modelObj;
+
+    public Axle(Map map, Track onTrack, float onDist) : base(map)
     {
         this.onTrack = onTrack;
         this.onDist = onDist;
-        speed = 15;
+        speed = 5;
+        wheelDia = 0.86f;
+        rotX = 0;
+        Vector3 a = onTrack is Curve
+            ? ((Curve) onTrack).getRotation(onDist / onTrack.length).eulerAngles
+            : onTrack.rot.eulerAngles;
+        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2;
+        a.x = rotX;
+        rot = Quaternion.Euler(a);
     }
 
-    protected Bogie(SerializationInfo info, StreamingContext context) : base(info, context)
+    protected Axle(SerializationInfo info, StreamingContext context) : base(info, context)
     {
         onTrack = (Track) info.GetValue(KEY_ON_TRACK, typeof(Track));
         _onDist = info.GetSingle(KEY_ON_DIST);
         speed = info.GetSingle(KEY_SPEED);
+        wheelDia = info.GetSingle(KEY_WHEEL_DIA);
+        rotX = info.GetSingle(KEY_ROT_X);
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -99,14 +114,28 @@ public class Bogie : MapObject
         info.AddValue(KEY_ON_TRACK, onTrack);
         info.AddValue(KEY_ON_DIST, _onDist);
         info.AddValue(KEY_SPEED, speed);
+        info.AddValue(KEY_WHEEL_DIA, wheelDia);
+        info.AddValue(KEY_ROT_X, rotX);
     }
 
     public override void generate()
     {
         if (entity == null)
-            (entity = new GameObject("bogie").AddComponent<MapEntity>()).init(this);
+            (entity = new GameObject("axle").AddComponent<MapEntity>()).init(this);
         else
             reloadEntity();
+    }
+
+    public override void update()
+    {
+        reloadEntity();
+    }
+
+    public override void fixedUpdate()
+    {
+        float a = speed * 10 * Time.deltaTime / 36;
+        onDist += a;
+        rotX += a * 360 / Mathf.PI * wheelDia;
     }
 
     public override void reloadEntity()
@@ -114,22 +143,19 @@ public class Bogie : MapObject
         if (entity == null)
             return;
 
-        pos = onTrack.getPoint(onDist / onTrack.length);
-        rot = onTrack is Curve ? ((Curve) onTrack).getRotation(onDist / onTrack.length) : onTrack.rot;
+        Vector3 a = onTrack is Curve
+            ? ((Curve) onTrack).getRotation(onDist / onTrack.length).eulerAngles
+            : onTrack.rot.eulerAngles;
+        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2;
+        a.x = rotX;
+        rot = Quaternion.Euler(a);
 
-        LineRenderer renderer = entity.GetComponent<LineRenderer>();
-        if (renderer == null)
-            renderer = entity.gameObject.AddComponent<LineRenderer>();
-        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        renderer.receiveShadows = false;
-        renderer.startWidth = RENDER_WIDTH;
-        renderer.endWidth = 0;
-        renderer.endColor = renderer.startColor = Color.white;
-        /*if (Main.main.selection == this)
-            renderer.material = Main.main.selection_line_mat;
-        else*/
-        renderer.material = Main.main.bogie_mat;
-        renderer.SetPositions(new Vector3[] {pos, pos + rot * Vector3.forward * Mathf.Repeat(Time.time, 1)});
+        if (modelObj == null)
+        {
+            (modelObj = GameObject.Instantiate(Main.main.axleModel)).transform.parent = entity.transform;
+            modelObj.transform.localEulerAngles = Vector3.zero;
+        }
+        modelObj.transform.position = pos;
 
         reloadCollider();
 
@@ -145,10 +171,5 @@ public class Bogie : MapObject
         collider.center = Vector3.forward * length / 2;
         collider.size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, length);
         collider.enabled = enableCollider;*/
-    }
-
-    public virtual void fixedUpdate()
-    {
-        onDist += speed * 10 * Time.deltaTime / 36;
     }
 }

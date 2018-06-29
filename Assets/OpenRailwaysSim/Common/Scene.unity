@@ -406,9 +406,9 @@ MonoBehaviour:
   track_mat: {fileID: 2100000, guid: 585dd19b54084fb4aaf580b59a878937, type: 2}
   selection_track_mat: {fileID: 2100000, guid: 112dd88e809a3d043a6b493f2727fd7a, type: 2}
   rail_mat: {fileID: 2100000, guid: 10b5efccca7826a4d89a50c93ea03dee, type: 2}
-  bogie_mat: {fileID: 2100000, guid: 89748544e0699ac42896a42ce55a08de, type: 2}
   point: {fileID: 133609050}
   gauge: 1.435
+  axleModel: {fileID: 100002, guid: de237d8cc0700e1459da2ef49f97c442, type: 3}
 --- !u!4 &51358973
 Transform:
   m_ObjectHideFlags: 0

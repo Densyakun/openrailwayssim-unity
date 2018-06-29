@@ -76,6 +76,14 @@ public class MapObject : ISerializable {
 			reloadEntity ();
 	}
 
+	public virtual void update()
+	{
+	}
+
+	public virtual void fixedUpdate()
+	{
+	}
+	
 	public virtual void reloadEntity () {
 		if (entity == null)
 			return;

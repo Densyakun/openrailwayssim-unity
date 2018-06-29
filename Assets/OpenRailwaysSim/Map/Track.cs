@@ -16,6 +16,7 @@ public class Track : MapObject
 
     public const float MIN_TRACK_LENGTH = 1f;
     public const float RENDER_WIDTH = 0.25f;
+    public const float RAIL_RENDER_WIDTH = 0.05f;
     public const float COLLIDER_WIDTH = 2f;
     public const float COLLIDER_HEIGHT = 1f / 8;
 
@@ -184,7 +185,7 @@ public class Track : MapObject
             o.transform.parent = entity.transform;
             railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             railRenderers[a].receiveShadows = false;
-            railRenderers[a].endWidth = railRenderers[a].startWidth = RENDER_WIDTH;
+            railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
             railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
             if (Main.selection == this)
                 railRenderers[a].material = Main.main.selection_track_mat;

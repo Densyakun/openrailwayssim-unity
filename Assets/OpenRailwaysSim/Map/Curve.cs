@@ -78,7 +78,7 @@ public class Curve : Track
             o.transform.parent = entity.transform;
             railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             railRenderers[a].receiveShadows = false;
-            railRenderers[a].endWidth = railRenderers[a].startWidth = RENDER_WIDTH;
+            railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
             railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
             if (Main.selection == this)
                 railRenderers[a].material = Main.main.selection_track_mat;

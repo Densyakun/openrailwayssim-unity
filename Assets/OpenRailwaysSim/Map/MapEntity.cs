@@ -10,14 +10,13 @@ public class MapEntity : MonoBehaviour {
 
 	void Update()
 	{
-		if (!Main.main.pause && obj is Bogie)
-			obj.reloadEntity();
+		if (!Main.main.pause)
+			obj.update();
 	}
 
 	void FixedUpdate()
 	{
-		if (!Main.main.pause && obj is Bogie)
-			((Bogie) obj).fixedUpdate();
+		obj.fixedUpdate();
 	}
 
 	//Startメソッドが実行される前に、MapObjectを設定する
