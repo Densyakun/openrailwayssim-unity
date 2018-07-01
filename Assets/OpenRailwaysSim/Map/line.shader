@@ -3,11 +3,12 @@
 		_Color ("Color", Color) = (1,1,1,1)
 	}
 	SubShader {
-	    Tags { "Queue" = "Transparent" }
+	    Tags { "Queue"="Transparent" }
         ZTest Always
         Pass {
             Color [_Color]
             ZWrite Off
+            Blend SrcAlpha OneMinusSrcAlpha
         }
     }
 	FallBack "Diffuse"

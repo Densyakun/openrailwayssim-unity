@@ -1,16 +1,32 @@
 fileFormatVersion: 2
-guid: f829e623eefd69a46adcac27943b7ba6
-timeCreated: 1530217016
+guid: ef44591e9c704b24db7b54b67a688278
+timeCreated: 1530318239
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
+    100002: BogieFrame.Beam
+    100004: BogieFrame.Beam.001
+    100006: BogieFrame.Left
+    100008: BogieFrame.Right
     400000: //RootNode
+    400002: BogieFrame.Beam
+    400004: BogieFrame.Beam.001
+    400006: BogieFrame.Left
+    400008: BogieFrame.Right
     2100000: Material.001
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Bogie.Frame.Right
+    2300000: BogieFrame.Beam
+    2300002: BogieFrame.Beam.001
+    2300004: BogieFrame.Left
+    2300006: BogieFrame.Right
+    3300000: BogieFrame.Beam
+    3300002: BogieFrame.Beam.001
+    3300004: BogieFrame.Left
+    3300006: BogieFrame.Right
+    4300000: BogieFrame.Beam.001
+    4300002: BogieFrame.Left
+    4300004: BogieFrame.Right
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -41,7 +57,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 100
     meshCompression: 0
     addColliders: 0
     importVisibility: 1

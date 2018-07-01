@@ -155,8 +155,10 @@ public class Track : MapObject
         trackRenderer.receiveShadows = false;
         trackRenderer.endWidth = trackRenderer.startWidth = RENDER_WIDTH;
         trackRenderer.endColor = trackRenderer.startColor = Color.white;
-        if (Main.selection == this)
-            trackRenderer.material = Main.main.selection_track_mat;
+        if (useSelectingMat)
+            trackRenderer.material = Main.main.selecting_track_mat;
+        else if (Main.focused == this)
+            trackRenderer.material = Main.main.focused_track_mat;
         else
             trackRenderer.material = Main.main.track_mat;
 
@@ -187,8 +189,10 @@ public class Track : MapObject
             railRenderers[a].receiveShadows = false;
             railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
             railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
-            if (Main.selection == this)
-                railRenderers[a].material = Main.main.selection_track_mat;
+            if (useSelectingMat)
+                railRenderers[a].material = Main.main.selecting_track_mat;
+            else if (Main.focused == this)
+                railRenderers[a].material = Main.main.focused_track_mat;
             else
                 railRenderers[a].material = Main.main.rail_mat;
 
@@ -211,5 +215,25 @@ public class Track : MapObject
     public virtual Vector3 getPoint(float a)
     {
         return pos + rot * Vector3.forward * _length * a;
+    }
+
+    public void removeConnects()
+    {
+        foreach (var t in _nextTracks)
+        {
+            t._prevTracks.Remove(this);
+            t._nextTracks.Remove(this);
+        }
+
+        foreach (var t in _prevTracks)
+        {
+            t._nextTracks.Remove(this);
+            t._prevTracks.Remove(this);
+        }
+
+        _nextTracks.Clear();
+        _prevTracks.Clear();
+        _connectingNextTrack = -1;
+        _connectingPrevTrack = -1;
     }
 }

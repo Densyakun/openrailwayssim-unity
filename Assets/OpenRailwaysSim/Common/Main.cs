@@ -65,16 +65,16 @@ public class Main : MonoBehaviour
 
     private float lasttick = 0; //時間を進ませた時の余り
     private float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
-    public int mode = 0; //操作モード 0=なし 1=軌道敷設 2=軌道削除 11=車両設置
-    public static int MODE_CONSTRUCT_TRACK = 1;
-    public static int MODE_REMOVE_TRACK = 2;
-    public static int MODE_PLACE_CAR = 11;
+    public int mode = 0; //操作モード 0=なし 11=軌道敷設 21=車軸設置
+    public static int MODE_CONSTRUCT_TRACK = 11;
+    public static int MODE_PLACE_AXLE = 21;
 
     public static Track editingTrack;
     public static Quaternion? editingRot;
-    public static float selectionDist;
     public static Track mainTrack;
-    public static Track selection;
+    public static MapObject focused;
+    public static float focusedDist;
+    public static List<MapObject> selectingObjs = new List<MapObject>();
 
     public Gradient sunGradient;
     public Light sun; //太陽
@@ -83,11 +83,13 @@ public class Main : MonoBehaviour
     public AudioSource bgmSource;
     public AudioSource seSource;
     public Material track_mat;
-    public Material selection_track_mat;
+    public Material focused_track_mat;
+    public Material selecting_track_mat;
     public Material rail_mat;
     public GameObject point;
     public float gauge = 1.435f;
     public GameObject axleModel;
+    public GameObject bogieFrameModel;
 
     void Awake()
     {
@@ -135,8 +137,10 @@ public class Main : MonoBehaviour
         {
             if (playingmap != null && !GameCanvas.settingPanel.isShowing() && !GameCanvas.titleBackPanel.isShowing())
             {
+                bool a = true;
                 if (GameCanvas.trackSettingPanel.isShowing())
                 {
+                    a = false;
                     GameCanvas.trackSettingPanel.show(false);
                     if (editingTrack != null)
                     {
@@ -146,7 +150,26 @@ public class Main : MonoBehaviour
 
                     editingRot = null;
                 }
-                else
+
+                if (mode != 0)
+                {
+                    a = false;
+                    mode = 0;
+                }
+
+                if (selectingObjs.Count != 0)
+                {
+                    a = false;
+                    foreach (var o in selectingObjs)
+                    {
+                        o.useSelectingMat = false;
+                        o.reloadEntity();
+                    }
+
+                    selectingObjs.Clear();
+                }
+
+                if (a)
                     setPause(!pause);
             }
         }
@@ -195,20 +218,32 @@ public class Main : MonoBehaviour
                     if (entity != null &&
                         (editingTrack == null
                             ? true
-                            : editingTrack.entity != null && entity.gameObject != editingTrack.entity.gameObject) &&
-                        entity.obj is Track)
+                            : editingTrack.entity != null && entity.gameObject != editingTrack.entity.gameObject))
                     {
-                        Track a = selection;
-                        (selection = (Track) entity.obj).reloadEntity();
-                        if (a != null)
-                            a.reloadEntity();
+                        if (focused != entity.obj)
+                        {
+                            MapObject a = focused;
+                            (focused = entity.obj).useSelectingMat = false;
+                            if (a != null)
+                            {
+                                if (selectingObjs.Contains(a))
+                                    a.useSelectingMat = true;
+                                a.reloadEntity();
+                            }
+
+                            focused.reloadEntity();
+                        }
                     }
                     else
                     {
-                        Track a = selection;
-                        selection = null;
+                        MapObject a = focused;
+                        focused = null;
                         if (a != null)
+                        {
+                            if (selectingObjs.Contains(a))
+                                a.useSelectingMat = true;
                             a.reloadEntity();
+                        }
                     }
 
                     if (mode == MODE_CONSTRUCT_TRACK)
@@ -216,12 +251,12 @@ public class Main : MonoBehaviour
                         Vector3 p = hit.point;
                         p.y = 0;
 
-                        if (selection != null)
+                        if (focused != null)
                         {
-                            if (selection is Curve)
+                            if (focused is Curve)
                             {
-                                Vector3 a = Quaternion.Inverse(selection.rot) * (hit.point - selection.pos);
-                                float r1 = ((Curve) selection).radius;
+                                Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
+                                float r1 = ((Curve) focused).radius;
                                 if (r1 < 0)
                                 {
                                     r1 = -r1;
@@ -234,23 +269,23 @@ public class Main : MonoBehaviour
                                     A = Mathf.PI + A;
                                 if (a.z < 0)
                                     A += Mathf.PI;
-                                selectionDist = A * r1;
-                                if (selectionDist < Track.MIN_TRACK_LENGTH ||
-                                    selectionDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
-                                    selectionDist = 0;
-                                else if (selectionDist > selection.length - Track.MIN_TRACK_LENGTH)
-                                    selectionDist = selection.length;
-                                p = selection.getPoint(selectionDist / selection.length);
+                                focusedDist = A * r1;
+                                if (focusedDist < Track.MIN_TRACK_LENGTH ||
+                                    focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = 0;
+                                else if (focusedDist > ((Track) focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track) focused).length;
+                                p = ((Track) focused).getPoint(focusedDist / ((Track) focused).length);
                             }
-                            else
+                            else if (focused is Track)
                             {
-                                selection = (Track) entity.obj;
-                                selectionDist = (Quaternion.Inverse(selection.rot) * (hit.point - selection.pos)).z;
-                                if (selectionDist < Track.MIN_TRACK_LENGTH)
-                                    selectionDist = 0;
-                                else if (selectionDist > selection.length - Track.MIN_TRACK_LENGTH)
-                                    selectionDist = selection.length;
-                                p = selection.pos + selection.rot * Vector3.forward * selectionDist;
+                                focused = (Track) entity.obj;
+                                focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
+                                if (focusedDist < Track.MIN_TRACK_LENGTH)
+                                    focusedDist = 0;
+                                else if (focusedDist > ((Track) focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track) focused).length;
+                                p = focused.pos + focused.rot * Vector3.forward * focusedDist;
                             }
                         }
 
@@ -337,14 +372,15 @@ public class Main : MonoBehaviour
 
                                 editingTrack = newTrack;
                             }
-                            else if (selection != null)
+                            else if (focused != null)
                             {
-                                if ((mainTrack = selection) is Curve)
+                                mainTrack = ((Track) focused);
+                                if (mainTrack is Curve)
                                 {
-                                    editingRot = ((Curve) mainTrack).getRotation(selectionDist / mainTrack.length);
+                                    editingRot = ((Curve) mainTrack).getRotation(focusedDist / mainTrack.length);
                                     editingTrack = new Track(playingmap, p);
                                 }
-                                else
+                                else if (mainTrack is Track)
                                 {
                                     editingRot = mainTrack.rot;
                                     editingTrack = new Curve(playingmap, p);
@@ -370,26 +406,17 @@ public class Main : MonoBehaviour
                                     Screen.height));
                         }
                     }
-                    else if (mode == MODE_REMOVE_TRACK)
-                    {
-                        point.SetActive(false);
-                        if (selection != null && Input.GetMouseButtonUp(0))
-                        {
-                            entity.Destroy();
-                            playingmap.removeTrack((Track) entity.obj);
-                        }
-                    }
-                    else if (mode == MODE_PLACE_CAR)
+                    else if (mode == MODE_PLACE_AXLE)
                     {
                         Vector3 p = hit.point;
                         p.y = 0;
 
-                        if (selection != null)
+                        if (focused != null)
                         {
-                            if (selection is Curve)
+                            if (focused is Curve)
                             {
-                                Vector3 a = Quaternion.Inverse(selection.rot) * (hit.point - selection.pos);
-                                float r1 = ((Curve) selection).radius;
+                                Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
+                                float r1 = ((Curve) focused).radius;
                                 if (r1 < 0)
                                 {
                                     r1 = -r1;
@@ -402,38 +429,71 @@ public class Main : MonoBehaviour
                                     A = Mathf.PI + A;
                                 if (a.z < 0)
                                     A += Mathf.PI;
-                                selectionDist = A * r1;
-                                if (selectionDist < Track.MIN_TRACK_LENGTH ||
-                                    selectionDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
-                                    selectionDist = 0;
-                                else if (selectionDist > selection.length - Track.MIN_TRACK_LENGTH)
-                                    selectionDist = selection.length;
-                                p = selection.getPoint(selectionDist / selection.length);
+                                focusedDist = A * r1;
+                                if (focusedDist < Track.MIN_TRACK_LENGTH ||
+                                    focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = 0;
+                                else if (focusedDist > ((Track) focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track) focused).length;
+                                p = ((Track) focused).getPoint(focusedDist / ((Track) focused).length);
                             }
-                            else
+                            else if (focused is Track)
                             {
-                                selection = (Track) entity.obj;
-                                selectionDist = (Quaternion.Inverse(selection.rot) * (hit.point - selection.pos)).z;
-                                if (selectionDist < Track.MIN_TRACK_LENGTH)
-                                    selectionDist = 0;
-                                else if (selectionDist > selection.length - Track.MIN_TRACK_LENGTH)
-                                    selectionDist = selection.length;
-                                p = selection.pos + selection.rot * Vector3.forward * selectionDist;
+                                focused = (Track) entity.obj;
+                                focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
+                                if (focusedDist < Track.MIN_TRACK_LENGTH)
+                                    focusedDist = 0;
+                                else if (focusedDist > ((Track) focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track) focused).length;
+                                p = focused.pos + focused.rot * Vector3.forward * focusedDist;
                             }
                         }
 
                         point.transform.position = p;
                         point.SetActive(true);
 
-                        if (Input.GetMouseButtonUp(0) && selection != null)
+                        if (Input.GetMouseButtonUp(0) && focused != null)
                         {
-                            Axle axle = new Axle(playingmap, selection, selectionDist);
+                            Axle axle = new Axle(playingmap, ((Track) focused), focusedDist);
                             axle.generate();
                             playingmap.addObject(axle);
                         }
                     }
                     else
+                    {
                         point.SetActive(false);
+
+                        if (Input.GetMouseButtonUp(0))
+                        {
+                            bool s = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+                            if (!s)
+                            {
+                                foreach (var o in selectingObjs)
+                                {
+                                    o.useSelectingMat = false;
+                                    o.reloadEntity();
+                                }
+
+                                selectingObjs.Clear();
+                            }
+
+                            if (focused != null)
+                            {
+                                if (s && selectingObjs.Contains(focused))
+                                {
+                                    selectingObjs.Remove(focused);
+                                    focused.useSelectingMat = false;
+                                    focused.reloadEntity();
+                                }
+                                else if (!selectingObjs.Contains(focused))
+                                {
+                                    selectingObjs.Add(focused);
+                                    focused.useSelectingMat = true;
+                                    focused.reloadEntity();
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                     point.SetActive(false);
@@ -645,7 +705,7 @@ public class Main : MonoBehaviour
 
         mainTrack = editingTrack;
 
-        playingmap.addTrack(editingTrack);
+        playingmap.addObject(editingTrack);
         editingTrack.enableCollider = true;
         editingTrack.reloadCollider();
     }

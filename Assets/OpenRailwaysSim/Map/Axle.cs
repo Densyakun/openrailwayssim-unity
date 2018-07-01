@@ -79,10 +79,12 @@ public class Axle : MapObject
     public float speed;
 
     public float wheelDia;
-    
+
     public float rotX;
 
     public GameObject modelObj;
+
+    public float lastFixed = -1;
 
     public Axle(Map map, Track onTrack, float onDist) : base(map)
     {
@@ -133,9 +135,17 @@ public class Axle : MapObject
 
     public override void fixedUpdate()
     {
+        fixedMove();
+    }
+
+    public void fixedMove()
+    {
+        if (lastFixed == Time.fixedTime)
+            return;
         float a = speed * 10 * Time.deltaTime / 36;
         onDist += a;
         rotX += a * 360 / Mathf.PI * wheelDia;
+        lastFixed = Time.fixedTime;
     }
 
     public override void reloadEntity()
@@ -153,23 +163,22 @@ public class Axle : MapObject
         if (modelObj == null)
         {
             (modelObj = GameObject.Instantiate(Main.main.axleModel)).transform.parent = entity.transform;
+            modelObj.transform.localPosition = Vector3.zero;
             modelObj.transform.localEulerAngles = Vector3.zero;
         }
-        modelObj.transform.position = pos;
 
         reloadCollider();
 
         base.reloadEntity();
     }
 
-    public virtual void reloadCollider()
+    public void reloadCollider()
     {
-        /*BoxCollider collider = entity.GetComponent<BoxCollider>();
+        BoxCollider collider = entity.GetComponent<BoxCollider>();
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;
-        collider.center = Vector3.forward * length / 2;
-        collider.size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, length);
-        collider.enabled = enableCollider;*/
+        collider.center = Vector3.up * wheelDia / 2;
+        collider.size = new Vector3(wheelDia, wheelDia, wheelDia);
     }
 }

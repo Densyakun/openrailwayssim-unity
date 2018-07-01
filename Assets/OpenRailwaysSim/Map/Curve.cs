@@ -80,8 +80,10 @@ public class Curve : Track
             railRenderers[a].receiveShadows = false;
             railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
             railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
-            if (Main.selection == this)
-                railRenderers[a].material = Main.main.selection_track_mat;
+            if (useSelectingMat)
+                railRenderers[a].material = Main.main.selecting_track_mat;
+            else if (Main.focused == this)
+                railRenderers[a].material = Main.main.focused_track_mat;
             else
                 railRenderers[a].material = Main.main.rail_mat;
 

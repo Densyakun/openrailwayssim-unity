@@ -20,6 +20,11 @@ ModelImporter:
     100024: Wheel_Right_001
     100026: WheelAndAxle
     100028: WheelAndAxle_001
+    100030: BogieFrame
+    100032: BogieFrame_Left
+    100034: BogieFrame_Right
+    100036: BogieFrame_Beam
+    100038: BogieFrame_Beam_001
     400000: Axle
     400002: Axle_001
     400004: //RootNode
@@ -35,6 +40,11 @@ ModelImporter:
     400024: Wheel_Right_001
     400026: WheelAndAxle
     400028: WheelAndAxle_001
+    400030: BogieFrame
+    400032: BogieFrame_Left
+    400034: BogieFrame_Right
+    400036: BogieFrame_Beam
+    400038: BogieFrame_Beam_001
     2100000: Material_001
     2100002: Material
     2300000: Axle
@@ -49,6 +59,10 @@ ModelImporter:
     2300018: Wheel_Left_001
     2300020: Wheel_Right
     2300022: Wheel_Right_001
+    2300024: BogieFrame_Left
+    2300026: BogieFrame_Right
+    2300028: BogieFrame_Beam
+    2300030: BogieFrame_Beam_001
     3300000: Axle
     3300002: Axle_001
     3300004: Bogie_Frame_Left
@@ -61,6 +75,10 @@ ModelImporter:
     3300018: Wheel_Left_001
     3300020: Wheel_Right
     3300022: Wheel_Right_001
+    3300024: BogieFrame_Left
+    3300026: BogieFrame_Right
+    3300028: BogieFrame_Beam
+    3300030: BogieFrame_Beam_001
     4300000: Bogie_Frame_Left
     4300002: Bogie_Frame_Right
     4300004: Wheel_Right_001
@@ -73,6 +91,10 @@ ModelImporter:
     4300018: Flange_Right
     4300020: Wheel_Left
     4300022: Wheel_Right
+    4300024: BogieFrame_Left
+    4300026: BogieFrame_Right
+    4300028: BogieFrame_Beam_001
+    4300030: BogieFrame_Beam
     7400000: Default Take
     9500000: //RootNode
   externalObjects: {}
