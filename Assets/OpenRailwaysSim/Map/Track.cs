@@ -156,11 +156,11 @@ public class Track : MapObject
         trackRenderer.endWidth = trackRenderer.startWidth = RENDER_WIDTH;
         trackRenderer.endColor = trackRenderer.startColor = Color.white;
         if (useSelectingMat)
-            trackRenderer.material = Main.main.selecting_track_mat;
+            trackRenderer.sharedMaterial = Main.main.selecting_track_mat;
         else if (Main.focused == this)
-            trackRenderer.material = Main.main.focused_track_mat;
+            trackRenderer.sharedMaterial = Main.main.focused_track_mat;
         else
-            trackRenderer.material = Main.main.track_mat;
+            trackRenderer.sharedMaterial = Main.main.track_mat;
 
         reloadTrackRendererPositions();
         reloadRailRenderers();
@@ -190,11 +190,11 @@ public class Track : MapObject
             railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
             railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
             if (useSelectingMat)
-                railRenderers[a].material = Main.main.selecting_track_mat;
+                railRenderers[a].sharedMaterial = Main.main.selecting_track_mat;
             else if (Main.focused == this)
-                railRenderers[a].material = Main.main.focused_track_mat;
+                railRenderers[a].sharedMaterial = Main.main.focused_track_mat;
             else
-                railRenderers[a].material = Main.main.rail_mat;
+                railRenderers[a].sharedMaterial = Main.main.rail_mat;
 
             Vector3 b = rot * Vector3.right * rails[a];
             railRenderers[a].SetPositions(new Vector3[] {pos + b, getPoint(1) + b});
