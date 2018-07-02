@@ -219,16 +219,24 @@ public class Track : MapObject
 
     public void removeConnects()
     {
-        foreach (var t in _nextTracks)
+        foreach (var t in nextTracks)
         {
-            t._prevTracks.Remove(this);
-            t._nextTracks.Remove(this);
+            var a = t.prevTracks;
+            a.Remove(this);
+            t.prevTracks = a;
+            a = t.nextTracks;
+            a.Remove(this);
+            t.nextTracks = a;
         }
 
-        foreach (var t in _prevTracks)
+        foreach (var t in prevTracks)
         {
-            t._nextTracks.Remove(this);
-            t._prevTracks.Remove(this);
+            var a = t.nextTracks;
+            a.Remove(this);
+            t.nextTracks = a;
+            a = t.prevTracks;
+            a.Remove(this);
+            t.prevTracks = a;
         }
 
         _nextTracks.Clear();

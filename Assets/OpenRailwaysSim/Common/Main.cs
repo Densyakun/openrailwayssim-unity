@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -133,7 +134,7 @@ public class Main : MonoBehaviour
             Directory.CreateDirectory(ssdir);
             ScreenCapture.CaptureScreenshot(Path.Combine(ssdir, DateTime.Now.Ticks + ".png"));
         }
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (playingmap != null && !GameCanvas.settingPanel.isShowing() && !GameCanvas.titleBackPanel.isShowing())
             {
@@ -173,6 +174,9 @@ public class Main : MonoBehaviour
                     setPause(!pause);
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Delete))
+            removeSelectingObjs();
 
         if (playingmap != null)
         {
@@ -492,6 +496,8 @@ public class Main : MonoBehaviour
                                     focused.reloadEntity();
                                 }
                             }
+
+                            GameCanvas.playingPanel.removeButton.interactable = selectingObjs.Any();
                         }
                     }
                 }
@@ -708,5 +714,17 @@ public class Main : MonoBehaviour
         playingmap.addObject(editingTrack);
         editingTrack.enableCollider = true;
         editingTrack.reloadCollider();
+    }
+
+    public static void removeSelectingObjs()
+    {
+        foreach (var obj in selectingObjs)
+        {
+            if (obj.entity)
+                obj.entity.Destroy();
+            playingmap.removeObject(obj);
+        }
+
+        GameCanvas.playingPanel.removeButton.interactable = false;
     }
 }

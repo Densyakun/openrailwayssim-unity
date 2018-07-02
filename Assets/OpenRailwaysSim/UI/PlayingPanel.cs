@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class PlayingPanel : GamePanel
 {
 
-    public GameObject removeButton;
+    public Button removeButton;
 
     public void ConstTrackButton()
     {
@@ -19,11 +19,10 @@ public class PlayingPanel : GamePanel
 
     public void RemoveButton()
     {
-        foreach (var obj in Main.selectingObjs)
-        {
-            if (obj.entity)
-                obj.entity.Destroy();
-            Main.playingmap.removeObject(obj);
-        }
+        Main.removeSelectingObjs();
+    }
+
+    public void PlaceBogieFrameButton()
+    {
     }
 }

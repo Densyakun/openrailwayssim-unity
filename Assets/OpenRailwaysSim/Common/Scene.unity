@@ -7559,7 +7559,7 @@ MonoBehaviour:
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1056995811}
   m_OnClick:
     m_PersistentCalls:
@@ -12321,7 +12321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 858ba13c8a10c304a8e2926003dcbf49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  removeButton: {fileID: 1056995808}
+  removeButton: {fileID: 1056995810}
 --- !u!1 &1806417101
 GameObject:
   m_ObjectHideFlags: 0
