@@ -20,7 +20,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4461613525392876}
   - component: {fileID: 33871148280530114}
-  - component: {fileID: 65677871001998370}
   - component: {fileID: 23292613926796830}
   m_Layer: 0
   m_Name: BodyCube
@@ -112,15 +111,3 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1410563436962010}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &65677871001998370
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1410563436962010}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}

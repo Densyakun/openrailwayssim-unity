@@ -13,6 +13,8 @@ public class Axle : MapObject
     public const string KEY_WHEEL_DIA = "WHEEL_DIA";
     public const string KEY_ROT_X = "ROT_X";
 
+    public const float COLLIDER_WIDTH = 2.3f;
+
     public Track onTrack { get; protected set; }
 
     protected float _onDist = 0;
@@ -146,6 +148,42 @@ public class Axle : MapObject
         onDist += a;
         rotX += a * 360 / Mathf.PI * wheelDia;
         lastFixed = Time.fixedTime;
+
+        Vector3 b = onTrack is Curve
+            ? ((Curve) onTrack).getRotation(onDist / onTrack.length).eulerAngles
+            : onTrack.rot.eulerAngles;
+        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(b) * Vector3.up * wheelDia / 2;
+        rot = Quaternion.Euler(b);
+    }
+
+    public void reloadOnDist()
+    {
+        if (onTrack is Curve)
+        {
+            Vector3 a = Quaternion.Inverse(onTrack.rot) * (pos - onTrack.pos);
+            float r1 = ((Curve) onTrack).radius;
+            if (r1 < 0)
+            {
+                r1 = -r1;
+                a.x = -a.x;
+            }
+
+            float r2 = Vector3.Distance(a, Vector3.right * r1);
+            float A = Mathf.Atan(a.z / (r2 - a.x));
+            if (A < 0)
+                A = Mathf.PI + A;
+            if (a.z < 0)
+                A += Mathf.PI;
+            onDist = A * r1;
+            //float b = onDist - speed * 10 * Time.deltaTime / 36;
+            //speed = ((onDist = A * r1) - b) * 36 / 10 / Time.deltaTime;
+        }
+        else
+        {
+            onDist = (Quaternion.Inverse(onTrack.rot) * (pos - onTrack.pos)).z;
+            //float b = onDist - speed * 10 * Time.deltaTime / 36;
+            //speed = ((onDist = (Quaternion.Inverse(onTrack.rot) * (pos - onTrack.pos)).z) - b) * 36 / 10 / Time.deltaTime;
+        }
     }
 
     public override void reloadEntity()
@@ -153,69 +191,15 @@ public class Axle : MapObject
         if (entity == null)
             return;
 
-        Vector3 a = onTrack is Curve
-            ? ((Curve) onTrack).getRotation(onDist / onTrack.length).eulerAngles
-            : onTrack.rot.eulerAngles;
-        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2;
-        a.x = rotX;
-        rot = Quaternion.Euler(a);
-
         if (modelObj == null)
         {
             (modelObj = GameObject.Instantiate(Main.main.axleModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
-            modelObj.transform.localEulerAngles = Vector3.zero;
         }
 
-        if (useSelectingMat)
-        {
-            Renderer[] b = modelObj.GetComponentsInChildren<Renderer>();
-            foreach (var c in b)
-            {
-                if (c.sharedMaterials[c.sharedMaterials.Length - 1] != Main.main.selecting_track_mat)
-                {
-                    Material[] d = new Material[c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.main.focused_track_mat
-                        ? c.sharedMaterials.Length
-                        : c.sharedMaterials.Length + 1];
-                    for (int e = 0; e < d.Length - 1; e++)
-                        d[e] = c.sharedMaterials[e];
-                    d[d.Length - 1] = Main.main.selecting_track_mat;
-                    c.sharedMaterials = d;
-                }
-            }
-        }
-        else if (Main.focused == this)
-        {
-            Renderer[] b = modelObj.GetComponentsInChildren<Renderer>();
-            foreach (var c in b)
-            {
-                if (c.sharedMaterials[c.sharedMaterials.Length - 1] != Main.main.focused_track_mat)
-                {
-                    Material[] d = new Material[c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.main.selecting_track_mat
-                        ? c.sharedMaterials.Length
-                        : c.sharedMaterials.Length + 1];
-                    for (int e = 0; e < d.Length - 1; e++)
-                        d[e] = c.sharedMaterials[e];
-                    d[d.Length - 1] = Main.main.focused_track_mat;
-                    c.sharedMaterials = d;
-                }
-            }
-        }
-        else
-        {
-            Renderer[] b = modelObj.GetComponentsInChildren<Renderer>();
-            foreach (var c in b)
-            {
-                if (c.sharedMaterials.Length >= 1 && (c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.main.selecting_track_mat ||
-                                                c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.main.focused_track_mat))
-                {
-                    Material[] d = new Material[c.sharedMaterials.Length - 1];
-                    for (int e = 0; e < d.Length; e++)
-                        d[e] = c.sharedMaterials[e];
-                    c.sharedMaterials = d;
-                }
-            }
-        }
+        modelObj.transform.localEulerAngles = new Vector3(rotX, 0);
+
+        reloadMaterial(modelObj);
 
         reloadCollider();
 
@@ -228,7 +212,6 @@ public class Axle : MapObject
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;
-        collider.center = Vector3.up * wheelDia / 2;
-        collider.size = new Vector3(wheelDia, wheelDia, wheelDia);
+        collider.size = new Vector3(COLLIDER_WIDTH, wheelDia, wheelDia);
     }
 }

@@ -107,6 +107,62 @@ public class MapObject : ISerializable
 		entity.transform.rotation = _rot;
 	}
 
+	public void reloadMaterial(GameObject obj)
+	{
+		if (useSelectingMat)
+		{
+			Renderer[] b = obj.GetComponentsInChildren<Renderer>();
+			foreach (var c in b)
+			{
+				if (c.sharedMaterials[c.sharedMaterials.Length - 1] != Main.main.selecting_track_mat)
+				{
+					Material[] d =
+						new Material[c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.main.focused_track_mat
+							? c.sharedMaterials.Length
+							: c.sharedMaterials.Length + 1];
+					for (int e = 0; e < d.Length - 1; e++)
+						d[e] = c.sharedMaterials[e];
+					d[d.Length - 1] = Main.main.selecting_track_mat;
+					c.sharedMaterials = d;
+				}
+			}
+		}
+		else if (Main.focused == this)
+		{
+			Renderer[] b = obj.GetComponentsInChildren<Renderer>();
+			foreach (var c in b)
+			{
+				if (c.sharedMaterials[c.sharedMaterials.Length - 1] != Main.main.focused_track_mat)
+				{
+					Material[] d =
+						new Material[c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.main.selecting_track_mat
+							? c.sharedMaterials.Length
+							: c.sharedMaterials.Length + 1];
+					for (int e = 0; e < d.Length - 1; e++)
+						d[e] = c.sharedMaterials[e];
+					d[d.Length - 1] = Main.main.focused_track_mat;
+					c.sharedMaterials = d;
+				}
+			}
+		}
+		else
+		{
+			Renderer[] b = obj.GetComponentsInChildren<Renderer>();
+			foreach (var c in b)
+			{
+				if (c.sharedMaterials.Length >= 1 &&
+				    (c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.main.selecting_track_mat ||
+				     c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.main.focused_track_mat))
+				{
+					Material[] d = new Material[c.sharedMaterials.Length - 1];
+					for (int e = 0; e < d.Length; e++)
+						d[e] = c.sharedMaterials[e];
+					c.sharedMaterials = d;
+				}
+			}
+		}
+	}
+
 	//時間が経過するメソッド。ticksには経過時間を指定。
 	public virtual void TimePasses(long ticks)
 	{

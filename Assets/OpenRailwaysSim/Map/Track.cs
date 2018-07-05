@@ -75,7 +75,7 @@ public class Track : MapObject
 
     public int connectingPrevTrack
     {
-        get { return _connectingNextTrack; }
+        get { return _connectingPrevTrack; }
         set
         {
             _connectingPrevTrack = value <

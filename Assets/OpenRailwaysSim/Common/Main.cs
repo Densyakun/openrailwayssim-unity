@@ -91,6 +91,7 @@ public class Main : MonoBehaviour
     public float gauge = 1.435f;
     public GameObject axleModel;
     public GameObject bogieFrameModel;
+    public GameObject bodyModel;
 
     void Awake()
     {
@@ -283,7 +284,6 @@ public class Main : MonoBehaviour
                             }
                             else if (focused is Track)
                             {
-                                focused = (Track) entity.obj;
                                 focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
                                 if (focusedDist < Track.MIN_TRACK_LENGTH)
                                     focusedDist = 0;
@@ -378,36 +378,43 @@ public class Main : MonoBehaviour
                             }
                             else if (focused != null)
                             {
-                                mainTrack = ((Track) focused);
-                                if (mainTrack is Curve)
+                                if (focused is Track)
                                 {
-                                    editingRot = ((Curve) mainTrack).getRotation(focusedDist / mainTrack.length);
-                                    editingTrack = new Track(playingmap, p);
-                                }
-                                else if (mainTrack is Track)
-                                {
-                                    editingRot = mainTrack.rot;
-                                    editingTrack = new Curve(playingmap, p);
+                                    mainTrack = ((Track) focused);
+                                    if (mainTrack is Curve)
+                                    {
+                                        editingRot = ((Curve) mainTrack).getRotation(focusedDist / mainTrack.length);
+                                        editingTrack = new Track(playingmap, p);
+                                    }
+                                    else
+                                    {
+                                        editingRot = mainTrack.rot;
+                                        editingTrack = new Curve(playingmap, p);
+                                    }
                                 }
                             }
                             else
                                 editingTrack = new Track(playingmap, p);
 
-                            editingTrack.rails.Add(-Main.main.gauge / 2);
-                            editingTrack.rails.Add(Main.main.gauge / 2);
+                            if (editingTrack != null)
+                            {
+                                editingTrack.rails.Add(-Main.main.gauge / 2);
+                                editingTrack.rails.Add(Main.main.gauge / 2);
 
-                            if (editingRot != null)
-                                editingTrack.rot = (Quaternion) editingRot;
-                            editingTrack.enableCollider = false;
-                            editingTrack.generate();
+                                if (editingRot != null)
+                                    editingTrack.rot = (Quaternion) editingRot;
+                                editingTrack.enableCollider = false;
+                                editingTrack.generate();
 
-                            GameCanvas.trackSettingPanel.show(true);
-                            GameCanvas.trackSettingPanel.transform.position = new Vector3(
-                                Mathf.Clamp(Input.mousePosition.x, 0,
-                                    Screen.width - ((RectTransform) GameCanvas.trackSettingPanel.transform).rect.width),
-                                Mathf.Clamp(Input.mousePosition.y,
-                                    ((RectTransform) GameCanvas.trackSettingPanel.transform).rect.height,
-                                    Screen.height));
+                                GameCanvas.trackSettingPanel.show(true);
+                                GameCanvas.trackSettingPanel.transform.position = new Vector3(
+                                    Mathf.Clamp(Input.mousePosition.x, 0,
+                                        Screen.width - ((RectTransform) GameCanvas.trackSettingPanel.transform).rect
+                                        .width),
+                                    Mathf.Clamp(Input.mousePosition.y,
+                                        ((RectTransform) GameCanvas.trackSettingPanel.transform).rect.height,
+                                        Screen.height));
+                            }
                         }
                     }
                     else if (mode == MODE_PLACE_AXLE)
@@ -443,7 +450,6 @@ public class Main : MonoBehaviour
                             }
                             else if (focused is Track)
                             {
-                                focused = (Track) entity.obj;
                                 focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
                                 if (focusedDist < Track.MIN_TRACK_LENGTH)
                                     focusedDist = 0;
@@ -456,7 +462,7 @@ public class Main : MonoBehaviour
                         point.transform.position = p;
                         point.SetActive(true);
 
-                        if (Input.GetMouseButtonUp(0) && focused != null)
+                        if (Input.GetMouseButtonUp(0) && focused != null && focused is Track)
                         {
                             Axle axle = new Axle(playingmap, ((Track) focused), focusedDist);
                             axle.generate();
@@ -498,6 +504,9 @@ public class Main : MonoBehaviour
                             }
 
                             GameCanvas.playingPanel.removeButton.interactable = selectingObjs.Any();
+                            GameCanvas.playingPanel.placeBFButton.interactable = selectingObjs.Any(obj => obj is Axle);
+                            GameCanvas.playingPanel.placeBodyButton.interactable =
+                                selectingObjs.Any(obj => obj is BogieFrame);
                         }
                     }
                 }
