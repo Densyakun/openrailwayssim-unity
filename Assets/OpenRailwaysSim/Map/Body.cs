@@ -73,38 +73,46 @@ public class Body : MapObject
 
     public override void fixedUpdate()
     {
-        //if (lastFixed == Time.fixedTime)
-        //    return;
+        snapToBogieFrame();
+        snapFromBogieFrame();
+    }
+
+    public void snapToBogieFrame()
+    {
         var p = Vector3.zero;
         var p_ = Vector3.zero;
         var q = Vector3.zero;
         foreach (var d in bogieFrames)
         {
-            d.fixedMove();
-            p += d.pos + d.rot * Vector3.down * d.height / 2;
+            d.snapToAxle();
+            p += d.pos + d.rot * Vector3.down * d.height;
         }
 
-        p = p / bogieFrames.Count;
+        p /= bogieFrames.Count;
 
         foreach (var d in bogieFrames)
             q += d.rot.eulerAngles;
         rot = Quaternion.Euler(q / bogieFrames.Count);
 
         for (var d = 0; d < bogieFrames.Count; d++)
-            p_ += (bogieFrames[d].pos = p + bogieFrames[d].rot * Vector3.up * bogieFrames[d].height / 2 +
-                                        (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0
-                                            ? Vector3.zero
-                                            : rot * Vector3.forward * bogieCenterDist *
-                                              ((float) -(bogieFrames.Count - 1) / 2 + d))) - bogieFrames[d].rot *
-                  Vector3.up * bogieFrames[d].height / 2;
+            p_ += (p + (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0
+                       ? Vector3.zero
+                       : rot * Vector3.forward * bogieCenterDist * ((float) -(bogieFrames.Count - 1) / 2 + d)));
 
         pos = (p_ / bogieFrames.Count) + rot * Vector3.up * height;
+    }
 
-        /*foreach (var bf in bogieFrames)
-        {
-            bf.reloadOnDist();
-            bf.rot = rot;
-        }*/
+    public void snapFromBogieFrame()
+    {
+        for (var d = 0; d < bogieFrames.Count; d++)
+            bogieFrames[d].pos = pos + bogieFrames[d].rot * (Vector3.up * (bogieFrames[d].height - height)) +
+                                 (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0
+                                     ? Vector3.zero
+                                     : rot * Vector3.forward * bogieCenterDist *
+                                       ((float) -(bogieFrames.Count - 1) / 2 + d));
+
+        foreach (var bf in bogieFrames)
+            bf.snapFromAxle();
     }
 
     public override void reloadEntity()

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using System.Linq;
 using UnityEngine.UI;
 
 //ゲーム中に表示される画面
@@ -40,5 +38,12 @@ public class PlayingPanel : GamePanel
         body.setBogieFrames(Main.selectingObjs.Where(obj => obj is BogieFrame).OfType<BogieFrame>().ToList());
         body.generate();
         Main.playingmap.addObject(body);
+    }
+
+    public void a()
+    {
+        removeButton.interactable = Main.selectingObjs.Any();
+        placeBFButton.interactable = Main.selectingObjs.Any(obj => obj is Axle);
+        placeBodyButton.interactable = Main.selectingObjs.Any(obj => obj is BogieFrame);
     }
 }

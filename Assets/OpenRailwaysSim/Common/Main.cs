@@ -135,6 +135,7 @@ public class Main : MonoBehaviour
             Directory.CreateDirectory(ssdir);
             ScreenCapture.CaptureScreenshot(Path.Combine(ssdir, DateTime.Now.Ticks + ".png"));
         }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (playingmap != null && !GameCanvas.settingPanel.isShowing() && !GameCanvas.titleBackPanel.isShowing())
@@ -503,18 +504,37 @@ public class Main : MonoBehaviour
                                 }
                             }
 
-                            GameCanvas.playingPanel.removeButton.interactable = selectingObjs.Any();
-                            GameCanvas.playingPanel.placeBFButton.interactable = selectingObjs.Any(obj => obj is Axle);
-                            GameCanvas.playingPanel.placeBodyButton.interactable =
-                                selectingObjs.Any(obj => obj is BogieFrame);
+                            GameCanvas.playingPanel.a();
                         }
                     }
                 }
                 else
+                {
                     point.SetActive(false);
+
+                    MapObject a = focused;
+                    focused = null;
+                    if (a != null)
+                    {
+                        if (selectingObjs.Contains(a))
+                            a.useSelectingMat = true;
+                        a.reloadEntity();
+                    }
+                }
             }
             else
+            {
                 point.SetActive(false);
+
+                MapObject a = focused;
+                focused = null;
+                if (a != null)
+                {
+                    if (selectingObjs.Contains(a))
+                        a.useSelectingMat = true;
+                    a.reloadEntity();
+                }
+            }
 
             if (bgmSource.isPlaying)
                 bgmSource.Stop();
@@ -734,6 +754,7 @@ public class Main : MonoBehaviour
             playingmap.removeObject(obj);
         }
 
-        GameCanvas.playingPanel.removeButton.interactable = false;
+        selectingObjs.Clear();
+        GameCanvas.playingPanel.a();
     }
 }

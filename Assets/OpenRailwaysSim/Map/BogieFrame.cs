@@ -21,8 +21,6 @@ public class BogieFrame : MapObject
 
     public GameObject modelObj;
 
-    public float lastFixed = -1;
-
     public BogieFrame(Map map) : base(map)
     {
         height = 0.8f;
@@ -75,13 +73,12 @@ public class BogieFrame : MapObject
 
     public override void fixedUpdate()
     {
-        fixedMove();
+        snapToAxle();
+        snapFromAxle();
     }
 
-    public void fixedMove()
+    public void snapToAxle()
     {
-        if (lastFixed == Time.fixedTime)
-            return;
         var p = Vector3.zero;
         var p_ = Vector3.zero;
         var q = Vector3.zero;
@@ -91,25 +88,39 @@ public class BogieFrame : MapObject
             p += d.pos + d.rot * Vector3.down * d.wheelDia / 2;
         }
 
-        p = p / axles.Count;
+        p /= axles.Count;
 
         foreach (var d in axles)
             q += d.rot.eulerAngles;
         rot = Quaternion.Euler(q / axles.Count);
 
         for (var d = 0; d < axles.Count; d++)
-            p_ += (axles[d].pos = p + axles[d].rot * Vector3.up * axles[d].wheelDia / 2 +
-                                  (axles.Count == 1 || d * 2 - (axles.Count - 1) == 0
-                                      ? Vector3.zero
-                                      : rot * Vector3.forward * wheelbase * ((float) -(axles.Count - 1) / 2 + d))) -
-                  axles[d].rot * Vector3.down * axles[d].wheelDia / 2;
+            p_ += (p + (axles.Count == 1 || d * 2 - (axles.Count - 1) == 0
+                       ? Vector3.zero
+                       : rot * Vector3.forward * wheelbase * ((float) -(axles.Count - 1) / 2 + d)));
 
         pos = (p_ / axles.Count) + rot * Vector3.up * height;
+    }
+
+    public void snapFromAxle()
+    {
+        float s = 0;
+        for (var d = 0; d < axles.Count; d++)
+        {
+            axles[d].pos = pos + axles[d].rot * (Vector3.up * (axles[d].wheelDia / 2 - height)) +
+                           (axles.Count == 1 || d * 2 - (axles.Count - 1) == 0
+                               ? Vector3.zero
+                               : rot * Vector3.forward * wheelbase * ((float) -(axles.Count - 1) / 2 + d));
+            s += axles[d].speed;
+        }
+
+        s /= axles.Count;
 
         foreach (var axle in axles)
         {
             axle.reloadOnDist();
             axle.rot = rot;
+            axle.speed = s;
         }
     }
 
