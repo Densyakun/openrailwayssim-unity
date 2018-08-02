@@ -13,6 +13,7 @@ public class GameCanvas : MonoBehaviour {
 	public static UnsupportedMapPanel unsupportedMapPanel;
 	public static DeleteMapPanel deleteMapPanel;
 	public static TrackSettingPanel trackSettingPanel;
+	public static CouplerSettingPanel couplerSettingPanel;
 
 	void Awake () {
 		titlePanel = GetComponentInChildren<TitlePanel> (true);
@@ -26,5 +27,6 @@ public class GameCanvas : MonoBehaviour {
 		unsupportedMapPanel = GetComponentInChildren<UnsupportedMapPanel> (true);
 		deleteMapPanel = GetComponentInChildren<DeleteMapPanel> (true);
 		trackSettingPanel = GetComponentInChildren<TrackSettingPanel> (true);
+		couplerSettingPanel = GetComponentInChildren<CouplerSettingPanel> (true);
 	}
 }

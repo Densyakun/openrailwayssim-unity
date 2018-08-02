@@ -68,51 +68,52 @@ public class Body : MapObject
 
     public override void update()
     {
-        reloadEntity();
-    }
-
-    public override void fixedUpdate()
-    {
         snapToBogieFrame();
         snapFromBogieFrame();
+        reloadEntity();
     }
 
     public void snapToBogieFrame()
     {
-        var p = Vector3.zero;
-        var p_ = Vector3.zero;
-        var q = Vector3.zero;
-        foreach (var d in bogieFrames)
+        if (bogieFrames.Count > 0)
         {
-            d.snapToAxle();
-            p += d.pos + d.rot * Vector3.down * d.height;
+            var p = Vector3.zero;
+            var p_ = Vector3.zero;
+            foreach (var d in bogieFrames)
+            {
+                d.snapToAxle();
+                p += d.pos + d.rot * Vector3.down * d.height;
+            }
+
+            p /= bogieFrames.Count;
+
+            if (bogieFrames.Count == 1)
+                rot = bogieFrames[0].rot;
+            else
+                rot = Quaternion.LookRotation(bogieFrames[bogieFrames.Count - 1].pos - bogieFrames[0].pos);
+
+            for (var d = 0; d < bogieFrames.Count; d++)
+                p_ += (p + (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0
+                           ? Vector3.zero
+                           : rot * Vector3.forward * bogieCenterDist * ((float) -(bogieFrames.Count - 1) / 2 + d)));
+
+            pos = (p_ / bogieFrames.Count) + rot * Vector3.up * height;
         }
-
-        p /= bogieFrames.Count;
-
-        foreach (var d in bogieFrames)
-            q += d.rot.eulerAngles;
-        rot = Quaternion.Euler(q / bogieFrames.Count);
-
-        for (var d = 0; d < bogieFrames.Count; d++)
-            p_ += (p + (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0
-                       ? Vector3.zero
-                       : rot * Vector3.forward * bogieCenterDist * ((float) -(bogieFrames.Count - 1) / 2 + d)));
-
-        pos = (p_ / bogieFrames.Count) + rot * Vector3.up * height;
     }
 
     public void snapFromBogieFrame()
     {
+        //台車枠を車軸に合わせると、台車中心間距離を失う
         for (var d = 0; d < bogieFrames.Count; d++)
+        {
             bogieFrames[d].pos = pos + bogieFrames[d].rot * (Vector3.up * (bogieFrames[d].height - height)) +
                                  (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0
                                      ? Vector3.zero
                                      : rot * Vector3.forward * bogieCenterDist *
                                        ((float) -(bogieFrames.Count - 1) / 2 + d));
-
-        foreach (var bf in bogieFrames)
-            bf.snapFromAxle();
+            bogieFrames[d].snapFromAxle();
+        }
+        //台車枠を車軸に合わせると、車体がずれる。次のフレームで合わせるので省略している。
     }
 
     public override void reloadEntity()

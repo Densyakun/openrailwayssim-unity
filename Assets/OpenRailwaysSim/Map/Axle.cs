@@ -36,7 +36,7 @@ public class Axle : MapObject
                     Track oldTrack = onTrack;
                     onTrack = oldTrack.nextTracks[oldTrack.connectingNextTrack];
                     if ((oldTrack is Curve
-                            ? ((Curve) oldTrack).getRotation(1)
+                            ? ((Curve)oldTrack).getRotation(1)
                             : oldTrack.rot) == oldTrack.nextTracks[oldTrack.connectingNextTrack].rot)
                     {
                         onDist = value - oldTrack.length;
@@ -61,7 +61,7 @@ public class Axle : MapObject
                     Track oldTrack = onTrack;
                     onTrack = oldTrack.prevTracks[oldTrack.connectingPrevTrack];
                     if (oldTrack.rot == (oldTrack.prevTracks[oldTrack.connectingPrevTrack] is Curve
-                            ? ((Curve) oldTrack.prevTracks[oldTrack.connectingPrevTrack]).getRotation(1)
+                            ? ((Curve)oldTrack.prevTracks[oldTrack.connectingPrevTrack]).getRotation(1)
                             : oldTrack.prevTracks[oldTrack.connectingPrevTrack].rot))
                     {
                         onDist = oldTrack.prevTracks[oldTrack.connectingPrevTrack].length + value;
@@ -96,7 +96,7 @@ public class Axle : MapObject
         wheelDia = 0.86f;
         rotX = 0;
         Vector3 a = onTrack is Curve
-            ? ((Curve) onTrack).getRotation(onDist / onTrack.length).eulerAngles
+            ? ((Curve)onTrack).getRotation(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
         pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2;
         a.x = rotX;
@@ -105,7 +105,7 @@ public class Axle : MapObject
 
     protected Axle(SerializationInfo info, StreamingContext context) : base(info, context)
     {
-        onTrack = (Track) info.GetValue(KEY_ON_TRACK, typeof(Track));
+        onTrack = (Track)info.GetValue(KEY_ON_TRACK, typeof(Track));
         _onDist = info.GetSingle(KEY_ON_DIST);
         speed = info.GetSingle(KEY_SPEED);
         wheelDia = info.GetSingle(KEY_WHEEL_DIA);
@@ -132,12 +132,13 @@ public class Axle : MapObject
 
     public override void update()
     {
-        reloadEntity();
-    }
-
-    public override void fixedUpdate()
-    {
+        //Editor上で移動するテスト
+        SyncFromEntity();
+        reloadOnDist();
         fixedMove();
+
+        //fixedMove();
+        //reloadEntity();
     }
 
     public void fixedMove()
@@ -150,7 +151,7 @@ public class Axle : MapObject
         lastFixed = Time.fixedTime;
 
         Vector3 b = onTrack is Curve
-            ? ((Curve) onTrack).getRotation(onDist / onTrack.length).eulerAngles
+            ? ((Curve)onTrack).getRotation(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
         pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(b) * Vector3.up * wheelDia / 2;
         rot = Quaternion.Euler(b);
@@ -161,7 +162,7 @@ public class Axle : MapObject
         if (onTrack is Curve)
         {
             Vector3 a = Quaternion.Inverse(onTrack.rot) * (pos - onTrack.pos);
-            float r1 = ((Curve) onTrack).radius;
+            float r1 = ((Curve)onTrack).radius;
             if (r1 < 0)
             {
                 r1 = -r1;
@@ -171,8 +172,11 @@ public class Axle : MapObject
             float r2 = Vector3.Distance(a, Vector3.right * r1);
             float A = Mathf.Atan(a.z / (r2 - a.x));
             if (A < 0)
-                A = Mathf.PI + A;
-            if (a.z < 0)
+            {
+                if (a.z >= 0)
+                    A += Mathf.PI;
+            }
+            else if (a.z < 0)
                 A += Mathf.PI;
             onDist = A * r1;
             //float b = onDist - speed * 10 * Time.deltaTime / 36;

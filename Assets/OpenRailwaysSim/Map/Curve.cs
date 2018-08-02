@@ -10,6 +10,12 @@ public class Curve : Track
     public const float MIN_RADIUS = 1f;
     public const float FINENESS_DISTANCE = 5f;
 
+    public override float length
+    {
+        get { return _length; }
+        set { _length = Mathf.Max(MIN_TRACK_LENGTH, Mathf.Min(value, 2 * Mathf.PI * Mathf.Abs(radius))); }
+    }
+
     private float _radius = MIN_RADIUS;
     public float radius
     {

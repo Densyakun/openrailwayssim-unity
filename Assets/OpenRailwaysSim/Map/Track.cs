@@ -22,7 +22,7 @@ public class Track : MapObject
 
     protected float _length = MIN_TRACK_LENGTH;
 
-    public float length
+    public virtual float length
     {
         get { return _length; }
         set { _length = Mathf.Max(MIN_TRACK_LENGTH, value); }
@@ -104,7 +104,7 @@ public class Track : MapObject
         {
             rails = (List<float>) info.GetValue(KEY_RAILS, typeof(List<float>));
         }
-        catch (SerializationException e)
+        catch (SerializationException)
         {
             rails = new List<float>();
             rails.Add(-Main.main.gauge / 2);
@@ -118,7 +118,7 @@ public class Track : MapObject
             _connectingNextTrack = info.GetInt32(KEY_CONNECTING_NEXT_TRACKS);
             _connectingPrevTrack = info.GetInt32(KEY_CONNECTING_PREV_TRACKS);
         }
-        catch (SerializationException e)
+        catch (SerializationException)
         {
             _connectingNextTrack = -1;
             _connectingPrevTrack = -1;

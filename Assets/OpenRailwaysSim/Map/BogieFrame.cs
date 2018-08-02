@@ -68,13 +68,9 @@ public class BogieFrame : MapObject
 
     public override void update()
     {
-        reloadEntity();
-    }
-
-    public override void fixedUpdate()
-    {
         snapToAxle();
         snapFromAxle();
+        reloadEntity();
     }
 
     public void snapToAxle()
@@ -90,9 +86,10 @@ public class BogieFrame : MapObject
 
         p /= axles.Count;
 
-        foreach (var d in axles)
-            q += d.rot.eulerAngles;
-        rot = Quaternion.Euler(q / axles.Count);
+        if (axles.Count == 1)
+            rot = axles[0].rot;
+        else
+            rot = Quaternion.LookRotation(axles[axles.Count - 1].pos - axles[0].pos);
 
         for (var d = 0; d < axles.Count; d++)
             p_ += (p + (axles.Count == 1 || d * 2 - (axles.Count - 1) == 0
@@ -116,12 +113,14 @@ public class BogieFrame : MapObject
 
         s /= axles.Count;
 
+        //車軸をレールに合わせると、ホイールベースを失う
         foreach (var axle in axles)
         {
             axle.reloadOnDist();
             axle.rot = rot;
             axle.speed = s;
         }
+        //車軸をレールに合わせると、台車枠がずれる。次のフレームで合わせるので省略している。
     }
 
     public override void reloadEntity()

@@ -72,6 +72,7 @@ public class Main : MonoBehaviour
 
     public static Track editingTrack;
     public static Quaternion? editingRot;
+    public static Coupler editingCoupler;
     public static Track mainTrack;
     public static MapObject focused;
     public static float focusedDist;
@@ -92,6 +93,7 @@ public class Main : MonoBehaviour
     public GameObject axleModel;
     public GameObject bogieFrameModel;
     public GameObject bodyModel;
+    public GameObject couplerModel;
 
     void Awake()
     {
@@ -152,6 +154,16 @@ public class Main : MonoBehaviour
                     }
 
                     editingRot = null;
+                }
+                else if (GameCanvas.couplerSettingPanel.isShowing())
+                {
+                    a = false;
+                    GameCanvas.couplerSettingPanel.show(false);
+                    if (editingCoupler != null)
+                    {
+                        editingCoupler.entity.Destroy();
+                        editingCoupler = null;
+                    }
                 }
 
                 if (mode != 0)
@@ -262,7 +274,7 @@ public class Main : MonoBehaviour
                             if (focused is Curve)
                             {
                                 Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                float r1 = ((Curve) focused).radius;
+                                float r1 = ((Curve)focused).radius;
                                 if (r1 < 0)
                                 {
                                     r1 = -r1;
@@ -279,17 +291,17 @@ public class Main : MonoBehaviour
                                 if (focusedDist < Track.MIN_TRACK_LENGTH ||
                                     focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
                                     focusedDist = 0;
-                                else if (focusedDist > ((Track) focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track) focused).length;
-                                p = ((Track) focused).getPoint(focusedDist / ((Track) focused).length);
+                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track)focused).length;
+                                p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
                             }
                             else if (focused is Track)
                             {
                                 focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
                                 if (focusedDist < Track.MIN_TRACK_LENGTH)
                                     focusedDist = 0;
-                                else if (focusedDist > ((Track) focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track) focused).length;
+                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track)focused).length;
                                 p = focused.pos + focused.rot * Vector3.forward * focusedDist;
                             }
                         }
@@ -324,7 +336,7 @@ public class Main : MonoBehaviour
                                             editingTrack.rot = Quaternion.Euler(0, editingTrack.rot.eulerAngles.y - 180,
                                                 0);
                                             editingTrack.length =
-                                                Mathf.Abs(a * 2 * (((Curve) editingTrack).radius = -((Vector2) i).x));
+                                                Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = -((Vector2)i).x));
                                         }
                                     }
                                     else
@@ -335,7 +347,7 @@ public class Main : MonoBehaviour
                                             Vector3.right * v.z);
                                         if (i != null)
                                             editingTrack.length =
-                                                Mathf.Abs(a * 2 * (((Curve) editingTrack).radius = ((Vector2) i).x));
+                                                Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = ((Vector2)i).x));
                                     }
                                 }
                             }
@@ -351,9 +363,9 @@ public class Main : MonoBehaviour
                             GameCanvas.trackSettingPanel.load();
                             GameCanvas.trackSettingPanel.transform.position = new Vector3(
                                 Mathf.Clamp(Input.mousePosition.x, 0,
-                                    Screen.width - ((RectTransform) GameCanvas.trackSettingPanel.transform).rect.width),
+                                    Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width),
                                 Mathf.Clamp(Input.mousePosition.y,
-                                    ((RectTransform) GameCanvas.trackSettingPanel.transform).rect.height,
+                                    ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
                                     Screen.height));
                         }
 
@@ -364,7 +376,7 @@ public class Main : MonoBehaviour
                                 trackEdited0();
 
                                 if (editingTrack is Curve)
-                                    editingRot = ((Curve) editingTrack).getRotation(1);
+                                    editingRot = ((Curve)editingTrack).getRotation(1);
                                 else
                                     editingRot = editingTrack.rot;
 
@@ -381,10 +393,10 @@ public class Main : MonoBehaviour
                             {
                                 if (focused is Track)
                                 {
-                                    mainTrack = ((Track) focused);
+                                    mainTrack = ((Track)focused);
                                     if (mainTrack is Curve)
                                     {
-                                        editingRot = ((Curve) mainTrack).getRotation(focusedDist / mainTrack.length);
+                                        editingRot = ((Curve)mainTrack).getRotation(focusedDist / mainTrack.length);
                                         editingTrack = new Track(playingmap, p);
                                     }
                                     else
@@ -403,17 +415,17 @@ public class Main : MonoBehaviour
                                 editingTrack.rails.Add(Main.main.gauge / 2);
 
                                 if (editingRot != null)
-                                    editingTrack.rot = (Quaternion) editingRot;
+                                    editingTrack.rot = (Quaternion)editingRot;
                                 editingTrack.enableCollider = false;
                                 editingTrack.generate();
 
                                 GameCanvas.trackSettingPanel.show(true);
                                 GameCanvas.trackSettingPanel.transform.position = new Vector3(
                                     Mathf.Clamp(Input.mousePosition.x, 0,
-                                        Screen.width - ((RectTransform) GameCanvas.trackSettingPanel.transform).rect
+                                        Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect
                                         .width),
                                     Mathf.Clamp(Input.mousePosition.y,
-                                        ((RectTransform) GameCanvas.trackSettingPanel.transform).rect.height,
+                                        ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
                                         Screen.height));
                             }
                         }
@@ -428,7 +440,7 @@ public class Main : MonoBehaviour
                             if (focused is Curve)
                             {
                                 Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                float r1 = ((Curve) focused).radius;
+                                float r1 = ((Curve)focused).radius;
                                 if (r1 < 0)
                                 {
                                     r1 = -r1;
@@ -438,24 +450,24 @@ public class Main : MonoBehaviour
                                 float r2 = Vector3.Distance(a, Vector3.right * r1);
                                 float A = Mathf.Atan(a.z / (r2 - a.x));
                                 if (A < 0)
-                                    A = Mathf.PI + A;
+                                    A += Mathf.PI;
                                 if (a.z < 0)
                                     A += Mathf.PI;
                                 focusedDist = A * r1;
                                 if (focusedDist < Track.MIN_TRACK_LENGTH ||
                                     focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
                                     focusedDist = 0;
-                                else if (focusedDist > ((Track) focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track) focused).length;
-                                p = ((Track) focused).getPoint(focusedDist / ((Track) focused).length);
+                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track)focused).length;
+                                p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
                             }
                             else if (focused is Track)
                             {
                                 focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
                                 if (focusedDist < Track.MIN_TRACK_LENGTH)
                                     focusedDist = 0;
-                                else if (focusedDist > ((Track) focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track) focused).length;
+                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track)focused).length;
                                 p = focused.pos + focused.rot * Vector3.forward * focusedDist;
                             }
                         }
@@ -465,7 +477,7 @@ public class Main : MonoBehaviour
 
                         if (Input.GetMouseButtonUp(0) && focused != null && focused is Track)
                         {
-                            Axle axle = new Axle(playingmap, ((Track) focused), focusedDist);
+                            Axle axle = new Axle(playingmap, ((Track)focused), focusedDist);
                             axle.generate();
                             playingmap.addObject(axle);
                         }
@@ -689,24 +701,25 @@ public class Main : MonoBehaviour
 
     public void trackEdited0()
     {
-        if (editingTrack is Curve && ((Curve) editingTrack).isLinear())
+        if (editingTrack is Curve && ((Curve)editingTrack).isLinear())
             print("!"); //TODO 作成する曲線が直線である場合、直線が作成されるようにする
 
+        //TODO mainTrack以外の軌道とも接続するようにする
         if (mainTrack != null)
         {
             if (mainTrack.pos == editingTrack.pos && mainTrack.rot == editingTrack.rot
                 || mainTrack.pos == editingTrack.getPoint(1) && mainTrack.rot ==
-                (editingTrack is Curve ? ((Curve) editingTrack).getRotation(1) : editingTrack.rot))
+                (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1) : editingTrack.rot))
             {
                 mainTrack.prevTracks.Add(editingTrack);
                 if (mainTrack.prevTracks.Count == 1)
                     mainTrack.connectingPrevTrack = 0;
             }
             else if (mainTrack.getPoint(1) == editingTrack.pos &&
-                     (mainTrack is Curve ? ((Curve) mainTrack).getRotation(1) : mainTrack.rot) == editingTrack.rot
+                     (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot) == editingTrack.rot
                      || mainTrack.getPoint(1) == editingTrack.getPoint(1) &&
-                     (mainTrack is Curve ? ((Curve) mainTrack).getRotation(1) : mainTrack.rot) == (editingTrack is Curve
-                         ? ((Curve) editingTrack).getRotation(1)
+                     (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot) == (editingTrack is Curve
+                         ? ((Curve)editingTrack).getRotation(1)
                          : editingTrack.rot))
             {
                 mainTrack.nextTracks.Add(editingTrack);
@@ -714,21 +727,24 @@ public class Main : MonoBehaviour
                     mainTrack.connectingNextTrack = 0;
             }
             else
-                print("!"); //TODO
+            {
+                print(mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot);
+                print(editingTrack.rot);
+            }
 
             if (editingTrack.pos == mainTrack.pos && editingTrack.rot == mainTrack.rot
                 || editingTrack.pos == mainTrack.getPoint(1) && editingTrack.rot ==
-                (mainTrack is Curve ? ((Curve) mainTrack).getRotation(1) : mainTrack.rot))
+                (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot))
             {
                 editingTrack.prevTracks.Add(mainTrack);
                 if (mainTrack.prevTracks.Count == 1)
                     mainTrack.connectingPrevTrack = 0;
             }
             else if (editingTrack.getPoint(1) == mainTrack.pos &&
-                     (editingTrack is Curve ? ((Curve) editingTrack).getRotation(1) : editingTrack.rot) == mainTrack.rot
+                     (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1) : editingTrack.rot) == mainTrack.rot
                      || editingTrack.getPoint(1) == mainTrack.getPoint(1) &&
-                     (editingTrack is Curve ? ((Curve) editingTrack).getRotation(1) : editingTrack.rot) ==
-                     (mainTrack is Curve ? ((Curve) mainTrack).getRotation(1) : mainTrack.rot))
+                     (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1) : editingTrack.rot) ==
+                     (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot))
             {
                 editingTrack.nextTracks.Add(mainTrack);
                 if (mainTrack.nextTracks.Count == 1)

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 //ゲーム中に表示される画面
@@ -8,6 +9,7 @@ public class PlayingPanel : GamePanel
     public Button removeButton;
     public Button placeBFButton;
     public Button placeBodyButton;
+    public Button placeCouplerButton;
 
     public void ConstTrackButton()
     {
@@ -40,10 +42,33 @@ public class PlayingPanel : GamePanel
         Main.playingmap.addObject(body);
     }
 
+    public void PlaceCouplerButton()
+    {
+        var bodies = Main.selectingObjs.Where(obj => obj is Body).OfType<Body>().ToList();
+        foreach (var body in bodies)
+        {
+            Coupler c = new Coupler(Main.playingmap);
+            c.body = body;
+            Main.editingCoupler = c;
+            c.generate();
+
+            GameCanvas.couplerSettingPanel.show(true);
+            GameCanvas.couplerSettingPanel.transform.position = new Vector3(
+                Mathf.Clamp(Input.mousePosition.x, 0,
+                    Screen.width - ((RectTransform)GameCanvas.couplerSettingPanel.transform).rect
+                    .width),
+                Mathf.Clamp(Input.mousePosition.y,
+                    ((RectTransform)GameCanvas.couplerSettingPanel.transform).rect.height,
+                    Screen.height));
+            break;
+        }
+    }
+
     public void a()
     {
         removeButton.interactable = Main.selectingObjs.Any();
         placeBFButton.interactable = Main.selectingObjs.Any(obj => obj is Axle);
         placeBodyButton.interactable = Main.selectingObjs.Any(obj => obj is BogieFrame);
+        placeCouplerButton.interactable = Main.selectingObjs.Any(obj => obj is Body);
     }
 }
