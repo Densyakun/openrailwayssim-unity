@@ -106,11 +106,10 @@ public class Coupler : MapObject
             (modelObj = GameObject.Instantiate(Main.main.couplerModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
             modelObj.transform.localEulerAngles = Vector3.zero;
+            reloadCollider();
         }
 
         reloadMaterial(modelObj);
-
-        reloadCollider();
 
         base.reloadEntity();
     }
@@ -121,7 +120,7 @@ public class Coupler : MapObject
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;
-        collider.center = Vector3.zero;
+        collider.center = Vector3.forward * COLLIDER_DEPTH / 2;
         collider.size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, COLLIDER_DEPTH);
     }
 }

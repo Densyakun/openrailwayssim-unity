@@ -133,11 +133,10 @@ public class BogieFrame : MapObject
             (modelObj = GameObject.Instantiate(Main.main.bogieFrameModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
             modelObj.transform.localEulerAngles = Vector3.zero;
+            reloadCollider();
         }
 
         reloadMaterial(modelObj);
-
-        reloadCollider();
 
         base.reloadEntity();
     }

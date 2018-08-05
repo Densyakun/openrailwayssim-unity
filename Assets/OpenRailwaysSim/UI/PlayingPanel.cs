@@ -10,6 +10,7 @@ public class PlayingPanel : GamePanel
     public Button placeBFButton;
     public Button placeBodyButton;
     public Button placeCouplerButton;
+    public Button placePermanentCouplerButton;
 
     public void ConstTrackButton()
     {
@@ -64,11 +65,33 @@ public class PlayingPanel : GamePanel
         }
     }
 
+    public void PlacePermanentCouplerButton()
+    {
+        var bodies = Main.selectingObjs.Where(obj => obj is Body).OfType<Body>().ToList();
+        if (bodies.Count >= 2)
+        {
+            PermanentCoupler c = new PermanentCoupler(Main.playingmap);
+            c.body1 = bodies[0];
+            c.body2 = bodies[1];
+            c.generate();
+            Main.playingmap.addObject(c);
+        }
+    }
+
     public void a()
     {
         removeButton.interactable = Main.selectingObjs.Any();
         placeBFButton.interactable = Main.selectingObjs.Any(obj => obj is Axle);
         placeBodyButton.interactable = Main.selectingObjs.Any(obj => obj is BogieFrame);
         placeCouplerButton.interactable = Main.selectingObjs.Any(obj => obj is Body);
+        int a = 0;
+        foreach (var obj in Main.selectingObjs)
+        {
+            if (obj is Body)
+                a++;
+            if (a >= 2)
+                break;
+        }
+        placePermanentCouplerButton.interactable = a >= 2;
     }
 }

@@ -94,6 +94,7 @@ public class Main : MonoBehaviour
     public GameObject bogieFrameModel;
     public GameObject bodyModel;
     public GameObject couplerModel;
+    public GameObject permanentCouplerModel;
 
     void Awake()
     {

@@ -199,13 +199,12 @@ public class Axle : MapObject
         {
             (modelObj = GameObject.Instantiate(Main.main.axleModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
+            reloadCollider();
         }
 
         modelObj.transform.localEulerAngles = new Vector3(rotX, 0);
 
         reloadMaterial(modelObj);
-
-        reloadCollider();
 
         base.reloadEntity();
     }
