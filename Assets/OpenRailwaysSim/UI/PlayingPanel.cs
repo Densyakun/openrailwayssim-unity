@@ -11,6 +11,8 @@ public class PlayingPanel : GamePanel
     public Button placeBodyButton;
     public Button placeCouplerButton;
     public Button placePermanentCouplerButton;
+    public Button placeDirectControllerButton;
+    public Button runButton;
 
     public void ConstTrackButton()
     {
@@ -78,6 +80,34 @@ public class PlayingPanel : GamePanel
         }
     }
 
+    public void PlaceDirectControllerButton()
+    {
+        DirectController dc = new DirectController(Main.playingmap);
+        foreach (var obj in Main.selectingObjs)
+        {
+            if (obj is Body)
+            {
+                dc.body = (Body)obj;
+                break;
+            }
+        }
+        dc.axles = Main.selectingObjs.Where(obj => obj is Axle).OfType<Axle>().ToList();
+        dc.generate();
+        Main.playingmap.addObject(dc);
+    }
+
+    public void RunButton()
+    {
+        foreach (var obj in Main.selectingObjs)
+        {
+            if (obj is DirectController)
+            {
+                GameCanvas.runPanel.show(true);
+                break;
+            }
+        }
+    }
+
     public void a()
     {
         removeButton.interactable = Main.selectingObjs.Any();
@@ -93,5 +123,7 @@ public class PlayingPanel : GamePanel
                 break;
         }
         placePermanentCouplerButton.interactable = a >= 2;
+        placeDirectControllerButton.interactable = Main.selectingObjs.Any(obj => obj is Body);
+        runButton.interactable = Main.selectingObjs.Any(obj => obj is DirectController);
     }
 }

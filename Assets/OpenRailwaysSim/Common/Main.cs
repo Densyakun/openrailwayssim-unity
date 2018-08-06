@@ -95,6 +95,7 @@ public class Main : MonoBehaviour
     public GameObject bodyModel;
     public GameObject couplerModel;
     public GameObject permanentCouplerModel;
+    public GameObject directControllerModel;
 
     void Awake()
     {
@@ -141,7 +142,7 @@ public class Main : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (playingmap != null && !GameCanvas.settingPanel.isShowing() && !GameCanvas.titleBackPanel.isShowing())
+            if (playingmap != null && !GameCanvas.settingPanel.isShowing() && !GameCanvas.titleBackPanel.isShowing() && !GameCanvas.runPanel.isShowing())
             {
                 bool a = true;
                 if (GameCanvas.trackSettingPanel.isShowing())
@@ -183,6 +184,8 @@ public class Main : MonoBehaviour
                     }
 
                     selectingObjs.Clear();
+
+                    GameCanvas.playingPanel.a();
                 }
 
                 if (a)

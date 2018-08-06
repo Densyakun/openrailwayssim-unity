@@ -28,7 +28,7 @@ public class CameraMover : MonoBehaviour
     //カメラは後からついてくる挙動になっており、カメラが一定距離以上離れないようになっているため、乗り物向けなカメラになっている。
     void LateUpdate()
     {
-        bool c = Main.playingmap != null && !Main.main.pause; //操作可能か
+        bool c = Main.playingmap != null && !Main.main.pause && !GameCanvas.runPanel.isShowing(); //操作可能か
         if (c && EventSystem.current.currentSelectedGameObject != null)
         {
             InputField input = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>();

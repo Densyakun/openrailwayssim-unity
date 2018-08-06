@@ -12,6 +12,7 @@ public class Axle : MapObject
     public const string KEY_SPEED = "SPEED";
     public const string KEY_WHEEL_DIA = "WHEEL_DIA";
     public const string KEY_ROT_X = "ROT_X";
+    public const string KEY_TM_OUTPUT = "TM_OUTPUT";
 
     public const float COLLIDER_WIDTH = 2.3f;
 
@@ -83,6 +84,7 @@ public class Axle : MapObject
     public float wheelDia;
 
     public float rotX;
+    public float tm_output;
 
     public GameObject modelObj;
 
@@ -92,9 +94,10 @@ public class Axle : MapObject
     {
         this.onTrack = onTrack;
         this.onDist = onDist;
-        speed = 5;
+        speed = 0;
         wheelDia = 0.86f;
         rotX = 0;
+        tm_output = 220;
         Vector3 a = onTrack is Curve
             ? ((Curve)onTrack).getRotation(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
@@ -110,6 +113,7 @@ public class Axle : MapObject
         speed = info.GetSingle(KEY_SPEED);
         wheelDia = info.GetSingle(KEY_WHEEL_DIA);
         rotX = info.GetSingle(KEY_ROT_X);
+        tm_output = info.GetSingle(KEY_TM_OUTPUT);
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -120,6 +124,7 @@ public class Axle : MapObject
         info.AddValue(KEY_SPEED, speed);
         info.AddValue(KEY_WHEEL_DIA, wheelDia);
         info.AddValue(KEY_ROT_X, rotX);
+        info.AddValue(KEY_TM_OUTPUT, tm_output);
     }
 
     public override void generate()

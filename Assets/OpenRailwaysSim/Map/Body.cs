@@ -7,6 +7,7 @@ using UnityEngine;
 public class Body : MapObject
 {
 
+    public const string KEY_WEIGHT = "WEIGHT";
     public const string KEY_HEIGHT = "HEIGHT";
     public const string KEY_BOGIE_CENTER_DIST = "BCD";
     public const string KEY_BOGIEFRAMES = "BOGIEFRAMES";
@@ -15,6 +16,7 @@ public class Body : MapObject
     public const float COLLIDER_HEIGHT = 2.65f;
     public const float COLLIDER_DEPTH = 19.5f;
 
+    public float weight;
     public float height;
     public float bogieCenterDist;
     public List<BogieFrame> bogieFrames { get; private set; }
@@ -23,6 +25,7 @@ public class Body : MapObject
 
     public Body(Map map) : base(map)
     {
+        weight = 20.95f;
         height = 2.295f;
         bogieCenterDist = 13.8f;
         bogieFrames = new List<BogieFrame>();
@@ -30,14 +33,16 @@ public class Body : MapObject
 
     protected Body(SerializationInfo info, StreamingContext context) : base(info, context)
     {
+        weight = info.GetSingle(KEY_WEIGHT);
         height = info.GetSingle(KEY_HEIGHT);
         bogieCenterDist = info.GetSingle(KEY_BOGIE_CENTER_DIST);
-        bogieFrames = (List<BogieFrame>) info.GetValue(KEY_BOGIEFRAMES, typeof(List<BogieFrame>));
+        bogieFrames = (List<BogieFrame>)info.GetValue(KEY_BOGIEFRAMES, typeof(List<BogieFrame>));
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
+        info.AddValue(KEY_WEIGHT, weight);
         info.AddValue(KEY_HEIGHT, height);
         info.AddValue(KEY_BOGIE_CENTER_DIST, bogieCenterDist);
         info.AddValue(KEY_BOGIEFRAMES, bogieFrames);
@@ -95,7 +100,7 @@ public class Body : MapObject
             for (var d = 0; d < bogieFrames.Count; d++)
                 p_ += (p + (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0
                            ? Vector3.zero
-                           : rot * Vector3.forward * bogieCenterDist * ((float) -(bogieFrames.Count - 1) / 2 + d)));
+                           : rot * Vector3.forward * bogieCenterDist * ((float)-(bogieFrames.Count - 1) / 2 + d)));
 
             pos = (p_ / bogieFrames.Count) + rot * Vector3.up * height;
         }
@@ -110,7 +115,7 @@ public class Body : MapObject
                                  (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0
                                      ? Vector3.zero
                                      : rot * Vector3.forward * bogieCenterDist *
-                                       ((float) -(bogieFrames.Count - 1) / 2 + d));
+                                       ((float)-(bogieFrames.Count - 1) / 2 + d));
             bogieFrames[d].snapFromAxle();
         }
         //台車枠を車軸に合わせると、車体がずれる。次のフレームで合わせるので省略している。
