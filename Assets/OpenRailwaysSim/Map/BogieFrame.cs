@@ -10,6 +10,7 @@ public class BogieFrame : MapObject
     public const string KEY_HEIGHT = "HEIGHT";
     public const string KEY_WHEELBASE = "WB";
     public const string KEY_AXLES = "AXLES";
+    public const string KEY_BODY = "BODY";
 
     public const float COLLIDER_WIDTH = 2.3f;
     public const float COLLIDER_HEIGHT = 0.4f;
@@ -18,21 +19,24 @@ public class BogieFrame : MapObject
     public float height;
     public float wheelbase;
     public List<Axle> axles { get; private set; }
+    public Body body;
 
     public GameObject modelObj;
 
-    public BogieFrame(Map map) : base(map)
+    public BogieFrame(Map map, List<Axle> axles) : base(map)
     {
         height = 0.8f;
         wheelbase = 2.1f;
-        axles = new List<Axle>();
+        foreach (var axle in this.axles = axles)
+            axle.bogieFrame = this;
     }
 
     protected BogieFrame(SerializationInfo info, StreamingContext context) : base(info, context)
     {
         height = info.GetSingle(KEY_HEIGHT);
         wheelbase = info.GetSingle(KEY_WHEELBASE);
-        axles = (List<Axle>) info.GetValue(KEY_AXLES, typeof(List<Axle>));
+        axles = (List<Axle>)info.GetValue(KEY_AXLES, typeof(List<Axle>));
+        body = (Body)info.GetValue(KEY_BODY, typeof(Body));
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -41,21 +45,7 @@ public class BogieFrame : MapObject
         info.AddValue(KEY_HEIGHT, height);
         info.AddValue(KEY_WHEELBASE, wheelbase);
         info.AddValue(KEY_AXLES, axles);
-    }
-
-    public void addAxle(Axle axle)
-    {
-        axles.Add(axle);
-    }
-
-    public void setAxles(List<Axle> axles)
-    {
-        this.axles = axles;
-    }
-
-    public bool removeAxle(Axle axle)
-    {
-        return axles.Remove(axle);
+        info.AddValue(KEY_BODY, body);
     }
 
     public override void generate()
@@ -94,7 +84,7 @@ public class BogieFrame : MapObject
         for (var d = 0; d < axles.Count; d++)
             p_ += (p + (axles.Count == 1 || d * 2 - (axles.Count - 1) == 0
                        ? Vector3.zero
-                       : rot * Vector3.forward * wheelbase * ((float) -(axles.Count - 1) / 2 + d)));
+                       : rot * Vector3.forward * wheelbase * ((float)-(axles.Count - 1) / 2 + d)));
 
         pos = (p_ / axles.Count) + rot * Vector3.up * height;
     }
@@ -107,7 +97,7 @@ public class BogieFrame : MapObject
             axles[d].pos = pos + axles[d].rot * (Vector3.up * (axles[d].wheelDia / 2 - height)) +
                            (axles.Count == 1 || d * 2 - (axles.Count - 1) == 0
                                ? Vector3.zero
-                               : rot * Vector3.forward * wheelbase * ((float) -(axles.Count - 1) / 2 + d));
+                               : rot * Vector3.forward * wheelbase * ((float)-(axles.Count - 1) / 2 + d));
             s += axles[d].speed;
         }
 

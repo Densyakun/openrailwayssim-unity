@@ -53,8 +53,15 @@ public class DirectController : MapObject
     public override void update()
     {
         if (notch > 0)
+        {
+            float w = 0;
             foreach (var axle in axles)
-                axle.speed += axle.tm_output * axle.wheelDia * Time.deltaTime / 2 / body.weight;
+            {
+                if (w == 0)
+                    w = axle.getTrainLoad();
+                axle.speed += axle.tm_output * axle.wheelDia * axles.Count * Time.deltaTime / 2 / w / axle.gearRatio;
+            }
+        }
         snapTo();
         reloadEntity();
     }

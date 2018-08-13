@@ -11,6 +11,8 @@ public class Body : MapObject
     public const string KEY_HEIGHT = "HEIGHT";
     public const string KEY_BOGIE_CENTER_DIST = "BCD";
     public const string KEY_BOGIEFRAMES = "BOGIEFRAMES";
+    public const string KEY_PERMANENT_COUPLER_1 = "PC1";
+    public const string KEY_PERMANENT_COUPLER_2 = "PC2";
 
     public const float COLLIDER_WIDTH = 2.95f;
     public const float COLLIDER_HEIGHT = 2.65f;
@@ -20,15 +22,18 @@ public class Body : MapObject
     public float height;
     public float bogieCenterDist;
     public List<BogieFrame> bogieFrames { get; private set; }
+    public PermanentCoupler permanentCoupler1;
+    public PermanentCoupler permanentCoupler2;
 
     public GameObject modelObj;
 
-    public Body(Map map) : base(map)
+    public Body(Map map, List<BogieFrame> bogieFrames) : base(map)
     {
         weight = 20.95f;
         height = 2.295f;
         bogieCenterDist = 13.8f;
-        bogieFrames = new List<BogieFrame>();
+        foreach (var bogieFrame in this.bogieFrames = bogieFrames)
+            bogieFrame.body = this;
     }
 
     protected Body(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -37,6 +42,8 @@ public class Body : MapObject
         height = info.GetSingle(KEY_HEIGHT);
         bogieCenterDist = info.GetSingle(KEY_BOGIE_CENTER_DIST);
         bogieFrames = (List<BogieFrame>)info.GetValue(KEY_BOGIEFRAMES, typeof(List<BogieFrame>));
+        permanentCoupler1 = (PermanentCoupler)info.GetValue(KEY_PERMANENT_COUPLER_1, typeof(PermanentCoupler));
+        permanentCoupler2 = (PermanentCoupler)info.GetValue(KEY_PERMANENT_COUPLER_2, typeof(PermanentCoupler));
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -46,21 +53,8 @@ public class Body : MapObject
         info.AddValue(KEY_HEIGHT, height);
         info.AddValue(KEY_BOGIE_CENTER_DIST, bogieCenterDist);
         info.AddValue(KEY_BOGIEFRAMES, bogieFrames);
-    }
-
-    public void addBogieFrame(BogieFrame bogieFrame)
-    {
-        bogieFrames.Add(bogieFrame);
-    }
-
-    public void setBogieFrames(List<BogieFrame> bogieFrames)
-    {
-        this.bogieFrames = bogieFrames;
-    }
-
-    public bool removeBogieFrame(BogieFrame bogieFrame)
-    {
-        return bogieFrames.Remove(bogieFrame);
+        info.AddValue(KEY_PERMANENT_COUPLER_1, permanentCoupler1);
+        info.AddValue(KEY_PERMANENT_COUPLER_2, permanentCoupler2);
     }
 
     public override void generate()

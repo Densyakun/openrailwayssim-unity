@@ -31,16 +31,14 @@ public class PlayingPanel : GamePanel
 
     public void PlaceBFButton()
     {
-        BogieFrame bf = new BogieFrame(Main.playingmap);
-        bf.setAxles(Main.selectingObjs.Where(obj => obj is Axle).OfType<Axle>().ToList());
+        BogieFrame bf = new BogieFrame(Main.playingmap, Main.selectingObjs.Where(obj => obj is Axle).OfType<Axle>().ToList());
         bf.generate();
         Main.playingmap.addObject(bf);
     }
 
     public void PlaceBodyButton()
     {
-        Body body = new Body(Main.playingmap);
-        body.setBogieFrames(Main.selectingObjs.Where(obj => obj is BogieFrame).OfType<BogieFrame>().ToList());
+        Body body = new Body(Main.playingmap, Main.selectingObjs.Where(obj => obj is BogieFrame).OfType<BogieFrame>().ToList());
         body.generate();
         Main.playingmap.addObject(body);
     }
@@ -72,9 +70,7 @@ public class PlayingPanel : GamePanel
         var bodies = Main.selectingObjs.Where(obj => obj is Body).OfType<Body>().ToList();
         if (bodies.Count >= 2)
         {
-            PermanentCoupler c = new PermanentCoupler(Main.playingmap);
-            c.body1 = bodies[0];
-            c.body2 = bodies[1];
+            PermanentCoupler c = new PermanentCoupler(Main.playingmap, bodies[0], bodies[1]);
             c.generate();
             Main.playingmap.addObject(c);
         }

@@ -13,6 +13,7 @@ public class RunPanel : GamePanel
 
     void OnEnable()
     {
+        GameCanvas.playingPanel.show(false);
         foreach (var obj in Main.selectingObjs)
         {
             if (obj is DirectController)
@@ -26,7 +27,10 @@ public class RunPanel : GamePanel
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
+        {
             show(false);
+            GameCanvas.playingPanel.show(true);
+        }
         else
         {
             if (Input.GetKeyDown(KeyCode.A))

@@ -25,11 +25,21 @@ public class PermanentCoupler : MapObject
 
     public GameObject modelObj;
 
-    public PermanentCoupler(Map map) : base(map)
+    public PermanentCoupler(Map map, Body body1, Body body2) : base(map)
     {
         height = 0.845f;
         couplingFace = 10f;
         length = 1.84f;
+        this.body1 = body1;
+        this.body2 = body2;
+        if (body1.permanentCoupler1 == null)
+            body1.permanentCoupler1 = this;
+        else
+            body1.permanentCoupler2 = this;
+        if (body2.permanentCoupler1 == null)
+            body2.permanentCoupler1 = this;
+        else
+            body2.permanentCoupler2 = this;
     }
 
     protected PermanentCoupler(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -111,5 +121,17 @@ public class PermanentCoupler : MapObject
         collider.isTrigger = true;
         collider.center = Vector3.zero;
         collider.size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, COLLIDER_DEPTH);
+    }
+
+    public void removeConnects()
+    {
+        if (this.body1.permanentCoupler1 == this)
+            this.body1.permanentCoupler1 = null;
+        else if (this.body1.permanentCoupler2 == this)
+            this.body1.permanentCoupler2 = null;
+        if (this.body2.permanentCoupler1 == this)
+            this.body2.permanentCoupler1 = null;
+        else if (this.body2.permanentCoupler2 == this)
+            this.body2.permanentCoupler2 = null;
     }
 }

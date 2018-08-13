@@ -11,8 +11,10 @@ public class Axle : MapObject
     public const string KEY_ON_DIST = "ON_DIST";
     public const string KEY_SPEED = "SPEED";
     public const string KEY_WHEEL_DIA = "WHEEL_DIA";
-    public const string KEY_ROT_X = "ROT_X";
     public const string KEY_TM_OUTPUT = "TM_OUTPUT";
+    public const string KEY_GEAR_RATIO = "GEAR_RATIO";
+    public const string KEY_ROT_X = "ROT_X";
+    public const string KEY_BOGIE_FRAME = "BOGIE_FRAME";
 
     public const float COLLIDER_WIDTH = 2.3f;
 
@@ -82,9 +84,11 @@ public class Axle : MapObject
     public float speed;
 
     public float wheelDia;
+    public float tm_output;
+    public float gearRatio;
 
     public float rotX;
-    public float tm_output;
+    public BogieFrame bogieFrame;
 
     public GameObject modelObj;
 
@@ -96,8 +100,9 @@ public class Axle : MapObject
         this.onDist = onDist;
         speed = 0;
         wheelDia = 0.86f;
-        rotX = 0;
         tm_output = 220;
+        gearRatio = 6.06f;
+        rotX = 0;
         Vector3 a = onTrack is Curve
             ? ((Curve)onTrack).getRotation(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
@@ -112,8 +117,10 @@ public class Axle : MapObject
         _onDist = info.GetSingle(KEY_ON_DIST);
         speed = info.GetSingle(KEY_SPEED);
         wheelDia = info.GetSingle(KEY_WHEEL_DIA);
-        rotX = info.GetSingle(KEY_ROT_X);
         tm_output = info.GetSingle(KEY_TM_OUTPUT);
+        gearRatio = info.GetSingle(KEY_GEAR_RATIO);
+        rotX = info.GetSingle(KEY_ROT_X);
+        bogieFrame = (BogieFrame)info.GetValue(KEY_BOGIE_FRAME, typeof(BogieFrame));
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -123,8 +130,10 @@ public class Axle : MapObject
         info.AddValue(KEY_ON_DIST, _onDist);
         info.AddValue(KEY_SPEED, speed);
         info.AddValue(KEY_WHEEL_DIA, wheelDia);
-        info.AddValue(KEY_ROT_X, rotX);
         info.AddValue(KEY_TM_OUTPUT, tm_output);
+        info.AddValue(KEY_GEAR_RATIO, gearRatio);
+        info.AddValue(KEY_ROT_X, rotX);
+        info.AddValue(KEY_BOGIE_FRAME, bogieFrame);
     }
 
     public override void generate()
@@ -138,12 +147,12 @@ public class Axle : MapObject
     public override void update()
     {
         //Editor上で移動するテスト
-        SyncFromEntity();
-        reloadOnDist();
-        fixedMove();
-
+        //SyncFromEntity();
+        //reloadOnDist();
         //fixedMove();
-        //reloadEntity();
+
+        fixedMove();
+        reloadEntity();
     }
 
     public void fixedMove()
@@ -221,5 +230,31 @@ public class Axle : MapObject
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;
         collider.size = new Vector3(COLLIDER_WIDTH, wheelDia, wheelDia);
+    }
+
+    public float getTrainLoad()
+    {
+        float w = 0;
+        if (bogieFrame != null)
+        {
+            w = bogieFrame.body.weight;
+            var a = bogieFrame.body;
+            var b = bogieFrame.body.permanentCoupler1;
+            while (b != null)
+            {
+                a = b.body1;
+                w += a.weight;
+                b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
+            }
+            a = bogieFrame.body;
+            b = bogieFrame.body.permanentCoupler2;
+            while (b != null)
+            {
+                a = b.body1;
+                w += a.weight;
+                b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
+            }
+        }
+        return w;
     }
 }
