@@ -15,7 +15,7 @@ public class Body : MapObject
     public const string KEY_PERMANENT_COUPLER_2 = "PC2";
 
     public const float COLLIDER_WIDTH = 2.95f;
-    public const float COLLIDER_HEIGHT = 2.65f;
+    public const float COLLIDER_HEIGHT = 0.16f;
     public const float COLLIDER_DEPTH = 19.5f;
 
     public float weight;
@@ -30,7 +30,7 @@ public class Body : MapObject
     public Body(Map map, List<BogieFrame> bogieFrames) : base(map)
     {
         weight = 20.95f;
-        height = 2.295f;
+        height = 1.05f;
         bogieCenterDist = 13.8f;
         foreach (var bogieFrame in this.bogieFrames = bogieFrames)
             bogieFrame.body = this;

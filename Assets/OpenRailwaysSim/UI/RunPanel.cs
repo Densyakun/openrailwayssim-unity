@@ -7,7 +7,9 @@ public class RunPanel : GamePanel
 {
 
     public static string speedText_DEF = "速度";
+    public static string notchText_DEF = "ノッチ";
     public Text speedText;
+    public Text notchText;
 
     DirectController controller;
 
@@ -33,10 +35,21 @@ public class RunPanel : GamePanel
         }
         else
         {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                if (controller.brakeNotchs > -controller.notch)
+                    controller.notch -= 1;
+            }
             if (Input.GetKeyDown(KeyCode.A))
-                controller.notch = 0;
-            else if (Input.GetKeyDown(KeyCode.Z))
-                controller.notch = 1;
+            {
+                if (controller.notch != 0)
+                    controller.notch += controller.notch < 0 ? 1 : -1;
+            }
+            if (Input.GetKeyDown(KeyCode.Z))
+            {
+                if (controller.powerNotchs > controller.notch)
+                    controller.notch += 1;
+            }
 
             float a = 0;
             if (controller.axles.Count > 0)
@@ -46,6 +59,7 @@ public class RunPanel : GamePanel
                 a /= controller.axles.Count;
             }
             speedText.text = speedText_DEF + ": " + (controller.axles.Count == 0 ? "NaN" : a.ToString() + " km/h");
+            notchText.text = notchText_DEF + ": " + controller.notch;
         }
     }
 }

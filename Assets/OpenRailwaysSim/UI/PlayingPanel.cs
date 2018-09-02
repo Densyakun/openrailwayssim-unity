@@ -78,16 +78,16 @@ public class PlayingPanel : GamePanel
 
     public void PlaceDirectControllerButton()
     {
-        DirectController dc = new DirectController(Main.playingmap);
+        Body body = null;
         foreach (var obj in Main.selectingObjs)
         {
             if (obj is Body)
             {
-                dc.body = (Body)obj;
+                body = (Body)obj;
                 break;
             }
         }
-        dc.axles = Main.selectingObjs.Where(obj => obj is Axle).OfType<Axle>().ToList();
+        DirectController dc = new DirectController(Main.playingmap, body, Main.selectingObjs.Where(obj => obj is Axle).OfType<Axle>().ToList());
         dc.generate();
         Main.playingmap.addObject(dc);
     }
