@@ -410,6 +410,7 @@ MonoBehaviour:
   point: {fileID: 133609050}
   grid: {fileID: 380964009}
   gauge: 1.435
+  railModel: {fileID: 100006, guid: b3df939debea5884d953b31f1e9b15ea, type: 3}
   axleModel: {fileID: 100002, guid: de237d8cc0700e1459da2ef49f97c442, type: 3}
   bogieFrameModel: {fileID: 100000, guid: ef44591e9c704b24db7b54b67a688278, type: 3}
   bodyModel: {fileID: 1694583479672266, guid: d5be45a6574a9cc468dd980e2b3821fa, type: 2}

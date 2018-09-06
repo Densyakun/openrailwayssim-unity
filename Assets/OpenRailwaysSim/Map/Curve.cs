@@ -97,9 +97,26 @@ public class Curve : Track
             Vector3[] p = new Vector3[l + 1];
             p[0] = pos + rot * Vector3.right * rails[a];
             for (int b = 1; b <= l; b++)
-                p[b] = getPoint((float) b / (float) l) + getRotation((float) b / (float) l) * Vector3.right * rails[a];
+                p[b] = getPoint((float)b / (float)l) + getRotation((float)b / (float)l) * Vector3.right * rails[a];
             railRenderers[a].positionCount = p.Length;
             railRenderers[a].SetPositions(p);
+        }
+    }
+
+    public override void reloadModels()
+    {
+        if (railModelObjs != null)
+            foreach (var r in railModelObjs)
+                GameObject.Destroy(r.gameObject);
+        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL)];
+        for (int a = 0; a < railModelObjs.Length; a++)
+        {
+            (railModelObjs[a] = GameObject.Instantiate(Main.main.railModel)).transform.parent = entity.transform;
+            var d = (float)a / railModelObjs.Length;
+            var p = getPoint(d);
+            var r_ = Quaternion.Inverse(rot);
+            railModelObjs[a].transform.localPosition = r_ * (p - pos);
+            railModelObjs[a].transform.localRotation = Quaternion.LookRotation(getPoint(((float)a + 1) / railModelObjs.Length) - p) * r_;
         }
     }
 

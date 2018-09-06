@@ -91,6 +91,7 @@ public class Main : MonoBehaviour
     public GameObject point;
     public GameObject grid;
     public float gauge = 1.435f;
+    public GameObject railModel;
     public GameObject axleModel;
     public GameObject bogieFrameModel;
     public GameObject bodyModel;

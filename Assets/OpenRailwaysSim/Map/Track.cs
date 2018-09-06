@@ -19,6 +19,7 @@ public class Track : MapObject
     public const float RAIL_RENDER_WIDTH = 0.05f;
     public const float COLLIDER_WIDTH = 2f;
     public const float COLLIDER_HEIGHT = 1f / 8;
+    public const float RAIL_MODEL_INTERVAL = 1f;
 
     protected float _length = MIN_TRACK_LENGTH;
 
@@ -85,6 +86,8 @@ public class Track : MapObject
         }
     }
 
+    public GameObject[] railModelObjs;
+
     public Track(Map map, Vector3 pos) : this(map, pos, new Quaternion())
     {
     }
@@ -102,7 +105,7 @@ public class Track : MapObject
         _length = info.GetSingle(KEY_LENGTH);
         try
         {
-            rails = (List<float>) info.GetValue(KEY_RAILS, typeof(List<float>));
+            rails = (List<float>)info.GetValue(KEY_RAILS, typeof(List<float>));
         }
         catch (SerializationException)
         {
@@ -111,8 +114,8 @@ public class Track : MapObject
             rails.Add(Main.main.gauge / 2);
         }
 
-        _nextTracks = (List<Track>) info.GetValue(KEY_NEXT_TRACKS, typeof(List<Track>));
-        _prevTracks = (List<Track>) info.GetValue(KEY_PREV_TRACKS, typeof(List<Track>));
+        _nextTracks = (List<Track>)info.GetValue(KEY_NEXT_TRACKS, typeof(List<Track>));
+        _prevTracks = (List<Track>)info.GetValue(KEY_PREV_TRACKS, typeof(List<Track>));
         try
         {
             _connectingNextTrack = info.GetInt32(KEY_CONNECTING_NEXT_TRACKS);
@@ -164,6 +167,7 @@ public class Track : MapObject
 
         reloadTrackRendererPositions();
         reloadRailRenderers();
+        reloadModels();
         reloadCollider();
 
         base.reloadEntity();
@@ -171,7 +175,7 @@ public class Track : MapObject
 
     public virtual void reloadTrackRendererPositions()
     {
-        trackRenderer.SetPositions(new Vector3[] {pos, getPoint(1)});
+        trackRenderer.SetPositions(new Vector3[] { pos, getPoint(1) });
     }
 
     public virtual void reloadRailRenderers()
@@ -197,7 +201,21 @@ public class Track : MapObject
                 railRenderers[a].sharedMaterial = Main.main.rail_mat;
 
             Vector3 b = rot * Vector3.right * rails[a];
-            railRenderers[a].SetPositions(new Vector3[] {pos + b, getPoint(1) + b});
+            railRenderers[a].SetPositions(new Vector3[] { pos + b, getPoint(1) + b });
+        }
+    }
+
+    public virtual void reloadModels()
+    {
+        if (railModelObjs != null)
+            foreach (var r in railModelObjs)
+                GameObject.Destroy(r.gameObject);
+        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL)];
+        for (int a = 0; a < railModelObjs.Length; a++)
+        {
+            (railModelObjs[a] = GameObject.Instantiate(Main.main.railModel)).transform.parent = entity.transform;
+            railModelObjs[a].transform.localPosition = Quaternion.Inverse(rot) * (getPoint((float)a / railModelObjs.Length) - pos);
+            railModelObjs[a].transform.localEulerAngles = new Vector3();
         }
     }
 
