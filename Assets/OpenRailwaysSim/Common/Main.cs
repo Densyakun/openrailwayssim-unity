@@ -89,6 +89,7 @@ public class Main : MonoBehaviour
     public Material selecting_track_mat;
     public Material rail_mat;
     public GameObject point;
+    public GameObject grid;
     public float gauge = 1.435f;
     public GameObject axleModel;
     public GameObject bogieFrameModel;

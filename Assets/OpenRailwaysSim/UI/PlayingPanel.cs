@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class PlayingPanel : GamePanel
 {
 
+    public Toggle gridToggle;
     public Button removeButton;
     public Button placeBFButton;
     public Button placeBodyButton;
@@ -13,6 +14,11 @@ public class PlayingPanel : GamePanel
     public Button placePermanentCouplerButton;
     public Button placeDirectControllerButton;
     public Button runButton;
+
+    public void GridButton()
+    {
+        Main.main.grid.SetActive(gridToggle.isOn);
+    }
 
     public void ConstTrackButton()
     {
