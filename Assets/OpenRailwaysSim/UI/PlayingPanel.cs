@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +18,13 @@ public class PlayingPanel : GamePanel
 
     public void GridButton()
     {
-        Main.main.grid.SetActive(gridToggle.isOn);
+        Main.main.grid.SetActive(Main.main.showGuide = gridToggle.isOn);
+        List<Track> objs = Main.playingmap.objs.Where(obj => obj is Track).OfType<Track>().ToList();
+        foreach (var obj in objs)
+        {
+            obj.reloadTrackRenderer();
+            obj.reloadRailRenderers();
+        }
     }
 
     public void ConstTrackButton()

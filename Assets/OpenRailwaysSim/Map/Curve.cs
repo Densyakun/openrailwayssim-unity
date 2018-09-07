@@ -76,31 +76,36 @@ public class Curve : Track
         if (railRenderers != null)
             foreach (var r in railRenderers)
                 GameObject.Destroy(r.gameObject);
-        railRenderers = new LineRenderer[rails.Count];
-        for (int a = 0; a < rails.Count; a++)
+        if (Main.main.showGuide)
         {
-            GameObject o = new GameObject();
-            railRenderers[a] = o.AddComponent<LineRenderer>();
-            o.transform.parent = entity.transform;
-            railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            railRenderers[a].receiveShadows = false;
-            railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
-            railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
-            if (useSelectingMat)
-                railRenderers[a].sharedMaterial = Main.main.selecting_track_mat;
-            else if (Main.focused == this)
-                railRenderers[a].sharedMaterial = Main.main.focused_track_mat;
-            else
-                railRenderers[a].sharedMaterial = Main.main.rail_mat;
+            railRenderers = new LineRenderer[rails.Count];
+            for (int a = 0; a < rails.Count; a++)
+            {
+                GameObject o = new GameObject();
+                railRenderers[a] = o.AddComponent<LineRenderer>();
+                o.transform.parent = entity.transform;
+                railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                railRenderers[a].receiveShadows = false;
+                railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
+                railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
+                if (useSelectingMat)
+                    railRenderers[a].sharedMaterial = Main.main.selecting_track_mat;
+                else if (Main.focused == this)
+                    railRenderers[a].sharedMaterial = Main.main.focused_track_mat;
+                else
+                    railRenderers[a].sharedMaterial = Main.main.rail_mat;
 
-            int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
-            Vector3[] p = new Vector3[l + 1];
-            p[0] = pos + rot * Vector3.right * rails[a];
-            for (int b = 1; b <= l; b++)
-                p[b] = getPoint((float)b / (float)l) + getRotation((float)b / (float)l) * Vector3.right * rails[a];
-            railRenderers[a].positionCount = p.Length;
-            railRenderers[a].SetPositions(p);
+                int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+                Vector3[] p = new Vector3[l + 1];
+                p[0] = pos + rot * Vector3.right * rails[a];
+                for (int b = 1; b <= l; b++)
+                    p[b] = getPoint((float)b / (float)l) + getRotation((float)b / (float)l) * Vector3.right * rails[a];
+                railRenderers[a].positionCount = p.Length;
+                railRenderers[a].SetPositions(p);
+            }
         }
+        else
+            railRenderers = null;
     }
 
     public override void reloadModels()
@@ -117,6 +122,19 @@ public class Curve : Track
             var r_ = Quaternion.Inverse(rot);
             railModelObjs[a].transform.localPosition = r_ * (p - pos);
             railModelObjs[a].transform.localRotation = Quaternion.LookRotation(getPoint(((float)a + 1) / railModelObjs.Length) - p) * r_;
+        }
+
+        if (tieModelObjs != null)
+            foreach (var r in tieModelObjs)
+                GameObject.Destroy(r.gameObject);
+        tieModelObjs = new GameObject[Mathf.CeilToInt(length / TIE_MODEL_INTERVAL)];
+        for (int a = 0; a < tieModelObjs.Length; a++)
+        {
+            (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
+            var d = (float)a / tieModelObjs.Length;
+            var r_ = Quaternion.Inverse(rot);
+            tieModelObjs[a].transform.localPosition = r_ * (getPoint(d) - pos);
+            tieModelObjs[a].transform.localRotation = getRotation(d) * r_;
         }
     }
 

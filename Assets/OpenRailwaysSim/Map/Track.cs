@@ -20,6 +20,7 @@ public class Track : MapObject
     public const float COLLIDER_WIDTH = 2f;
     public const float COLLIDER_HEIGHT = 1f / 8;
     public const float RAIL_MODEL_INTERVAL = 1f;
+    public const float TIE_MODEL_INTERVAL = 25f / 37f;
 
     protected float _length = MIN_TRACK_LENGTH;
 
@@ -87,6 +88,7 @@ public class Track : MapObject
     }
 
     public GameObject[] railModelObjs;
+    public GameObject[] tieModelObjs;
 
     public Track(Map map, Vector3 pos) : this(map, pos, new Quaternion())
     {
@@ -152,25 +154,38 @@ public class Track : MapObject
         if (entity == null)
             return;
 
-        if (trackRenderer == null)
-            trackRenderer = entity.gameObject.AddComponent<LineRenderer>();
-        trackRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        trackRenderer.receiveShadows = false;
-        trackRenderer.endWidth = trackRenderer.startWidth = RENDER_WIDTH;
-        trackRenderer.endColor = trackRenderer.startColor = Color.white;
-        if (useSelectingMat)
-            trackRenderer.sharedMaterial = Main.main.selecting_track_mat;
-        else if (Main.focused == this)
-            trackRenderer.sharedMaterial = Main.main.focused_track_mat;
-        else
-            trackRenderer.sharedMaterial = Main.main.track_mat;
-
-        reloadTrackRendererPositions();
+        reloadTrackRenderer();
         reloadRailRenderers();
         reloadModels();
         reloadCollider();
 
         base.reloadEntity();
+    }
+
+    public void reloadTrackRenderer()
+    {
+        if (Main.main.showGuide)
+        {
+            if (trackRenderer == null)
+                trackRenderer = entity.gameObject.AddComponent<LineRenderer>();
+            trackRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            trackRenderer.receiveShadows = false;
+            trackRenderer.endWidth = trackRenderer.startWidth = RENDER_WIDTH;
+            trackRenderer.endColor = trackRenderer.startColor = Color.white;
+            if (useSelectingMat)
+                trackRenderer.sharedMaterial = Main.main.selecting_track_mat;
+            else if (Main.focused == this)
+                trackRenderer.sharedMaterial = Main.main.focused_track_mat;
+            else
+                trackRenderer.sharedMaterial = Main.main.track_mat;
+
+            reloadTrackRendererPositions();
+        }
+        else if (trackRenderer != null)
+        {
+            GameObject.Destroy(trackRenderer);
+            trackRenderer = null;
+        }
     }
 
     public virtual void reloadTrackRendererPositions()
@@ -183,26 +198,31 @@ public class Track : MapObject
         if (railRenderers != null)
             foreach (var r in railRenderers)
                 GameObject.Destroy(r.gameObject);
-        railRenderers = new LineRenderer[rails.Count];
-        for (int a = 0; a < rails.Count; a++)
+        if (Main.main.showGuide)
         {
-            GameObject o = new GameObject();
-            railRenderers[a] = o.AddComponent<LineRenderer>();
-            o.transform.parent = entity.transform;
-            railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            railRenderers[a].receiveShadows = false;
-            railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
-            railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
-            if (useSelectingMat)
-                railRenderers[a].sharedMaterial = Main.main.selecting_track_mat;
-            else if (Main.focused == this)
-                railRenderers[a].sharedMaterial = Main.main.focused_track_mat;
-            else
-                railRenderers[a].sharedMaterial = Main.main.rail_mat;
+            railRenderers = new LineRenderer[rails.Count];
+            for (int a = 0; a < rails.Count; a++)
+            {
+                GameObject o = new GameObject();
+                railRenderers[a] = o.AddComponent<LineRenderer>();
+                o.transform.parent = entity.transform;
+                railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                railRenderers[a].receiveShadows = false;
+                railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
+                railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
+                if (useSelectingMat)
+                    railRenderers[a].sharedMaterial = Main.main.selecting_track_mat;
+                else if (Main.focused == this)
+                    railRenderers[a].sharedMaterial = Main.main.focused_track_mat;
+                else
+                    railRenderers[a].sharedMaterial = Main.main.rail_mat;
 
-            Vector3 b = rot * Vector3.right * rails[a];
-            railRenderers[a].SetPositions(new Vector3[] { pos + b, getPoint(1) + b });
+                Vector3 b = rot * Vector3.right * rails[a];
+                railRenderers[a].SetPositions(new Vector3[] { pos + b, getPoint(1) + b });
+            }
         }
+        else
+            railRenderers = null;
     }
 
     public virtual void reloadModels()
@@ -216,6 +236,17 @@ public class Track : MapObject
             (railModelObjs[a] = GameObject.Instantiate(Main.main.railModel)).transform.parent = entity.transform;
             railModelObjs[a].transform.localPosition = Quaternion.Inverse(rot) * (getPoint((float)a / railModelObjs.Length) - pos);
             railModelObjs[a].transform.localEulerAngles = new Vector3();
+        }
+
+        if (tieModelObjs != null)
+            foreach (var r in tieModelObjs)
+                GameObject.Destroy(r.gameObject);
+        tieModelObjs = new GameObject[Mathf.CeilToInt(length / TIE_MODEL_INTERVAL)];
+        for (int a = 0; a < tieModelObjs.Length; a++)
+        {
+            (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
+            tieModelObjs[a].transform.localPosition = Quaternion.Inverse(rot) * (getPoint((float)a / tieModelObjs.Length) - pos);
+            tieModelObjs[a].transform.localEulerAngles = new Vector3();
         }
     }
 

@@ -63,12 +63,14 @@ public class Main : MonoBehaviour
     public bool vignette = DEFAULT_VIGNETTE;
 
     public bool pause { get; private set; } //ポーズ
-
     private float lasttick = 0; //時間を進ませた時の余り
     private float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
+
     public int mode = 0; //操作モード 0=なし 11=軌道敷設 21=車軸設置
     public static int MODE_CONSTRUCT_TRACK = 11;
     public static int MODE_PLACE_AXLE = 21;
+
+    public bool showGuide = true;
 
     public static Track editingTrack;
     public static Quaternion? editingRot;
@@ -92,6 +94,7 @@ public class Main : MonoBehaviour
     public GameObject grid;
     public float gauge = 1.435f;
     public GameObject railModel;
+    public GameObject tieModel;
     public GameObject axleModel;
     public GameObject bogieFrameModel;
     public GameObject bodyModel;

@@ -368,6 +368,7 @@ MonoBehaviour:
   bloom: 1
   vignette: 1
   mode: 0
+  showGuide: 1
   sunGradient:
     serializedVersion: 2
     key0: {r: 0, g: 0, b: 0, a: 1}
@@ -411,6 +412,7 @@ MonoBehaviour:
   grid: {fileID: 380964009}
   gauge: 1.435
   railModel: {fileID: 100006, guid: b3df939debea5884d953b31f1e9b15ea, type: 3}
+  tieModel: {fileID: 1751478870312202, guid: 2f41ff159c85b0648abe8fb05228485c, type: 2}
   axleModel: {fileID: 100002, guid: de237d8cc0700e1459da2ef49f97c442, type: 3}
   bogieFrameModel: {fileID: 100000, guid: ef44591e9c704b24db7b54b67a688278, type: 3}
   bodyModel: {fileID: 1694583479672266, guid: d5be45a6574a9cc468dd980e2b3821fa, type: 2}
@@ -5286,7 +5288,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 100000
-  field of view: 90
+  field of view: 45
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
