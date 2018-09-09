@@ -33,6 +33,35 @@ public class Axle : MapObject
                 {
                     _onDist = onTrack.length;
                     speed = 0;
+                    if (bogieFrame != null)
+                    {
+                        var a = bogieFrame.body;
+                        if (a != null)
+                        {
+                            foreach (var bf in a.bogieFrames)
+                                foreach (var axle in bf.axles)
+                                    axle.speed = 0;
+                            var b = bogieFrame.body.permanentCoupler1;
+                            while (b != null)
+                            {
+                                a = b.body1 == a ? b.body2 : b.body1;
+                                foreach (var bf in a.bogieFrames)
+                                    foreach (var axle in bf.axles)
+                                        axle.speed = 0;
+                                b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
+                            }
+                            a = bogieFrame.body;
+                            b = bogieFrame.body.permanentCoupler2;
+                            while (b != null)
+                            {
+                                a = b.body1 == a ? b.body2 : b.body1;
+                                foreach (var bf in a.bogieFrames)
+                                    foreach (var axle in bf.axles)
+                                        axle.speed = 0;
+                                b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -58,6 +87,35 @@ public class Axle : MapObject
                 {
                     _onDist = 0;
                     speed = 0;
+                    if (bogieFrame != null)
+                    {
+                        var a = bogieFrame.body;
+                        if (a != null)
+                        {
+                            foreach (var bf in a.bogieFrames)
+                                foreach (var axle in bf.axles)
+                                    axle.speed = 0;
+                            var b = bogieFrame.body.permanentCoupler1;
+                            while (b != null)
+                            {
+                                a = b.body1 == a ? b.body2 : b.body1;
+                                foreach (var bf in a.bogieFrames)
+                                    foreach (var axle in bf.axles)
+                                        axle.speed = 0;
+                                b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
+                            }
+                            a = bogieFrame.body;
+                            b = bogieFrame.body.permanentCoupler2;
+                            while (b != null)
+                            {
+                                a = b.body1 == a ? b.body2 : b.body1;
+                                foreach (var bf in a.bogieFrames)
+                                    foreach (var axle in bf.axles)
+                                        axle.speed = 0;
+                                b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -237,22 +295,25 @@ public class Axle : MapObject
         float w = 0;
         if (bogieFrame != null)
         {
-            w = bogieFrame.body.weight;
             var a = bogieFrame.body;
-            var b = bogieFrame.body.permanentCoupler1;
-            while (b != null)
+            if (a != null)
             {
-                a = b.body1;
-                w += a.weight;
-                b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
-            }
-            a = bogieFrame.body;
-            b = bogieFrame.body.permanentCoupler2;
-            while (b != null)
-            {
-                a = b.body1;
-                w += a.weight;
-                b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
+                w = bogieFrame.body.carWeight;
+                var b = bogieFrame.body.permanentCoupler1;
+                while (b != null)
+                {
+                    a = b.body1 == a ? b.body2 : b.body1;
+                    w += a.carWeight;
+                    b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
+                }
+                a = bogieFrame.body;
+                b = bogieFrame.body.permanentCoupler2;
+                while (b != null)
+                {
+                    a = b.body1 == a ? b.body2 : b.body1;
+                    w += a.carWeight;
+                    b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
+                }
             }
         }
         return w;

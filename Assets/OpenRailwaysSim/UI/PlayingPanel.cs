@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class PlayingPanel : GamePanel
 {
 
-    public Toggle gridToggle;
+    public Toggle guideToggle;
     public Button removeButton;
     public Button placeBFButton;
     public Button placeBodyButton;
@@ -16,9 +16,9 @@ public class PlayingPanel : GamePanel
     public Button placeDirectControllerButton;
     public Button runButton;
 
-    public void GridButton()
+    public void GuideButton()
     {
-        Main.main.grid.SetActive(Main.main.showGuide = gridToggle.isOn);
+        Main.main.grid.SetActive(Main.main.showGuide = guideToggle.isOn);
         List<Track> objs = Main.playingmap.objs.Where(obj => obj is Track).OfType<Track>().ToList();
         foreach (var obj in objs)
         {

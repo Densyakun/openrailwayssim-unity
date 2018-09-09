@@ -84,7 +84,7 @@ public class DirectController : MapObject
     public void snapTo()
     {
         body.snapToBogieFrame();
-        pos = body.pos + body.rot * Vector3.up * (4f - body.height);
+        pos = body.pos + body.rot * Vector3.up * (4f - body.bogieHeight);
         rot = body.rot;
     }
 

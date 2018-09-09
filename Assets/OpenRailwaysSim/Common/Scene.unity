@@ -11650,7 +11650,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Grid
+  m_Text: Guide
 --- !u!222 &1352242392
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14291,7 +14291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 858ba13c8a10c304a8e2926003dcbf49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridToggle: {fileID: 1149267430}
+  guideToggle: {fileID: 1149267430}
   removeButton: {fileID: 1056995810}
   placeBFButton: {fileID: 1081076729}
   placeBodyButton: {fileID: 2000762463}

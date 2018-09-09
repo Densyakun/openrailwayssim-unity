@@ -7,20 +7,22 @@ using UnityEngine;
 public class Body : MapObject
 {
 
-    public const string KEY_WEIGHT = "WEIGHT";
-    public const string KEY_HEIGHT = "HEIGHT";
+    public const string KEY_CAR_WEIGHT = "CAR_WEIGHT";
+    public const string KEY_BOGIE_HEIGHT = "BOGIE_HEIGHT";
     public const string KEY_BOGIE_CENTER_DIST = "BCD";
+    public const string KEY_CAR_LENGTH = "CAR_LENGTH";
     public const string KEY_BOGIEFRAMES = "BOGIEFRAMES";
     public const string KEY_PERMANENT_COUPLER_1 = "PC1";
     public const string KEY_PERMANENT_COUPLER_2 = "PC2";
 
     public const float COLLIDER_WIDTH = 2.95f;
     public const float COLLIDER_HEIGHT = 0.16f;
-    public const float COLLIDER_DEPTH = 19.5f;
+    public const float COLLIDER_DEPTH = 19f;
 
-    public float weight;
-    public float height;
+    public float carWeight;
+    public float bogieHeight;
     public float bogieCenterDist;
+    public float carLength;
     public List<BogieFrame> bogieFrames { get; private set; }
     public PermanentCoupler permanentCoupler1;
     public PermanentCoupler permanentCoupler2;
@@ -29,18 +31,20 @@ public class Body : MapObject
 
     public Body(Map map, List<BogieFrame> bogieFrames) : base(map)
     {
-        weight = 20.95f;
-        height = 1.05f;
+        carWeight = 20.95f;
+        bogieHeight = 0.97f;
         bogieCenterDist = 13.8f;
+        carLength = 19.5f;
         foreach (var bogieFrame in this.bogieFrames = bogieFrames)
             bogieFrame.body = this;
     }
 
     protected Body(SerializationInfo info, StreamingContext context) : base(info, context)
     {
-        weight = info.GetSingle(KEY_WEIGHT);
-        height = info.GetSingle(KEY_HEIGHT);
+        carWeight = info.GetSingle(KEY_CAR_WEIGHT);
+        bogieHeight = info.GetSingle(KEY_BOGIE_HEIGHT);
         bogieCenterDist = info.GetSingle(KEY_BOGIE_CENTER_DIST);
+        carLength = info.GetSingle(KEY_CAR_LENGTH);
         bogieFrames = (List<BogieFrame>)info.GetValue(KEY_BOGIEFRAMES, typeof(List<BogieFrame>));
         permanentCoupler1 = (PermanentCoupler)info.GetValue(KEY_PERMANENT_COUPLER_1, typeof(PermanentCoupler));
         permanentCoupler2 = (PermanentCoupler)info.GetValue(KEY_PERMANENT_COUPLER_2, typeof(PermanentCoupler));
@@ -49,9 +53,10 @@ public class Body : MapObject
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
-        info.AddValue(KEY_WEIGHT, weight);
-        info.AddValue(KEY_HEIGHT, height);
+        info.AddValue(KEY_CAR_WEIGHT, carWeight);
+        info.AddValue(KEY_BOGIE_HEIGHT, bogieHeight);
         info.AddValue(KEY_BOGIE_CENTER_DIST, bogieCenterDist);
+        info.AddValue(KEY_CAR_LENGTH, carLength);
         info.AddValue(KEY_BOGIEFRAMES, bogieFrames);
         info.AddValue(KEY_PERMANENT_COUPLER_1, permanentCoupler1);
         info.AddValue(KEY_PERMANENT_COUPLER_2, permanentCoupler2);
@@ -96,7 +101,7 @@ public class Body : MapObject
                            ? Vector3.zero
                            : rot * Vector3.forward * bogieCenterDist * ((float)-(bogieFrames.Count - 1) / 2 + d)));
 
-            pos = (p_ / bogieFrames.Count) + rot * Vector3.up * height;
+            pos = (p_ / bogieFrames.Count) + rot * Vector3.up * bogieHeight;
         }
     }
 
@@ -105,7 +110,7 @@ public class Body : MapObject
         //台車枠を車軸に合わせると、台車中心間距離を失う
         for (var d = 0; d < bogieFrames.Count; d++)
         {
-            bogieFrames[d].pos = pos + bogieFrames[d].rot * (Vector3.up * (bogieFrames[d].height - height)) +
+            bogieFrames[d].pos = pos + bogieFrames[d].rot * (Vector3.up * (bogieFrames[d].height - bogieHeight)) +
                                  (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0
                                      ? Vector3.zero
                                      : rot * Vector3.forward * bogieCenterDist *

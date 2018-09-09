@@ -10,7 +10,6 @@ public class Coupler : MapObject
     public const string KEY_BODY = "BODY";
     public const string KEY_IS_FRONT = "IS_FRONT";
     public const string KEY_HEIGHT = "HEIGHT";
-    public const string KEY_COUPLING_FACE = "COUPLING_FACE";
     public const string KEY_LENGTH = "LENGTH";
     public const string KEY_CONNECTING_COUPLER = "CONNECTING_COUPLER";
     public const string KEY_LOCAL_ROT = "LOCAL_ROT";
@@ -22,7 +21,6 @@ public class Coupler : MapObject
     public Body body;
     public bool isFront;
     public float height;
-    public float couplingFace;
     public float length;
     public Coupler connectingCoupler;
     public Quaternion localRot;
@@ -33,7 +31,6 @@ public class Coupler : MapObject
     {
         isFront = true;
         height = 0.845f;
-        couplingFace = 10f;
         length = 0.92f;
         localRot = new Quaternion();
     }
@@ -43,7 +40,6 @@ public class Coupler : MapObject
         body = (Body)info.GetValue(KEY_BODY, typeof(Body));
         isFront = info.GetBoolean(KEY_IS_FRONT);
         height = info.GetSingle(KEY_HEIGHT);
-        couplingFace = info.GetSingle(KEY_COUPLING_FACE);
         length = info.GetSingle(KEY_LENGTH);
         connectingCoupler = (Coupler)info.GetValue(KEY_CONNECTING_COUPLER, typeof(Coupler));
         localRot = ((SerializableQuaternion)info.GetValue(KEY_LOCAL_ROT, typeof(SerializableQuaternion))).toQuaternion();
@@ -55,7 +51,6 @@ public class Coupler : MapObject
         info.AddValue(KEY_BODY, body);
         info.AddValue(KEY_IS_FRONT, isFront);
         info.AddValue(KEY_HEIGHT, height);
-        info.AddValue(KEY_COUPLING_FACE, couplingFace);
         info.AddValue(KEY_LENGTH, length);
         info.AddValue(KEY_CONNECTING_COUPLER, connectingCoupler);
         info.AddValue(KEY_LOCAL_ROT, new SerializableQuaternion(localRot));
@@ -79,7 +74,7 @@ public class Coupler : MapObject
     public void snapTo()
     {
         body.snapToBogieFrame();
-        pos = body.pos + body.rot * new Vector3(0, height - body.height, (couplingFace - length) * (isFront ? 1 : -1));
+        pos = body.pos + body.rot * new Vector3(0, height - body.bogieHeight, (body.carLength / 2 - length) * (isFront ? 1 : -1));
 
         if (connectingCoupler == null)
         {
@@ -92,7 +87,7 @@ public class Coupler : MapObject
 
     public void snapFrom()
     {
-        body.pos = pos + body.rot * new Vector3(0, body.height - height, (length - couplingFace) * (isFront ? 1 : -1));
+        body.pos = pos + body.rot * new Vector3(0, body.bogieHeight - height, (length - body.carLength / 2) * (isFront ? 1 : -1));
         body.snapFromBogieFrame();
     }
 

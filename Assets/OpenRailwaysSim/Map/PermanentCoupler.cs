@@ -10,7 +10,6 @@ public class PermanentCoupler : MapObject
     public const string KEY_BODY1 = "BODY1";
     public const string KEY_BODY2 = "BODY2";
     public const string KEY_HEIGHT = "HEIGHT";
-    public const string KEY_COUPLING_FACE = "COUPLING_FACE";
     public const string KEY_LENGTH = "LENGTH";
 
     public const float COLLIDER_WIDTH = 0.28f;
@@ -20,7 +19,6 @@ public class PermanentCoupler : MapObject
     public Body body1;
     public Body body2;
     public float height;
-    public float couplingFace;
     public float length;
 
     public GameObject modelObj;
@@ -28,7 +26,6 @@ public class PermanentCoupler : MapObject
     public PermanentCoupler(Map map, Body body1, Body body2) : base(map)
     {
         height = 0.845f;
-        couplingFace = 10f;
         length = 1.84f;
         this.body1 = body1;
         this.body2 = body2;
@@ -47,7 +44,6 @@ public class PermanentCoupler : MapObject
         body1 = (Body)info.GetValue(KEY_BODY1, typeof(Body));
         body2 = (Body)info.GetValue(KEY_BODY2, typeof(Body));
         height = info.GetSingle(KEY_HEIGHT);
-        couplingFace = info.GetSingle(KEY_COUPLING_FACE);
         length = info.GetSingle(KEY_LENGTH);
     }
 
@@ -57,7 +53,6 @@ public class PermanentCoupler : MapObject
         info.AddValue(KEY_BODY1, body1);
         info.AddValue(KEY_BODY2, body2);
         info.AddValue(KEY_HEIGHT, height);
-        info.AddValue(KEY_COUPLING_FACE, couplingFace);
         info.AddValue(KEY_LENGTH, length);
     }
 
@@ -80,8 +75,8 @@ public class PermanentCoupler : MapObject
     {
         body1.snapToBogieFrame();
         body2.snapToBogieFrame();
-        var pos1 = body1.pos + body1.rot * new Vector3(0, height - body1.height, (couplingFace - length / 2) * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1));
-        var pos2 = body2.pos + body2.rot * new Vector3(0, height - body2.height, (couplingFace - length / 2) * ((Quaternion.Inverse(body2.rot) * (body1.pos - body2.pos)).z > 0 ? 1 : -1));
+        var pos1 = body1.pos + body1.rot * new Vector3(0, height - body1.bogieHeight, (body1.carLength / 2 - length / 2) * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1));
+        var pos2 = body2.pos + body2.rot * new Vector3(0, height - body2.bogieHeight, (body2.carLength / 2 - length / 2) * ((Quaternion.Inverse(body2.rot) * (body1.pos - body2.pos)).z > 0 ? 1 : -1));
         pos = (pos1 + pos2) / 2;
 
         rot = Quaternion.LookRotation(pos2 - pos1);
@@ -89,8 +84,8 @@ public class PermanentCoupler : MapObject
 
     public void snapFrom()
     {
-        body1.pos = pos + rot * Vector3.back * length / 2 * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1) + body1.rot * new Vector3(0, body1.height - height, (length / 2 - couplingFace) * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1));
-        body2.pos = pos + rot * Vector3.forward * length / 2 * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1) + body2.rot * new Vector3(0, body2.height - height, (length / 2 - couplingFace) * ((Quaternion.Inverse(body2.rot) * (body1.pos - body2.pos)).z > 0 ? 1 : -1));
+        body1.pos = pos + rot * Vector3.back * length / 2 * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1) + body1.rot * new Vector3(0, body1.bogieHeight - height, (length / 2 - body1.carLength / 2) * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1));
+        body2.pos = pos + rot * Vector3.forward * length / 2 * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1) + body2.rot * new Vector3(0, body2.bogieHeight - height, (length / 2 - body2.carLength / 2) * ((Quaternion.Inverse(body2.rot) * (body1.pos - body2.pos)).z > 0 ? 1 : -1));
         body1.snapFromBogieFrame();
         body2.snapFromBogieFrame();
     }
