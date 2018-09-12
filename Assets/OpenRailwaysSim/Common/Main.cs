@@ -153,14 +153,7 @@ public class Main : MonoBehaviour
                 if (GameCanvas.trackSettingPanel.isShowing())
                 {
                     a = false;
-                    GameCanvas.trackSettingPanel.show(false);
-                    if (editingTrack != null)
-                    {
-                        editingTrack.entity.Destroy();
-                        editingTrack = null;
-                    }
-
-                    editingRot = null;
+                    cancelEditingTrack();
                 }
                 else if (GameCanvas.couplerSettingPanel.isShowing())
                 {
@@ -441,6 +434,8 @@ public class Main : MonoBehaviour
                                         Screen.height));
                             }
                         }
+                        if (Input.GetMouseButtonUp(1))
+                            cancelEditingTrack();
                     }
                     else if (mode == MODE_PLACE_AXLE)
                     {
@@ -764,5 +759,18 @@ public class Main : MonoBehaviour
 
         selectingObjs.Clear();
         GameCanvas.playingPanel.a();
+    }
+
+    public static void cancelEditingTrack()
+    {
+        GameCanvas.trackSettingPanel.show(false);
+
+        if (editingTrack != null)
+        {
+            editingTrack.entity.Destroy();
+            editingTrack = null;
+        }
+
+        editingRot = null;
     }
 }
