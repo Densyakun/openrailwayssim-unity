@@ -229,6 +229,9 @@ public class Main : MonoBehaviour
 
                 if (ticks != 0)
                     playingmap.TimePasses(ticks);
+
+                var p = main.mainCamera.transform.position;
+                grid.transform.position = new Vector3(Mathf.RoundToInt(p.x), 0, Mathf.RoundToInt(p.z));
             }
 
             if (!GameCanvas.pausePanel.isShowing() && !CameraMover.INSTANCE.dragging &&
@@ -716,51 +719,31 @@ public class Main : MonoBehaviour
         //TODO mainTrack以外の軌道とも接続するようにする
         if (mainTrack != null)
         {
-            if (mainTrack.pos == editingTrack.pos && mainTrack.rot == editingTrack.rot
-                || mainTrack.pos == editingTrack.getPoint(1) && mainTrack.rot ==
-                (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1) : editingTrack.rot))
+            if (mainTrack.pos == editingTrack.pos && mainTrack.rot.eulerAngles == editingTrack.rot.eulerAngles || mainTrack.pos == editingTrack.getPoint(1) && mainTrack.rot.eulerAngles == (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles))
             {
                 mainTrack.prevTracks.Add(editingTrack);
                 if (mainTrack.prevTracks.Count == 1)
                     mainTrack.connectingPrevTrack = 0;
             }
-            else if (mainTrack.getPoint(1) == editingTrack.pos &&
-                     (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot) == editingTrack.rot
-                     || mainTrack.getPoint(1) == editingTrack.getPoint(1) &&
-                     (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot) == (editingTrack is Curve
-                         ? ((Curve)editingTrack).getRotation(1)
-                         : editingTrack.rot))
+            else if (mainTrack.getPoint(1) == editingTrack.pos && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == editingTrack.rot.eulerAngles || mainTrack.getPoint(1) == editingTrack.getPoint(1) && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles))
             {
                 mainTrack.nextTracks.Add(editingTrack);
                 if (mainTrack.nextTracks.Count == 1)
                     mainTrack.connectingNextTrack = 0;
             }
-            else
-            {
-                print(mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot);
-                print(editingTrack.rot);
-            }
 
-            if (editingTrack.pos == mainTrack.pos && editingTrack.rot == mainTrack.rot
-                || editingTrack.pos == mainTrack.getPoint(1) && editingTrack.rot ==
-                (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot))
+            if (editingTrack.pos == mainTrack.pos && editingTrack.rot.eulerAngles == mainTrack.rot.eulerAngles || editingTrack.pos == mainTrack.getPoint(1) && editingTrack.rot.eulerAngles == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
             {
                 editingTrack.prevTracks.Add(mainTrack);
                 if (mainTrack.prevTracks.Count == 1)
                     mainTrack.connectingPrevTrack = 0;
             }
-            else if (editingTrack.getPoint(1) == mainTrack.pos &&
-                     (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1) : editingTrack.rot) == mainTrack.rot
-                     || editingTrack.getPoint(1) == mainTrack.getPoint(1) &&
-                     (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1) : editingTrack.rot) ==
-                     (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1) : mainTrack.rot))
+            else if (editingTrack.getPoint(1) == mainTrack.pos && (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles) == mainTrack.rot.eulerAngles || editingTrack.getPoint(1) == mainTrack.getPoint(1) && (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles) == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
             {
                 editingTrack.nextTracks.Add(mainTrack);
                 if (mainTrack.nextTracks.Count == 1)
                     mainTrack.connectingNextTrack = 0;
             }
-            else
-                print("!"); //TODO
         }
 
         mainTrack = editingTrack;
