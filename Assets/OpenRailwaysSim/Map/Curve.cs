@@ -117,6 +117,7 @@ public class Curve : Track
         for (int a = 0; a < railModelObjs.Length; a++)
         {
             (railModelObjs[a] = GameObject.Instantiate(Main.main.railModel)).transform.parent = entity.transform;
+            setLOD(railModelObjs[a], 0.02f);
             var d = (float)a / railModelObjs.Length;
             var p = getPoint(d);
             var r_ = Quaternion.Inverse(rot);
@@ -131,6 +132,7 @@ public class Curve : Track
         for (int a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
+            setLOD(tieModelObjs[a], 0.02f);
             var d = (float)a / tieModelObjs.Length;
             var r_ = Quaternion.Inverse(rot);
             tieModelObjs[a].transform.localPosition = r_ * (getPoint(d) - pos);

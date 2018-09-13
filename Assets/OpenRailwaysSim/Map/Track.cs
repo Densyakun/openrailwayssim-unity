@@ -234,6 +234,7 @@ public class Track : MapObject
         for (int a = 0; a < railModelObjs.Length; a++)
         {
             (railModelObjs[a] = GameObject.Instantiate(Main.main.railModel)).transform.parent = entity.transform;
+            setLOD(railModelObjs[a], 0.02f);
             railModelObjs[a].transform.localPosition = Quaternion.Inverse(rot) * (getPoint((float)a / railModelObjs.Length) - pos);
             railModelObjs[a].transform.localEulerAngles = new Vector3();
         }
@@ -245,6 +246,7 @@ public class Track : MapObject
         for (int a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
+            setLOD(tieModelObjs[a], 0.02f);
             tieModelObjs[a].transform.localPosition = Quaternion.Inverse(rot) * (getPoint((float)a / tieModelObjs.Length) - pos);
             tieModelObjs[a].transform.localEulerAngles = new Vector3();
         }
@@ -292,5 +294,15 @@ public class Track : MapObject
         _prevTracks.Clear();
         _connectingNextTrack = -1;
         _connectingPrevTrack = -1;
+    }
+
+    public void setLOD(GameObject obj, float screenRelativeTransitionHeight)
+    {
+        LODGroup lodGroup = obj.AddComponent<LODGroup>();
+        List<Renderer> renderers = new List<Renderer>(obj.GetComponents<Renderer>());
+        foreach (Transform t in obj.GetComponentsInChildren<Transform>())
+            renderers.AddRange(t.GetComponents<Renderer>());
+        LOD[] lods = new LOD[] { new LOD(screenRelativeTransitionHeight, renderers.ToArray()) };
+        lodGroup.SetLODs(lods);
     }
 }
