@@ -67,15 +67,12 @@ public class Axle : MapObject
                 {
                     Track oldTrack = onTrack;
                     onTrack = oldTrack.nextTracks[oldTrack.connectingNextTrack];
-                    if ((oldTrack is Curve ? ((Curve)oldTrack).getRotation(1).eulerAngles : oldTrack.rot.eulerAngles) == oldTrack.nextTracks[oldTrack.connectingNextTrack].rot.eulerAngles)
-                    {
+                    if ((oldTrack is Curve ? ((Curve)oldTrack).getRotation(1).eulerAngles : oldTrack.rot.eulerAngles) == onTrack.rot.eulerAngles)
                         onDist = value - oldTrack.length;
-                        oldTrack = oldTrack.nextTracks[oldTrack.connectingNextTrack];
-                    }
                     else
                     {
                         speed = -speed;
-                        onDist = oldTrack.nextTracks[oldTrack.connectingNextTrack].length - value + oldTrack.length;
+                        onDist = onTrack.length - value + oldTrack.length;
                     }
                 }
             }
@@ -119,10 +116,8 @@ public class Axle : MapObject
                 {
                     Track oldTrack = onTrack;
                     onTrack = oldTrack.prevTracks[oldTrack.connectingPrevTrack];
-                    if (oldTrack.rot.eulerAngles == (oldTrack.prevTracks[oldTrack.connectingPrevTrack] is Curve ? ((Curve)oldTrack.prevTracks[oldTrack.connectingPrevTrack]).getRotation(1).eulerAngles : oldTrack.prevTracks[oldTrack.connectingPrevTrack].rot.eulerAngles))
-                    {
-                        onDist = oldTrack.prevTracks[oldTrack.connectingPrevTrack].length + value;
-                    }
+                    if (oldTrack.rot.eulerAngles == (onTrack is Curve ? ((Curve)onTrack).getRotation(1).eulerAngles : onTrack.rot.eulerAngles))
+                        onDist = onTrack.length + value;
                     else
                     {
                         speed = -speed;
