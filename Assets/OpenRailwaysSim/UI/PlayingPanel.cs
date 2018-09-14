@@ -135,4 +135,9 @@ public class PlayingPanel : GamePanel
         placeDirectControllerButton.interactable = Main.selectingObjs.Any(obj => obj is Body);
         runButton.interactable = Main.selectingObjs.Any(obj => obj is DirectController);
     }
+
+    public void b()
+    {
+        guideToggle.isOn = Main.main.showGuide;
+    }
 }

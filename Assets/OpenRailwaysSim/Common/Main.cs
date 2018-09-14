@@ -227,6 +227,12 @@ public class Main : MonoBehaviour
                 grid.transform.position = new Vector3(Mathf.RoundToInt(p.x), 0, Mathf.RoundToInt(p.z));
             }
 
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                showGuide = !showGuide;
+                GameCanvas.playingPanel.b();
+            }
+
             if (!GameCanvas.pausePanel.isShowing() && !CameraMover.INSTANCE.dragging &&
                 !EventSystem.current.IsPointerOverGameObject() &&
                 !(GameCanvas.trackSettingPanel.isShowing() && EventSystem.current.currentSelectedGameObject != null &&
@@ -313,8 +319,21 @@ public class Main : MonoBehaviour
 
                         point.transform.position = p;
                         point.SetActive(true);
+                        var aaa = false;
                         if (editingTrack != null)
                         {
+                            if (Input.GetKeyDown(KeyCode.T))
+                            {
+                                var pos = editingTrack.pos;
+                                editingTrack.entity.Destroy();
+                                if (editingTrack is Curve)
+                                    editingTrack = new Track(playingmap, pos);
+                                else
+                                    editingTrack = new Curve(playingmap, pos);
+
+                                aaa = true;
+                            }
+
                             if (editingRot == null)
                             {
                                 editingTrack.entity.transform.LookAt(p);
@@ -415,27 +434,31 @@ public class Main : MonoBehaviour
                                 editingTrack = new Track(playingmap, p);
 
                             if (editingTrack != null)
-                            {
-                                editingTrack.rails.Add(-Main.main.gauge / 2);
-                                editingTrack.rails.Add(Main.main.gauge / 2);
-
-                                if (editingRot != null)
-                                    editingTrack.rot = (Quaternion)editingRot;
-                                editingTrack.enableCollider = false;
-                                editingTrack.generate();
-
-                                GameCanvas.trackSettingPanel.show(true);
-                                GameCanvas.trackSettingPanel.transform.position = new Vector3(
-                                    Mathf.Clamp(Input.mousePosition.x, 0,
-                                        Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect
-                                        .width),
-                                    Mathf.Clamp(Input.mousePosition.y,
-                                        ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
-                                        Screen.height));
-                            }
+                                aaa = true;
                         }
+
                         if (Input.GetMouseButtonUp(1))
                             cancelEditingTrack();
+
+                        if (aaa)
+                        {
+                            editingTrack.rails.Add(-Main.main.gauge / 2);
+                            editingTrack.rails.Add(Main.main.gauge / 2);
+
+                            if (editingRot != null)
+                                editingTrack.rot = (Quaternion)editingRot;
+                            editingTrack.enableCollider = false;
+                            editingTrack.generate();
+
+                            GameCanvas.trackSettingPanel.show(true);
+                            GameCanvas.trackSettingPanel.transform.position = new Vector3(
+                                Mathf.Clamp(Input.mousePosition.x, 0,
+                                    Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect
+                                    .width),
+                                Mathf.Clamp(Input.mousePosition.y,
+                                    ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
+                                    Screen.height));
+                        }
                     }
                     else if (mode == MODE_PLACE_AXLE)
                     {
