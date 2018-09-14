@@ -8,8 +8,10 @@ public class RunPanel : GamePanel
 
     public static string speedText_DEF = "速度";
     public static string notchText_DEF = "ノッチ";
+    public static string reverserText_DEF = "レバーサー";
     public Text speedText;
     public Text notchText;
+    public Text reverserText;
 
     DirectController controller;
 
@@ -37,15 +39,26 @@ public class RunPanel : GamePanel
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
+                if (controller.reverser < 1)
+                    controller.reverser += 1;
+            }
+            else if (Input.GetKeyDown(KeyCode.A))
+            {
+                if (controller.reverser > -1)
+                    controller.reverser -= 1;
+            }
+
+            if (Input.GetKeyDown(KeyCode.W))
+            {
                 if (controller.brakeNotchs > -controller.notch)
                     controller.notch -= 1;
             }
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.S))
             {
                 if (controller.notch != 0)
                     controller.notch += controller.notch < 0 ? 1 : -1;
             }
-            if (Input.GetKeyDown(KeyCode.Z))
+            if (Input.GetKeyDown(KeyCode.X))
             {
                 if (controller.powerNotchs > controller.notch)
                     controller.notch += 1;
@@ -58,8 +71,9 @@ public class RunPanel : GamePanel
                     a += axle.speed;
                 a /= controller.axles.Count;
             }
-            speedText.text = speedText_DEF + ": " + (controller.axles.Count == 0 ? "NaN" : a.ToString() + " km/h");
+            speedText.text = speedText_DEF + ": " + (controller.axles.Count == 0 ? "NaN" : Mathf.Abs(a).ToString("F1") + " km/h");
             notchText.text = notchText_DEF + ": " + controller.notch;
+            reverserText.text = reverserText_DEF + ": " + (controller.reverser == 1 ? "前" : controller.reverser == 0 ? "切" : "後");
         }
     }
 }
