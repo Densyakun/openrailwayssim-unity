@@ -74,20 +74,20 @@ public class DirectController : MapObject
             foreach (var axle in axles)
             {
                 if (w == 0)
-                    w = axle.getTrainLoad();
-                var a = axle.tm_output * axle.wheelDia * axles.Count * Time.deltaTime * notch / 2 / w / axle.gearRatio;
+                    w = axle.getTrainLoad() / axles.Count;
+                float a = notch;
                 if (a >= 0)
                 {
                     if (reverser == -1)
                         a = -a;
-                    axle.speed += a / powerNotchs;
+                    axle.inputPower(a / powerNotchs, w);
                 }
                 else
                 {
                     if (axle.speed > 0)
-                        axle.speed = axle.speed - Mathf.Min(-a / brakeNotchs, axle.speed);
+                        axle.inputPower(a / brakeNotchs, w, true);
                     else
-                        axle.speed = axle.speed + Mathf.Min(-a / brakeNotchs, -axle.speed);
+                        axle.inputPower(-a / brakeNotchs, w, true);
                 }
             }
         }

@@ -13,6 +13,9 @@ public class Axle : MapObject
     public const string KEY_WHEEL_DIA = "WHEEL_DIA";
     public const string KEY_TM_OUTPUT = "TM_OUTPUT";
     public const string KEY_GEAR_RATIO = "GEAR_RATIO";
+    public const string KEY_STARTING_RESISTANCE = "STARTING_RESISTANCE";
+    public const string KEY_RUNNING_RESISTANCE_A = "RUNNING_RESISTANCE_A";
+    public const string KEY_RUNNING_RESISTANCE_B = "RUNNING_RESISTANCE_B";
     public const string KEY_ROT_X = "ROT_X";
     public const string KEY_BOGIE_FRAME = "BOGIE_FRAME";
 
@@ -135,6 +138,9 @@ public class Axle : MapObject
     public float wheelDia;
     public float tm_output;
     public float gearRatio;
+    public float startingResistance;
+    public float runningResistanceA;
+    public float runningResistanceB;
 
     public float rotX;
     public BogieFrame bogieFrame;
@@ -151,6 +157,9 @@ public class Axle : MapObject
         wheelDia = 0.86f;
         tm_output = 220;
         gearRatio = 6.06f;
+        startingResistance = 30f;
+        runningResistanceA = 0.019890625f;
+        runningResistanceB = 0.000015625f;
         rotX = 0;
         Vector3 a = onTrack is Curve
             ? ((Curve)onTrack).getRotation(onDist / onTrack.length).eulerAngles
@@ -168,6 +177,9 @@ public class Axle : MapObject
         wheelDia = info.GetSingle(KEY_WHEEL_DIA);
         tm_output = info.GetSingle(KEY_TM_OUTPUT);
         gearRatio = info.GetSingle(KEY_GEAR_RATIO);
+        startingResistance = info.GetSingle(KEY_STARTING_RESISTANCE);
+        runningResistanceA = info.GetSingle(KEY_RUNNING_RESISTANCE_A);
+        runningResistanceB = info.GetSingle(KEY_RUNNING_RESISTANCE_B);
         rotX = info.GetSingle(KEY_ROT_X);
         bogieFrame = (BogieFrame)info.GetValue(KEY_BOGIE_FRAME, typeof(BogieFrame));
     }
@@ -181,6 +193,9 @@ public class Axle : MapObject
         info.AddValue(KEY_WHEEL_DIA, wheelDia);
         info.AddValue(KEY_TM_OUTPUT, tm_output);
         info.AddValue(KEY_GEAR_RATIO, gearRatio);
+        info.AddValue(KEY_STARTING_RESISTANCE, startingResistance);
+        info.AddValue(KEY_RUNNING_RESISTANCE_A, runningResistanceA);
+        info.AddValue(KEY_RUNNING_RESISTANCE_B, runningResistanceB);
         info.AddValue(KEY_ROT_X, rotX);
         info.AddValue(KEY_BOGIE_FRAME, bogieFrame);
     }
@@ -208,16 +223,37 @@ public class Axle : MapObject
     {
         if (lastFixed == Time.fixedTime)
             return;
-        float a = speed * 10 * Time.deltaTime / 36;
-        onDist += a;
-        rotX += a * 360 / Mathf.PI * wheelDia;
+
+        float w = 0;
+        if (bogieFrame != null)
+        {
+            var body = bogieFrame.body;
+            if (body != null)
+            {
+                w = bogieFrame.body.carWeight;
+                int d = 0;
+                foreach (var bf in bogieFrame.body.bogieFrames)
+                    d += bf.axles.Count;
+                w /= d;
+                float a = -Physics.gravity.y * runningResistanceA;
+                a += runningResistanceB * speed;
+                a *= Time.deltaTime * 36 / 100;
+                if (speed < 0)
+                    speed = Mathf.Min(speed + a, 0);
+                else
+                    speed = Mathf.Max(speed - a, 0);
+            }
+        }
+        float b = speed * 10 * Time.deltaTime / 36;
+        onDist += b;
+        rotX += b * 360 / Mathf.PI * wheelDia;
         lastFixed = Time.fixedTime;
 
-        Vector3 b = onTrack is Curve
+        Vector3 c = onTrack is Curve
             ? ((Curve)onTrack).getRotation(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
-        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(b) * Vector3.up * wheelDia / 2;
-        rot = Quaternion.Euler(b);
+        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2;
+        rot = Quaternion.Euler(c);
     }
 
     public void reloadOnDist()
@@ -308,5 +344,31 @@ public class Axle : MapObject
             }
         }
         return w;
+    }
+
+    public void inputPower(float power, float weight, bool brake = false)
+    {
+        var a = tm_output * wheelDia * Time.deltaTime * power / 2 / weight / gearRatio;
+        if (speed > 0 == a > 0)
+        {
+            var b = a > 0 ? a : -a;
+            b -= (1f - Mathf.Clamp(Mathf.Abs(speed), 0f, 3f) / 3f) * startingResistance * Time.deltaTime * 36 / 100000 / weight;
+            if (a > 0)
+                speed += b;
+            else
+                speed -= b;
+        }
+        else
+        {
+            if (brake)
+            {
+                if (speed > 0)
+                    speed = Mathf.Max(speed + a, 0);
+                else
+                    speed = Mathf.Min(speed + a, 0);
+            }
+            else
+                speed += a;
+        }
     }
 }
