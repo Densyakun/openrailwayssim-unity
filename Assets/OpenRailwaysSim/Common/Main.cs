@@ -322,6 +322,12 @@ public class Main : MonoBehaviour
                         var aaa = false;
                         if (editingTrack != null)
                         {
+                            if (editingRot == null)
+                            {
+                                editingTrack.entity.transform.LookAt(p);
+                                editingTrack.SyncFromEntity();
+                            }
+
                             if (Input.GetKeyDown(KeyCode.T))
                             {
                                 var pos = editingTrack.pos;
@@ -332,12 +338,6 @@ public class Main : MonoBehaviour
                                     editingTrack = new Curve(playingmap, pos);
 
                                 aaa = true;
-                            }
-
-                            if (editingRot == null)
-                            {
-                                editingTrack.entity.transform.LookAt(p);
-                                editingTrack.SyncFromEntity();
                             }
 
                             if (editingTrack is Curve)
