@@ -497,7 +497,7 @@ public class Main : MonoBehaviour
 
                         if (focused != null)
                         {
-                            if (focused is Curve && ((Curve)focused).radius != 0)
+                            if (focused is Curve && !((Curve)focused).isVerticalCurve)
                             {
                                 Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
                                 float r1 = ((Curve)focused).radius;
