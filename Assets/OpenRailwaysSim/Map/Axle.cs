@@ -260,26 +260,50 @@ public class Axle : MapObject
     {
         if (onTrack is Curve)
         {
-            Vector3 a = Quaternion.Inverse(onTrack.rot) * (pos - onTrack.pos);
-            float r1 = ((Curve)onTrack).radius;
-            if (r1 < 0)
+            if (((Curve)onTrack).isVerticalCurve)
             {
-                r1 = -r1;
-                a.x = -a.x;
-            }
+                Vector3 a = Quaternion.Inverse(onTrack.rot) * (pos - onTrack.pos);
+                float r1 = ((Curve)onTrack).radius;
+                if (r1 < 0)
+                {
+                    r1 = -r1;
+                    a.y = -a.y;
+                }
 
-            float r2 = Vector3.Distance(a, Vector3.right * r1);
-            float A = Mathf.Atan(a.z / (r2 - a.x));
-            if (A < 0)
-            {
-                if (a.z >= 0)
+                float r2 = Vector3.Distance(a, Vector3.up * r1);
+                float A = Mathf.Atan(a.z / (r2 - a.y));
+                if (A < 0)
+                {
+                    if (a.z >= 0)
+                        A += Mathf.PI;
+                }
+                else if (a.z < 0)
                     A += Mathf.PI;
+                onDist = A * r1;
             }
-            else if (a.z < 0)
-                A += Mathf.PI;
-            onDist = A * r1;
-            //float b = onDist - speed * 10 * Time.deltaTime / 36;
-            //speed = ((onDist = A * r1) - b) * 36 / 10 / Time.deltaTime;
+            else
+            {
+                Vector3 a = Quaternion.Inverse(onTrack.rot) * (pos - onTrack.pos);
+                float r1 = ((Curve)onTrack).radius;
+                if (r1 < 0)
+                {
+                    r1 = -r1;
+                    a.x = -a.x;
+                }
+
+                float r2 = Vector3.Distance(a, Vector3.right * r1);
+                float A = Mathf.Atan(a.z / (r2 - a.x));
+                if (A < 0)
+                {
+                    if (a.z >= 0)
+                        A += Mathf.PI;
+                }
+                else if (a.z < 0)
+                    A += Mathf.PI;
+                onDist = A * r1;
+                //float b = onDist - speed * 10 * Time.deltaTime / 36;
+                //speed = ((onDist = A * r1) - b) * 36 / 10 / Time.deltaTime;
+            }
         }
         else
         {

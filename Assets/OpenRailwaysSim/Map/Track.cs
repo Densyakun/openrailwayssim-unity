@@ -21,6 +21,7 @@ public class Track : MapObject
     public const float COLLIDER_HEIGHT = 1f / 8;
     public const float RAIL_MODEL_INTERVAL = 1f;
     public const float TIE_MODEL_INTERVAL = 25f / 37f;
+    public const float LOD_DISTANCE = 0.03f;
 
     protected float _length = MIN_TRACK_LENGTH;
 
@@ -230,12 +231,13 @@ public class Track : MapObject
         if (railModelObjs != null)
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
+        var r_ = Quaternion.Inverse(rot);
         railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL)];
         for (int a = 0; a < railModelObjs.Length; a++)
         {
             (railModelObjs[a] = GameObject.Instantiate(Main.main.railModel)).transform.parent = entity.transform;
-            setLOD(railModelObjs[a], 0.02f);
-            railModelObjs[a].transform.localPosition = Quaternion.Inverse(rot) * (getPoint((float)a / railModelObjs.Length) - pos);
+            setLOD(railModelObjs[a], LOD_DISTANCE);
+            railModelObjs[a].transform.localPosition = r_ * (getPoint((float)a / railModelObjs.Length) - pos);
             railModelObjs[a].transform.localEulerAngles = new Vector3();
         }
 
@@ -246,8 +248,8 @@ public class Track : MapObject
         for (int a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
-            setLOD(tieModelObjs[a], 0.02f);
-            tieModelObjs[a].transform.localPosition = Quaternion.Inverse(rot) * (getPoint((float)a / tieModelObjs.Length) - pos);
+            setLOD(tieModelObjs[a], LOD_DISTANCE);
+            tieModelObjs[a].transform.localPosition = r_ * (getPoint((float)a / tieModelObjs.Length) - pos);
             tieModelObjs[a].transform.localEulerAngles = new Vector3();
         }
     }

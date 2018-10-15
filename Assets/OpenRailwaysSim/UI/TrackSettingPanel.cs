@@ -9,15 +9,19 @@ public class TrackSettingPanel : GamePanel
     //TODO 多言語対応化
     public static string lengthText_DEF = "長さ";
     public static string radiusText_DEF = "半径";
+    public static string isVerticalCurveText_DEF = "縦曲線";
     public Text lengthText;
     public InputField lengthInput;
     public GameObject curveSettingPanel;
     public Text radiusText;
     public InputField radiusInput;
+    public Text isVerticalCurveText;
+    public Toggle isVerticalCurveToggle;
 
     private float lastLength;
     private float lastRadius;
-    private bool tab = false;
+    private bool lastIsVerticalCurve;
+    //private bool tab = false;
 
     void Update()
     {
@@ -33,16 +37,16 @@ public class TrackSettingPanel : GamePanel
                 {
                     if (Main.editingTrack is Curve)
                     {
-                        tab = true;
+                        //tab = true;
                         EventSystem.current.SetSelectedGameObject(radiusInput.gameObject);
-                        tab = false;
+                        //tab = false;
                     }
                 }
                 else
                 {
-                    tab = true;
+                    //tab = true;
                     EventSystem.current.SetSelectedGameObject(lengthInput.gameObject);
-                    tab = false;
+                    //tab = false;
                 }
             }
             else
@@ -54,7 +58,10 @@ public class TrackSettingPanel : GamePanel
     {
         lengthInput.text = (lastLength = Main.editingTrack.length).ToString();
         if (Main.editingTrack is Curve)
+        {
             radiusInput.text = (lastRadius = ((Curve)Main.editingTrack).radius).ToString();
+            isVerticalCurveToggle.isOn = lastIsVerticalCurve = ((Curve)Main.editingTrack).isVerticalCurve;
+        }
     }
 
     new public void show(bool show)
@@ -63,7 +70,10 @@ public class TrackSettingPanel : GamePanel
         {
             lengthText.text = lengthText_DEF + ": ";
             if (Main.editingTrack is Curve)
+            {
                 radiusText.text = radiusText_DEF + ": ";
+                isVerticalCurveText.text = isVerticalCurveText_DEF + ": ";
+            }
 
             load();
 
@@ -91,7 +101,10 @@ public class TrackSettingPanel : GamePanel
         {
             Main.editingTrack.length = float.Parse(lengthInput.text);
             if (Main.editingTrack is Curve)
+            {
                 ((Curve)Main.editingTrack).radius = float.Parse(radiusInput.text);
+                ((Curve)Main.editingTrack).isVerticalCurve = isVerticalCurveToggle.isOn;
+            }
             Main.editingTrack.reloadEntity();
         }
         catch (FormatException) { }
@@ -102,7 +115,6 @@ public class TrackSettingPanel : GamePanel
     {
         reflect();
         Main.main.trackEdited0();
-        Main.mainTrack = null;
         Main.editingTrack = null;
         Main.editingRot = null;
 
@@ -114,14 +126,9 @@ public class TrackSettingPanel : GamePanel
     {
         lengthInput.text = lastLength.ToString();
         radiusInput.text = lastRadius.ToString();
+        isVerticalCurveToggle.isOn = lastIsVerticalCurve;
         reflect();
 
         show(false);
-    }
-
-    public void onEndEdit()
-    {
-        if (!tab)
-            save();
     }
 }

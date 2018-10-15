@@ -7,15 +7,15 @@ using UnityEngine;
 public class Curve : Track
 {
     public const string KEY_RADIUS = "RADIUS";
+    public const string KEY_IS_VERTICAL_CURVE = "IS_VERTICAL_CURVE";
     public const float MIN_RADIUS = 1f;
     public const float FINENESS_DISTANCE = 5f;
 
     public override float length
     {
         get { return _length; }
-        set { _length = Mathf.Max(MIN_TRACK_LENGTH, Mathf.Min(value, 2 * Mathf.PI * Mathf.Abs(radius))); }
+        set { _length = Mathf.Max(MIN_TRACK_LENGTH, Mathf.Min(value, 2 * Mathf.PI * Mathf.Abs(_radius))); }
     }
-
     private float _radius = MIN_RADIUS;
     public float radius
     {
@@ -31,6 +31,7 @@ public class Curve : Track
                 _radius = Mathf.Min(-MIN_RADIUS, value);
         }
     }
+    public bool isVerticalCurve = false;
     public BoxCollider[] colliders = new BoxCollider[0];
 
     public Curve(Map map, Vector3 pos) : base(map, pos)
@@ -44,12 +45,14 @@ public class Curve : Track
     protected Curve(SerializationInfo info, StreamingContext context) : base(info, context)
     {
         _radius = info.GetSingle(KEY_RADIUS);
+        isVerticalCurve = info.GetBoolean(KEY_IS_VERTICAL_CURVE);
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
         info.AddValue(KEY_RADIUS, _radius);
+        info.AddValue(KEY_IS_VERTICAL_CURVE, isVerticalCurve);
     }
 
     public override void generate()
@@ -113,16 +116,16 @@ public class Curve : Track
         if (railModelObjs != null)
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
+        var r_ = Quaternion.Inverse(rot);
         railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL)];
         for (int a = 0; a < railModelObjs.Length; a++)
         {
             (railModelObjs[a] = GameObject.Instantiate(Main.main.railModel)).transform.parent = entity.transform;
-            setLOD(railModelObjs[a], 0.02f);
+            setLOD(railModelObjs[a], LOD_DISTANCE);
             var d = (float)a / railModelObjs.Length;
             var p = getPoint(d);
-            var r_ = Quaternion.Inverse(rot);
             railModelObjs[a].transform.localPosition = r_ * (p - pos);
-            railModelObjs[a].transform.localRotation = Quaternion.LookRotation(getPoint(((float)a + 1) / railModelObjs.Length) - p) * r_;
+            railModelObjs[a].transform.localRotation = r_ * Quaternion.LookRotation(getPoint(((float)a + 1) / railModelObjs.Length) - p);
         }
 
         if (tieModelObjs != null)
@@ -132,11 +135,10 @@ public class Curve : Track
         for (int a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
-            setLOD(tieModelObjs[a], 0.02f);
+            setLOD(tieModelObjs[a], LOD_DISTANCE);
             var d = (float)a / tieModelObjs.Length;
-            var r_ = Quaternion.Inverse(rot);
             tieModelObjs[a].transform.localPosition = r_ * (getPoint(d) - pos);
-            tieModelObjs[a].transform.localRotation = getRotation(d) * r_;
+            tieModelObjs[a].transform.localRotation = r_ * getRotation(d);
         }
     }
 
@@ -171,17 +173,31 @@ public class Curve : Track
 
     public override Vector3 getPoint(float a)
     {
-        return pos + rot * (Vector3.right + Vector3.left * Mathf.Cos(_length * a / Mathf.Abs(_radius))) * _radius +
-            rot * Vector3.forward * Mathf.Sin(_length * a / Mathf.Abs(_radius)) * Mathf.Abs(_radius);
+        var x = 0f;
+        var y = 0f;
+        var z = _length * a;
+        if (isVerticalCurve)
+        {
+            var d = _length * a / Mathf.Abs(_radius);
+            y = (1f - Mathf.Cos(d)) * _radius;
+            z = Mathf.Sin(d) * Mathf.Abs(_radius);
+        }
+        else
+        {
+            var d = _length * a / Mathf.Abs(_radius);
+            x = (1f - Mathf.Cos(d)) * _radius;
+            z = Mathf.Sin(d) * Mathf.Abs(_radius);
+        }
+        return pos + rot * new Vector3(x, y, z);
     }
 
     public virtual Quaternion getRotation(float a)
     {
-        return rot * Quaternion.Euler(new Vector3(0, _length * a * Mathf.Rad2Deg / _radius));
+        return isVerticalCurve ? rot * Quaternion.Euler(new Vector3(-_length * a * Mathf.Rad2Deg / _radius, 0)) : rot * Quaternion.Euler(new Vector3(0, _length * a * Mathf.Rad2Deg / _radius));
     }
 
     public virtual bool isLinear()
     {
-        return length / radius <= Mathf.PI * 2 && rot == getRotation(1);
+        return length / _radius <= Mathf.PI * 2 && rot == getRotation(1);
     }
 }
