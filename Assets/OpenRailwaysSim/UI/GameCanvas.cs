@@ -3,6 +3,7 @@
 //GamePanelを管理するスクリプト
 public class GameCanvas : MonoBehaviour
 {
+    public static Canvas canvas;
     public static TitlePanel titlePanel;
     public static SelectMapPanel selectMapPanel;
     public static SettingPanel settingPanel;
@@ -16,9 +17,11 @@ public class GameCanvas : MonoBehaviour
     public static TrackSettingPanel trackSettingPanel;
     public static CouplerSettingPanel couplerSettingPanel;
     public static RunPanel runPanel;
+    public static MapPinSettingPanel mapPinSettingPanel;
 
     void Awake()
     {
+        canvas = GetComponent<Canvas>();
         titlePanel = GetComponentInChildren<TitlePanel>(true);
         selectMapPanel = GetComponentInChildren<SelectMapPanel>(true);
         settingPanel = GetComponentInChildren<SettingPanel>(true);
@@ -32,5 +35,6 @@ public class GameCanvas : MonoBehaviour
         trackSettingPanel = GetComponentInChildren<TrackSettingPanel>(true);
         couplerSettingPanel = GetComponentInChildren<CouplerSettingPanel>(true);
         runPanel = GetComponentInChildren<RunPanel>(true);
+        mapPinSettingPanel = GetComponentInChildren<MapPinSettingPanel>(true);
     }
 }

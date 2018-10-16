@@ -21,7 +21,6 @@ public class TrackSettingPanel : GamePanel
     private float lastLength;
     private float lastRadius;
     private bool lastIsVerticalCurve;
-    //private bool tab = false;
 
     void Update()
     {
@@ -36,18 +35,10 @@ public class TrackSettingPanel : GamePanel
                 if (input == lengthInput)
                 {
                     if (Main.editingTrack is Curve)
-                    {
-                        //tab = true;
                         EventSystem.current.SetSelectedGameObject(radiusInput.gameObject);
-                        //tab = false;
-                    }
                 }
                 else
-                {
-                    //tab = true;
                     EventSystem.current.SetSelectedGameObject(lengthInput.gameObject);
-                    //tab = false;
-                }
             }
             else
                 EventSystem.current.SetSelectedGameObject(lengthInput.gameObject);

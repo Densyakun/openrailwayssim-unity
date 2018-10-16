@@ -165,7 +165,7 @@ public class Track : MapObject
 
     public void reloadTrackRenderer()
     {
-        if (Main.main.showGuide)
+        if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
         {
             if (trackRenderer == null)
                 trackRenderer = entity.gameObject.AddComponent<LineRenderer>();
@@ -199,7 +199,7 @@ public class Track : MapObject
         if (railRenderers != null)
             foreach (var r in railRenderers)
                 GameObject.Destroy(r.gameObject);
-        if (Main.main.showGuide)
+        if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
         {
             railRenderers = new LineRenderer[rails.Count];
             for (int a = 0; a < rails.Count; a++)

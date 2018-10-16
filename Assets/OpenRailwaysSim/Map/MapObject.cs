@@ -99,6 +99,10 @@ public class MapObject : ISerializable
     {
     }
 
+    public virtual void destroy()
+    {
+    }
+
     public virtual void reloadEntity()
     {
         if (!entity)

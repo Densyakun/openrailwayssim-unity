@@ -66,15 +66,17 @@ public class Main : MonoBehaviour
     private float lasttick = 0; //時間を進ませた時の余り
     private float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
 
-    public int mode = 0; //操作モード 0=なし 11=軌道敷設 21=車軸設置
+    public int mode = 0; //操作モード 0=なし 11=軌道敷設 21=車軸設置 31=マップピンを置く
     public static int MODE_CONSTRUCT_TRACK = 11;
     public static int MODE_PLACE_AXLE = 21;
+    public static int MODE_PLACE_MAPPIN = 31;
 
     public bool showGuide = true;
 
     public static Track editingTrack;
     public static Quaternion? editingRot;
     public static Coupler editingCoupler;
+    public static MapPin editingMapPin;
     public static Track mainTrack;
     public static MapObject focused;
     public static float focusedDist;
@@ -101,6 +103,7 @@ public class Main : MonoBehaviour
     public GameObject couplerModel;
     public GameObject permanentCouplerModel;
     public GameObject directControllerModel;
+    public Font mapPinFont;
 
     void Awake()
     {
@@ -540,6 +543,92 @@ public class Main : MonoBehaviour
                             Axle axle = new Axle(playingmap, ((Track)focused), focusedDist);
                             axle.generate();
                             playingmap.addObject(axle);
+                        }
+                    }
+                    else if (mode == MODE_PLACE_MAPPIN)
+                    {
+                        Vector3 p = hit.point;
+                        p.y = 0;
+
+                        if (focused != null)
+                        {
+                            if (focused is Curve)
+                            {
+                                if (((Curve)focused).isVerticalCurve)
+                                {
+                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
+                                    float r1 = ((Curve)focused).radius;
+                                    if (r1 < 0)
+                                    {
+                                        r1 = -r1;
+                                        a.y = -a.y;
+                                    }
+
+                                    float r2 = Vector3.Distance(a, Vector3.up * r1);
+                                    float A = Mathf.Atan(a.z / (r2 - a.y));
+                                    if (A < 0)
+                                        A = Mathf.PI + A;
+                                    if (a.z < 0)
+                                        A += Mathf.PI;
+                                    focusedDist = A * r1;
+                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
+                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = 0;
+                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = ((Track)focused).length;
+                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
+                                }
+                                else
+                                {
+                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
+                                    float r1 = ((Curve)focused).radius;
+                                    if (r1 < 0)
+                                    {
+                                        r1 = -r1;
+                                        a.x = -a.x;
+                                    }
+
+                                    float r2 = Vector3.Distance(a, Vector3.right * r1);
+                                    float A = Mathf.Atan(a.z / (r2 - a.x));
+                                    if (A < 0)
+                                        A = Mathf.PI + A;
+                                    if (a.z < 0)
+                                        A += Mathf.PI;
+                                    focusedDist = A * r1;
+                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
+                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = 0;
+                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = ((Track)focused).length;
+                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
+                                }
+                            }
+                            else if (focused is Track)
+                            {
+                                focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
+                                if (focusedDist < Track.MIN_TRACK_LENGTH)
+                                    focusedDist = 0;
+                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track)focused).length;
+                                p = focused.pos + focused.rot * Vector3.forward * focusedDist;
+                            }
+                        }
+
+                        point.transform.position = p;
+                        point.SetActive(true);
+                        if (Input.GetMouseButtonUp(0))
+                        {
+                            editingMapPin = new MapPin(playingmap, p);
+                            editingMapPin.generate();
+                            playingmap.addObject(editingMapPin);
+                            GameCanvas.mapPinSettingPanel.show(true);
+                            GameCanvas.mapPinSettingPanel.transform.position = new Vector3(
+                                Mathf.Clamp(Input.mousePosition.x, 0,
+                                    Screen.width - ((RectTransform)GameCanvas.mapPinSettingPanel.transform).rect
+                                    .width),
+                                Mathf.Clamp(Input.mousePosition.y,
+                                    ((RectTransform)GameCanvas.mapPinSettingPanel.transform).rect.height,
+                                    Screen.height));
                         }
                     }
                     else

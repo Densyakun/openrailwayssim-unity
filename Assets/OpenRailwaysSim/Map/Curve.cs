@@ -79,7 +79,7 @@ public class Curve : Track
         if (railRenderers != null)
             foreach (var r in railRenderers)
                 GameObject.Destroy(r.gameObject);
-        if (Main.main.showGuide)
+        if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
         {
             railRenderers = new LineRenderer[rails.Count];
             for (int a = 0; a < rails.Count; a++)
