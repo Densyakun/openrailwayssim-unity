@@ -168,6 +168,16 @@ public class Main : MonoBehaviour
                         editingCoupler = null;
                     }
                 }
+                else if (GameCanvas.mapPinSettingPanel.isShowing())
+                {
+                    a = false;
+                    GameCanvas.mapPinSettingPanel.show(false);
+                    if (editingMapPin != null)
+                    {
+                        editingMapPin.entity.Destroy();
+                        editingMapPin = null;
+                    }
+                }
 
                 if (mode != 0)
                 {
@@ -620,7 +630,6 @@ public class Main : MonoBehaviour
                         {
                             editingMapPin = new MapPin(playingmap, p);
                             editingMapPin.generate();
-                            playingmap.addObject(editingMapPin);
                             GameCanvas.mapPinSettingPanel.show(true);
                             GameCanvas.mapPinSettingPanel.transform.position = new Vector3(
                                 Mathf.Clamp(Input.mousePosition.x, 0,
@@ -636,37 +645,7 @@ public class Main : MonoBehaviour
                         point.SetActive(false);
 
                         if (Input.GetMouseButtonUp(0))
-                        {
-                            bool s = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-                            if (!s)
-                            {
-                                foreach (var o in selectingObjs)
-                                {
-                                    o.useSelectingMat = false;
-                                    o.reloadEntity();
-                                }
-
-                                selectingObjs.Clear();
-                            }
-
-                            if (focused != null)
-                            {
-                                if (s && selectingObjs.Contains(focused))
-                                {
-                                    selectingObjs.Remove(focused);
-                                    focused.useSelectingMat = false;
-                                    focused.reloadEntity();
-                                }
-                                else if (!selectingObjs.Contains(focused))
-                                {
-                                    selectingObjs.Add(focused);
-                                    focused.useSelectingMat = true;
-                                    focused.reloadEntity();
-                                }
-                            }
-
-                            GameCanvas.playingPanel.a();
-                        }
+                            selectObj(focused);
                     }
                 }
                 else
@@ -934,6 +913,39 @@ public class Main : MonoBehaviour
         playingmap.addObject(editingTrack);
         editingTrack.enableCollider = true;
         editingTrack.reloadCollider();
+    }
+
+    public static void selectObj(MapObject obj)
+    {
+        bool s = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        if (!s)
+        {
+            foreach (var o in selectingObjs)
+            {
+                o.useSelectingMat = false;
+                o.reloadEntity();
+            }
+
+            selectingObjs.Clear();
+        }
+
+        if (obj != null)
+        {
+            if (s && selectingObjs.Contains(obj))
+            {
+                selectingObjs.Remove(obj);
+                obj.useSelectingMat = false;
+                obj.reloadEntity();
+            }
+            else if (!selectingObjs.Contains(obj))
+            {
+                selectingObjs.Add(obj);
+                obj.useSelectingMat = true;
+                obj.reloadEntity();
+            }
+        }
+
+        GameCanvas.playingPanel.a();
     }
 
     public static void removeSelectingObjs()

@@ -16,7 +16,6 @@ public class MapPinSettingPanel : GamePanel
 
     private string lastTitle;
     private string lastDescription;
-    private bool tab = false;
 
     void Update()
     {
@@ -29,17 +28,9 @@ public class MapPinSettingPanel : GamePanel
             if (input != null && input.isFocused)
             {
                 if (input == titleInput)
-                {
-                    tab = true;
                     EventSystem.current.SetSelectedGameObject(descriptionInput.gameObject);
-                    tab = false;
-                }
                 else
-                {
-                    tab = true;
                     EventSystem.current.SetSelectedGameObject(titleInput.gameObject);
-                    tab = false;
-                }
             }
             else
                 EventSystem.current.SetSelectedGameObject(titleInput.gameObject);
@@ -78,6 +69,7 @@ public class MapPinSettingPanel : GamePanel
     public void save()
     {
         reflect();
+        Main.playingmap.addObject(Main.editingMapPin);
         Main.editingMapPin = null;
 
         if (!Input.GetKeyDown(KeyCode.Escape))
@@ -91,11 +83,5 @@ public class MapPinSettingPanel : GamePanel
         reflect();
 
         show(false);
-    }
-
-    public void onEndEdit()
-    {
-        if (!tab)
-            save();
     }
 }
