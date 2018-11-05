@@ -66,10 +66,12 @@ public class Main : MonoBehaviour
     private float lasttick = 0; //時間を進ませた時の余り
     private float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
 
-    public int mode = 0; //操作モード 0=なし 11=軌道敷設 21=車軸設置 31=マップピンを置く
+    public static int MODE_NONE = 0;
     public static int MODE_CONSTRUCT_TRACK = 11;
     public static int MODE_PLACE_AXLE = 21;
     public static int MODE_PLACE_MAPPIN = 31;
+    public static int MODE_PLACE_STRUCTURE = 41;
+    public int mode = MODE_NONE; // 操作モード 0=なし 11=軌道敷設 21=車軸設置 31=マップピンを置く 41=ストラクチャーを設置
 
     public bool showGuide = true;
 
@@ -288,364 +290,256 @@ public class Main : MonoBehaviour
                         }
                     }
 
-                    if (mode == MODE_CONSTRUCT_TRACK)
-                    {
-                        Vector3 p = hit.point;
-                        p.y = 0;
-
-                        if (focused != null)
-                        {
-                            if (focused is Curve)
-                            {
-                                if (((Curve)focused).isVerticalCurve)
-                                {
-                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                    float r1 = ((Curve)focused).radius;
-                                    if (r1 < 0)
-                                    {
-                                        r1 = -r1;
-                                        a.y = -a.y;
-                                    }
-
-                                    float r2 = Vector3.Distance(a, Vector3.up * r1);
-                                    float A = Mathf.Atan(a.z / (r2 - a.y));
-                                    if (A < 0)
-                                        A = Mathf.PI + A;
-                                    if (a.z < 0)
-                                        A += Mathf.PI;
-                                    focusedDist = A * r1;
-                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
-                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = 0;
-                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = ((Track)focused).length;
-                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
-                                }
-                                else
-                                {
-                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                    float r1 = ((Curve)focused).radius;
-                                    if (r1 < 0)
-                                    {
-                                        r1 = -r1;
-                                        a.x = -a.x;
-                                    }
-
-                                    float r2 = Vector3.Distance(a, Vector3.right * r1);
-                                    float A = Mathf.Atan(a.z / (r2 - a.x));
-                                    if (A < 0)
-                                        A = Mathf.PI + A;
-                                    if (a.z < 0)
-                                        A += Mathf.PI;
-                                    focusedDist = A * r1;
-                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
-                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = 0;
-                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = ((Track)focused).length;
-                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
-                                }
-                            }
-                            else if (focused is Track)
-                            {
-                                focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
-                                if (focusedDist < Track.MIN_TRACK_LENGTH)
-                                    focusedDist = 0;
-                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track)focused).length;
-                                p = focused.pos + focused.rot * Vector3.forward * focusedDist;
-                            }
-                        }
-
-                        point.transform.position = p;
-                        point.SetActive(true);
-                        var aaa = false;
-                        if (editingTrack != null)
-                        {
-                            if (editingRot == null)
-                            {
-                                editingTrack.entity.transform.LookAt(p);
-                                editingTrack.SyncFromEntity();
-                            }
-
-                            if (Input.GetKeyDown(KeyCode.T))
-                            {
-                                var pos = editingTrack.pos;
-                                editingTrack.entity.Destroy();
-                                if (editingTrack is Curve)
-                                    editingTrack = new Track(playingmap, pos);
-                                else
-                                    editingTrack = new Curve(playingmap, pos);
-
-                                aaa = true;
-                            }
-
-                            if (editingTrack is Curve)
-                            {
-                                Vector3 v = Quaternion.Inverse(editingTrack.rot) * (p - editingTrack.pos);
-                                if (v.z != 0)
-                                {
-                                    float a = Mathf.Atan(Mathf.Abs(v.x) / v.z);
-                                    if (v.x < 0)
-                                        a = -a;
-
-                                    if (v.z < 0)
-                                    {
-                                        Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero,
-                                            Vector3.right * v.x, v,
-                                            v + Quaternion.Euler(new Vector3(0, a * 2 * Mathf.Rad2Deg)) *
-                                            Vector3.right * v.z);
-                                        if (i != null)
-                                        {
-                                            editingTrack.rot = Quaternion.Euler(-editingTrack.rot.eulerAngles.x, editingTrack.rot.eulerAngles.y - 180,
-                                                0);
-                                            editingTrack.length =
-                                                Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = -((Vector2)i).x));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero,
-                                            Vector3.right * v.x, v,
-                                            v + Quaternion.Euler(new Vector3(0, a * 2 * Mathf.Rad2Deg)) *
-                                            Vector3.right * v.z);
-                                        if (i != null)
-                                            editingTrack.length =
-                                                Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = ((Vector2)i).x));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Vector3 v = Quaternion.Inverse(editingTrack.rot) * (p - editingTrack.pos);
-                                if (v.z < 0)
-                                    editingTrack.rot = Quaternion.Euler(-editingTrack.rot.eulerAngles.x, editingTrack.rot.eulerAngles.y - 180, 0);
-                                editingTrack.length = Mathf.Abs(v.z);
-                            }
-
-                            editingTrack.reloadEntity();
-                            GameCanvas.trackSettingPanel.load();
-                            GameCanvas.trackSettingPanel.transform.position = new Vector3(
-                                Mathf.Clamp(Input.mousePosition.x, 0,
-                                    Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width),
-                                Mathf.Clamp(Input.mousePosition.y,
-                                    ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
-                                    Screen.height));
-                        }
-
-                        if (Input.GetMouseButtonUp(0))
-                        {
-                            if (editingTrack != null)
-                            {
-                                trackEdited0();
-
-                                if (editingTrack is Curve)
-                                    editingRot = ((Curve)editingTrack).getRotation(1);
-                                else
-                                    editingRot = editingTrack.rot;
-
-                                Track newTrack;
-
-                                if (editingTrack.GetType() == typeof(Track))
-                                    newTrack = new Curve(playingmap, editingTrack.getPoint(1));
-                                else
-                                    newTrack = new Track(playingmap, editingTrack.getPoint(1));
-
-                                editingTrack = newTrack;
-                            }
-                            else if (focused != null)
-                            {
-                                if (focused is Track)
-                                {
-                                    mainTrack = ((Track)focused);
-                                    if (mainTrack is Curve)
-                                    {
-                                        editingRot = ((Curve)mainTrack).getRotation(focusedDist / mainTrack.length);
-                                        editingTrack = new Track(playingmap, p);
-                                    }
-                                    else
-                                    {
-                                        editingRot = mainTrack.rot;
-                                        editingTrack = new Curve(playingmap, p);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                mainTrack = null;
-                                editingTrack = new Track(playingmap, p);
-                            }
-
-                            if (editingTrack != null)
-                                aaa = true;
-                        }
-
-                        if (Input.GetMouseButtonUp(1))
-                            cancelEditingTrack();
-
-                        if (aaa)
-                        {
-                            editingTrack.rails.Add(-Main.main.gauge / 2);
-                            editingTrack.rails.Add(Main.main.gauge / 2);
-
-                            if (editingRot != null)
-                                editingTrack.rot = (Quaternion)editingRot;
-                            editingTrack.enableCollider = false;
-                            editingTrack.generate();
-
-                            GameCanvas.trackSettingPanel.show(true);
-                            GameCanvas.trackSettingPanel.transform.position = new Vector3(
-                                Mathf.Clamp(Input.mousePosition.x, 0,
-                                    Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect
-                                    .width),
-                                Mathf.Clamp(Input.mousePosition.y,
-                                    ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
-                                    Screen.height));
-                        }
-                    }
-                    else if (mode == MODE_PLACE_AXLE)
-                    {
-                        Vector3 p = hit.point;
-                        p.y = 0;
-
-                        if (focused != null)
-                        {
-                            if (focused is Curve && !((Curve)focused).isVerticalCurve)
-                            {
-                                Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                float r1 = ((Curve)focused).radius;
-                                if (r1 < 0)
-                                {
-                                    r1 = -r1;
-                                    a.x = -a.x;
-                                }
-
-                                float r2 = Vector3.Distance(a, Vector3.right * r1);
-                                float A = Mathf.Atan(a.z / (r2 - a.x));
-                                if (A < 0)
-                                    A += Mathf.PI;
-                                if (a.z < 0)
-                                    A += Mathf.PI;
-                                focusedDist = A * r1;
-                                if (focusedDist < Track.MIN_TRACK_LENGTH ||
-                                    focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = 0;
-                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track)focused).length;
-                                p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
-                            }
-                            else if (focused is Track)
-                            {
-                                focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
-                                if (focusedDist < Track.MIN_TRACK_LENGTH)
-                                    focusedDist = 0;
-                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track)focused).length;
-                                p = focused.pos + focused.rot * Vector3.forward * focusedDist;
-                            }
-                        }
-
-                        point.transform.position = p;
-                        point.SetActive(true);
-
-                        if (Input.GetMouseButtonUp(0) && focused != null && focused is Track)
-                        {
-                            Axle axle = new Axle(playingmap, ((Track)focused), focusedDist);
-                            axle.generate();
-                            playingmap.addObject(axle);
-                        }
-                    }
-                    else if (mode == MODE_PLACE_MAPPIN)
-                    {
-                        Vector3 p = hit.point;
-                        p.y = 0;
-
-                        if (focused != null)
-                        {
-                            if (focused is Curve)
-                            {
-                                if (((Curve)focused).isVerticalCurve)
-                                {
-                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                    float r1 = ((Curve)focused).radius;
-                                    if (r1 < 0)
-                                    {
-                                        r1 = -r1;
-                                        a.y = -a.y;
-                                    }
-
-                                    float r2 = Vector3.Distance(a, Vector3.up * r1);
-                                    float A = Mathf.Atan(a.z / (r2 - a.y));
-                                    if (A < 0)
-                                        A = Mathf.PI + A;
-                                    if (a.z < 0)
-                                        A += Mathf.PI;
-                                    focusedDist = A * r1;
-                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
-                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = 0;
-                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = ((Track)focused).length;
-                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
-                                }
-                                else
-                                {
-                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                    float r1 = ((Curve)focused).radius;
-                                    if (r1 < 0)
-                                    {
-                                        r1 = -r1;
-                                        a.x = -a.x;
-                                    }
-
-                                    float r2 = Vector3.Distance(a, Vector3.right * r1);
-                                    float A = Mathf.Atan(a.z / (r2 - a.x));
-                                    if (A < 0)
-                                        A = Mathf.PI + A;
-                                    if (a.z < 0)
-                                        A += Mathf.PI;
-                                    focusedDist = A * r1;
-                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
-                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = 0;
-                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = ((Track)focused).length;
-                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
-                                }
-                            }
-                            else if (focused is Track)
-                            {
-                                focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
-                                if (focusedDist < Track.MIN_TRACK_LENGTH)
-                                    focusedDist = 0;
-                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track)focused).length;
-                                p = focused.pos + focused.rot * Vector3.forward * focusedDist;
-                            }
-                        }
-
-                        point.transform.position = p;
-                        point.SetActive(true);
-                        if (Input.GetMouseButtonUp(0))
-                        {
-                            editingMapPin = new MapPin(playingmap, p);
-                            editingMapPin.generate();
-                            GameCanvas.mapPinSettingPanel.show(true);
-                            GameCanvas.mapPinSettingPanel.transform.position = new Vector3(
-                                Mathf.Clamp(Input.mousePosition.x, 0,
-                                    Screen.width - ((RectTransform)GameCanvas.mapPinSettingPanel.transform).rect
-                                    .width),
-                                Mathf.Clamp(Input.mousePosition.y,
-                                    ((RectTransform)GameCanvas.mapPinSettingPanel.transform).rect.height,
-                                    Screen.height));
-                        }
-                    }
-                    else
+                    if (mode == MODE_NONE)
                     {
                         point.SetActive(false);
 
                         if (Input.GetMouseButtonUp(0))
                             selectObj(focused);
+                    }
+                    else
+                    {
+                        Vector3 p = hit.point;
+                        p.y = 0;
+
+                        if (focused != null)
+                        {
+                            if (focused is Curve)
+                            {
+                                if (((Curve)focused).isVerticalCurve)
+                                {
+                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
+                                    float r1 = ((Curve)focused).radius;
+                                    if (r1 < 0)
+                                    {
+                                        r1 = -r1;
+                                        a.y = -a.y;
+                                    }
+
+                                    float r2 = Vector3.Distance(a, Vector3.up * r1);
+                                    float A = Mathf.Atan(a.z / (r2 - a.y));
+                                    if (A < 0)
+                                        A = Mathf.PI + A;
+                                    if (a.z < 0)
+                                        A += Mathf.PI;
+                                    focusedDist = A * r1;
+                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
+                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = 0;
+                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = ((Track)focused).length;
+                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
+                                }
+                                else
+                                {
+                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
+                                    float r1 = ((Curve)focused).radius;
+                                    if (r1 < 0)
+                                    {
+                                        r1 = -r1;
+                                        a.x = -a.x;
+                                    }
+
+                                    float r2 = Vector3.Distance(a, Vector3.right * r1);
+                                    float A = Mathf.Atan(a.z / (r2 - a.x));
+                                    if (A < 0)
+                                        A = Mathf.PI + A;
+                                    if (a.z < 0)
+                                        A += Mathf.PI;
+                                    focusedDist = A * r1;
+                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
+                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = 0;
+                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = ((Track)focused).length;
+                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
+                                }
+                            }
+                            else if (focused is Track)
+                            {
+                                focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
+                                if (focusedDist < Track.MIN_TRACK_LENGTH)
+                                    focusedDist = 0;
+                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track)focused).length;
+                                p = focused.pos + focused.rot * Vector3.forward * focusedDist;
+                            }
+                        }
+
+                        point.transform.position = p;
+                        point.SetActive(true);
+
+                        if (mode == MODE_CONSTRUCT_TRACK)
+                        {
+                            var aaa = false;
+                            if (editingTrack != null)
+                            {
+                                if (editingRot == null)
+                                {
+                                    editingTrack.entity.transform.LookAt(p);
+                                    editingTrack.SyncFromEntity();
+                                }
+
+                                if (Input.GetKeyDown(KeyCode.T))
+                                {
+                                    var pos = editingTrack.pos;
+                                    editingTrack.entity.Destroy();
+                                    if (editingTrack is Curve)
+                                        editingTrack = new Track(playingmap, pos);
+                                    else
+                                        editingTrack = new Curve(playingmap, pos);
+
+                                    aaa = true;
+                                }
+
+                                if (editingTrack is Curve)
+                                {
+                                    Vector3 v = Quaternion.Inverse(editingTrack.rot) * (p - editingTrack.pos);
+                                    if (v.z != 0)
+                                    {
+                                        float a = Mathf.Atan(Mathf.Abs(v.x) / v.z);
+                                        if (v.x < 0)
+                                            a = -a;
+
+                                        if (v.z < 0)
+                                        {
+                                            Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero,
+                                                Vector3.right * v.x, v,
+                                                v + Quaternion.Euler(new Vector3(0, a * 2 * Mathf.Rad2Deg)) *
+                                                Vector3.right * v.z);
+                                            if (i != null)
+                                            {
+                                                editingTrack.rot = Quaternion.Euler(-editingTrack.rot.eulerAngles.x, editingTrack.rot.eulerAngles.y - 180,
+                                                    0);
+                                                editingTrack.length =
+                                                    Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = -((Vector2)i).x));
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero,
+                                                Vector3.right * v.x, v,
+                                                v + Quaternion.Euler(new Vector3(0, a * 2 * Mathf.Rad2Deg)) *
+                                                Vector3.right * v.z);
+                                            if (i != null)
+                                                editingTrack.length =
+                                                    Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = ((Vector2)i).x));
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Vector3 v = Quaternion.Inverse(editingTrack.rot) * (p - editingTrack.pos);
+                                    if (v.z < 0)
+                                        editingTrack.rot = Quaternion.Euler(-editingTrack.rot.eulerAngles.x, editingTrack.rot.eulerAngles.y - 180, 0);
+                                    editingTrack.length = Mathf.Abs(v.z);
+                                }
+
+                                editingTrack.reloadEntity();
+                                GameCanvas.trackSettingPanel.load();
+                                GameCanvas.trackSettingPanel.transform.position = new Vector3(
+                                    Mathf.Clamp(Input.mousePosition.x, 0,
+                                        Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width),
+                                    Mathf.Clamp(Input.mousePosition.y,
+                                        ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
+                                        Screen.height));
+                            }
+
+                            if (Input.GetMouseButtonUp(0))
+                            {
+                                if (editingTrack != null)
+                                {
+                                    trackEdited0();
+
+                                    if (editingTrack is Curve)
+                                        editingRot = ((Curve)editingTrack).getRotation(1);
+                                    else
+                                        editingRot = editingTrack.rot;
+
+                                    Track newTrack;
+
+                                    if (editingTrack.GetType() == typeof(Track))
+                                        newTrack = new Curve(playingmap, editingTrack.getPoint(1));
+                                    else
+                                        newTrack = new Track(playingmap, editingTrack.getPoint(1));
+
+                                    editingTrack = newTrack;
+                                }
+                                else if (focused != null)
+                                {
+                                    if (focused is Track)
+                                    {
+                                        mainTrack = ((Track)focused);
+                                        if (mainTrack is Curve)
+                                        {
+                                            editingRot = ((Curve)mainTrack).getRotation(focusedDist / mainTrack.length);
+                                            editingTrack = new Track(playingmap, p);
+                                        }
+                                        else
+                                        {
+                                            editingRot = mainTrack.rot;
+                                            editingTrack = new Curve(playingmap, p);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    mainTrack = null;
+                                    editingTrack = new Track(playingmap, p);
+                                }
+
+                                if (editingTrack != null)
+                                    aaa = true;
+                            }
+
+                            if (Input.GetMouseButtonUp(1))
+                                cancelEditingTrack();
+
+                            if (aaa)
+                            {
+                                editingTrack.rails.Add(-Main.main.gauge / 2);
+                                editingTrack.rails.Add(Main.main.gauge / 2);
+
+                                if (editingRot != null)
+                                    editingTrack.rot = (Quaternion)editingRot;
+                                editingTrack.enableCollider = false;
+                                editingTrack.generate();
+
+                                GameCanvas.trackSettingPanel.show(true);
+                                GameCanvas.trackSettingPanel.transform.position = new Vector3(
+                                    Mathf.Clamp(Input.mousePosition.x, 0,
+                                        Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect
+                                        .width),
+                                    Mathf.Clamp(Input.mousePosition.y,
+                                        ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
+                                        Screen.height));
+                            }
+                        }
+                        else if (mode == MODE_PLACE_AXLE)
+                        {
+                            if (Input.GetMouseButtonUp(0) && focused != null && focused is Track)
+                            {
+                                Axle axle = new Axle(playingmap, ((Track)focused), focusedDist);
+                                axle.generate();
+                                playingmap.addObject(axle);
+                            }
+                        }
+                        else if (mode == MODE_PLACE_MAPPIN)
+                        {
+                            if (Input.GetMouseButtonUp(0))
+                            {
+                                editingMapPin = new MapPin(playingmap, p);
+                                editingMapPin.generate();
+                                GameCanvas.mapPinSettingPanel.show(true);
+                                GameCanvas.mapPinSettingPanel.transform.position = new Vector3(
+                                    Mathf.Clamp(Input.mousePosition.x, 0,
+                                        Screen.width - ((RectTransform)GameCanvas.mapPinSettingPanel.transform).rect
+                                        .width),
+                                    Mathf.Clamp(Input.mousePosition.y,
+                                        ((RectTransform)GameCanvas.mapPinSettingPanel.transform).rect.height,
+                                        Screen.height));
+                            }
+                        }
                     }
                 }
                 else

@@ -42,6 +42,11 @@ public class PlayingPanel : GamePanel
         Main.main.mode = Main.main.mode == Main.MODE_PLACE_MAPPIN ? 0 : Main.MODE_PLACE_MAPPIN;
     }
 
+    public void PlaceStructureButton()
+    {
+        Main.main.mode = Main.main.mode == Main.MODE_PLACE_STRUCTURE ? 0 : Main.MODE_PLACE_STRUCTURE;
+    }
+
     public void RemoveButton()
     {
         Main.removeSelectingObjs();
