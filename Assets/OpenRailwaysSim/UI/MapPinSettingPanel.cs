@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-//軌道の設定画面
+//マップピンの設定画面
 public class MapPinSettingPanel : GamePanel
 {
     //TODO 多言語対応化

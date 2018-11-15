@@ -18,6 +18,7 @@ public class GameCanvas : MonoBehaviour
     public static CouplerSettingPanel couplerSettingPanel;
     public static RunPanel runPanel;
     public static MapPinSettingPanel mapPinSettingPanel;
+    public static StructureSettingPanel structureSettingPanel;
 
     void Awake()
     {
@@ -36,5 +37,6 @@ public class GameCanvas : MonoBehaviour
         couplerSettingPanel = GetComponentInChildren<CouplerSettingPanel>(true);
         runPanel = GetComponentInChildren<RunPanel>(true);
         mapPinSettingPanel = GetComponentInChildren<MapPinSettingPanel>(true);
+        structureSettingPanel = GetComponentInChildren<StructureSettingPanel>(true);
     }
 }

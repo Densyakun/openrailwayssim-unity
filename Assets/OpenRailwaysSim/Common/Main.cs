@@ -79,6 +79,7 @@ public class Main : MonoBehaviour
     public static Quaternion? editingRot;
     public static Coupler editingCoupler;
     public static MapPin editingMapPin;
+    public static Structure editingStructure;
     public static Track mainTrack;
     public static MapObject focused;
     public static float focusedDist;
@@ -178,6 +179,16 @@ public class Main : MonoBehaviour
                     {
                         editingMapPin.entity.Destroy();
                         editingMapPin = null;
+                    }
+                }
+                else if (GameCanvas.structureSettingPanel.isShowing())
+                {
+                    a = false;
+                    GameCanvas.structureSettingPanel.show(false);
+                    if (editingStructure != null)
+                    {
+                        editingStructure.entity.Destroy();
+                        editingStructure = null;
                     }
                 }
 
@@ -437,12 +448,7 @@ public class Main : MonoBehaviour
 
                                 editingTrack.reloadEntity();
                                 GameCanvas.trackSettingPanel.load();
-                                GameCanvas.trackSettingPanel.transform.position = new Vector3(
-                                    Mathf.Clamp(Input.mousePosition.x, 0,
-                                        Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.width),
-                                    Mathf.Clamp(Input.mousePosition.y,
-                                        ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
-                                        Screen.height));
+                                setPanelPosToMousePos((RectTransform)GameCanvas.trackSettingPanel.transform);
                             }
 
                             if (Input.GetMouseButtonUp(0))
@@ -506,13 +512,7 @@ public class Main : MonoBehaviour
                                 editingTrack.generate();
 
                                 GameCanvas.trackSettingPanel.show(true);
-                                GameCanvas.trackSettingPanel.transform.position = new Vector3(
-                                    Mathf.Clamp(Input.mousePosition.x, 0,
-                                        Screen.width - ((RectTransform)GameCanvas.trackSettingPanel.transform).rect
-                                        .width),
-                                    Mathf.Clamp(Input.mousePosition.y,
-                                        ((RectTransform)GameCanvas.trackSettingPanel.transform).rect.height,
-                                        Screen.height));
+                                setPanelPosToMousePos((RectTransform)GameCanvas.trackSettingPanel.transform);
                             }
                         }
                         else if (mode == MODE_PLACE_AXLE)
@@ -531,13 +531,17 @@ public class Main : MonoBehaviour
                                 editingMapPin = new MapPin(playingmap, p);
                                 editingMapPin.generate();
                                 GameCanvas.mapPinSettingPanel.show(true);
-                                GameCanvas.mapPinSettingPanel.transform.position = new Vector3(
-                                    Mathf.Clamp(Input.mousePosition.x, 0,
-                                        Screen.width - ((RectTransform)GameCanvas.mapPinSettingPanel.transform).rect
-                                        .width),
-                                    Mathf.Clamp(Input.mousePosition.y,
-                                        ((RectTransform)GameCanvas.mapPinSettingPanel.transform).rect.height,
-                                        Screen.height));
+                                setPanelPosToMousePos((RectTransform)GameCanvas.mapPinSettingPanel.transform);
+                            }
+                        }
+                        else if (mode == MODE_PLACE_STRUCTURE)
+                        {
+                            if (Input.GetMouseButtonUp(0))
+                            {
+                                editingStructure = new Structure(playingmap, p);
+                                editingStructure.generate();
+                                GameCanvas.structureSettingPanel.show(true);
+                                setPanelPosToMousePos((RectTransform)GameCanvas.structureSettingPanel.transform);
                             }
                         }
                     }
@@ -677,6 +681,12 @@ public class Main : MonoBehaviour
     public static bool yrCondition()
     {
         return 1 / Time.deltaTime <= Main.min_fps;
+    }
+
+    public static void setPanelPosToMousePos(RectTransform panel)
+    {
+        panel.position = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0, Screen.width - panel.rect.width),
+            Mathf.Clamp(Input.mousePosition.y, panel.rect.height, Screen.height));
     }
 
     public void setPause(bool pause)
