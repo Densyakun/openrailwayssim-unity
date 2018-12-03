@@ -9,6 +9,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.PostProcessing;
 
+// TODO 線形を変えたときに繰り返す線形も適用させる
+
 //ゲームの動作を制御する中心的クラス
 public class Main : MonoBehaviour
 {
@@ -75,7 +77,7 @@ public class Main : MonoBehaviour
 
     public bool showGuide = true;
 
-    public static Track editingTrack;
+    public static List<Track> editingTracks = new List<Track>();
     public static Quaternion? editingRot;
     public static Coupler editingCoupler;
     public static MapPin editingMapPin;
@@ -270,10 +272,7 @@ public class Main : MonoBehaviour
                     MapEntity entity = hit.collider.GetComponent<MapEntity>();
                     if (entity == null && hit.collider.transform.parent)
                         entity = hit.collider.transform.parent.GetComponent<MapEntity>();
-                    if (entity != null &&
-                        (editingTrack == null
-                            ? true
-                            : editingTrack.entity != null && entity.gameObject != editingTrack.entity.gameObject))
+                    if (entity != null && (editingTracks.Any() ? editingTracks.Any(track => track.entity && entity.gameObject != track.entity.gameObject) : true))
                     {
                         if (focused != entity.obj)
                         {
@@ -383,29 +382,45 @@ public class Main : MonoBehaviour
                         if (mode == MODE_CONSTRUCT_TRACK)
                         {
                             var aaa = false;
-                            if (editingTrack != null)
+                            if (editingTracks.Any())
                             {
                                 if (editingRot == null)
                                 {
-                                    editingTrack.entity.transform.LookAt(p);
-                                    editingTrack.SyncFromEntity();
+                                    foreach (var track in editingTracks)
+                                    {
+                                        track.entity.transform.LookAt(p);
+                                        track.SyncFromEntity();
+                                    }
                                 }
+
+                                var isCurve = editingTracks[0] is Curve;
 
                                 if (Input.GetKeyDown(KeyCode.T))
                                 {
-                                    var pos = editingTrack.pos;
-                                    editingTrack.entity.Destroy();
-                                    if (editingTrack is Curve)
-                                        editingTrack = new Track(playingmap, pos);
-                                    else
-                                        editingTrack = new Curve(playingmap, pos);
+                                    var pos = editingTracks[0].pos;
+                                    var rot = editingTracks[0].rot;
+                                    foreach (var track in editingTracks)
+                                        track.entity.Destroy();
+                                    var c = editingTracks.Count;
+                                    editingTracks.Clear();
+                                    for (var a = 0; a < c; a++)
+                                    {
+                                        if (isCurve)
+                                            editingTracks.Add(new Track(playingmap, pos));
+                                        else
+                                            editingTracks.Add(new Curve(playingmap, pos));
+                                        var l = editingTracks.Last();
+                                        pos = l.getPoint(1);
+                                        if (isCurve)
+                                            rot = ((Curve)l).getRotation(1);
+                                    }
 
                                     aaa = true;
                                 }
 
-                                if (editingTrack is Curve)
+                                if (isCurve)
                                 {
-                                    Vector3 v = Quaternion.Inverse(editingTrack.rot) * (p - editingTrack.pos);
+                                    Vector3 v = Quaternion.Inverse(editingTracks[0].rot) * (p - editingTracks[0].pos);
                                     if (v.z != 0)
                                     {
                                         float a = Mathf.Atan(Mathf.Abs(v.x) / v.z);
@@ -420,10 +435,8 @@ public class Main : MonoBehaviour
                                                 Vector3.right * v.z);
                                             if (i != null)
                                             {
-                                                editingTrack.rot = Quaternion.Euler(-editingTrack.rot.eulerAngles.x, editingTrack.rot.eulerAngles.y - 180,
-                                                    0);
-                                                editingTrack.length =
-                                                    Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = -((Vector2)i).x));
+                                                editingTracks[0].rot = Quaternion.Euler(-editingTracks[0].rot.eulerAngles.x, editingTracks[0].rot.eulerAngles.y - 180, 0);
+                                                editingTracks[0].length = Mathf.Abs(a * 2 * (((Curve)editingTracks[0]).radius = -((Vector2)i).x));
                                             }
                                         }
                                         else
@@ -433,43 +446,45 @@ public class Main : MonoBehaviour
                                                 v + Quaternion.Euler(new Vector3(0, a * 2 * Mathf.Rad2Deg)) *
                                                 Vector3.right * v.z);
                                             if (i != null)
-                                                editingTrack.length =
-                                                    Mathf.Abs(a * 2 * (((Curve)editingTrack).radius = ((Vector2)i).x));
+                                                editingTracks[0].length = Mathf.Abs(a * 2 * (((Curve)editingTracks[0]).radius = ((Vector2)i).x));
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    Vector3 v = Quaternion.Inverse(editingTrack.rot) * (p - editingTrack.pos);
+                                    Vector3 v = Quaternion.Inverse(editingTracks[0].rot) * (p - editingTracks[0].pos);
                                     if (v.z < 0)
-                                        editingTrack.rot = Quaternion.Euler(-editingTrack.rot.eulerAngles.x, editingTrack.rot.eulerAngles.y - 180, 0);
-                                    editingTrack.length = Mathf.Abs(v.z);
+                                        editingTracks[0].rot = Quaternion.Euler(-editingTracks[0].rot.eulerAngles.x, editingTracks[0].rot.eulerAngles.y - 180, 0);
+                                    editingTracks[0].length = Mathf.Abs(v.z);
                                 }
 
-                                editingTrack.reloadEntity();
+                                foreach (var track in editingTracks)
+                                    track.reloadEntity();
                                 GameCanvas.trackSettingPanel.load();
                                 setPanelPosToMousePos((RectTransform)GameCanvas.trackSettingPanel.transform);
                             }
 
                             if (Input.GetMouseButtonUp(0))
                             {
-                                if (editingTrack != null)
+                                if (editingTracks.Any())
                                 {
                                     trackEdited0();
 
-                                    if (editingTrack is Curve)
-                                        editingRot = ((Curve)editingTrack).getRotation(1);
+                                    var l = editingTracks.Last();
+                                    if (l is Curve)
+                                        editingRot = ((Curve)l).getRotation(1);
                                     else
-                                        editingRot = editingTrack.rot;
+                                        editingRot = l.rot;
 
                                     Track newTrack;
 
-                                    if (editingTrack.GetType() == typeof(Track))
-                                        newTrack = new Curve(playingmap, editingTrack.getPoint(1));
+                                    if (l.GetType() == typeof(Track))
+                                        newTrack = new Curve(playingmap, l.getPoint(1));
                                     else
-                                        newTrack = new Track(playingmap, editingTrack.getPoint(1));
+                                        newTrack = new Track(playingmap, l.getPoint(1));
 
-                                    editingTrack = newTrack;
+                                    editingTracks.Clear();
+                                    editingTracks.Add(newTrack);
                                 }
                                 else if (focused != null)
                                 {
@@ -479,22 +494,25 @@ public class Main : MonoBehaviour
                                         if (mainTrack is Curve)
                                         {
                                             editingRot = ((Curve)mainTrack).getRotation(focusedDist / mainTrack.length);
-                                            editingTrack = new Track(playingmap, p);
+                                            editingTracks.Clear();
+                                            editingTracks.Add(new Track(playingmap, p));
                                         }
                                         else
                                         {
                                             editingRot = mainTrack.rot;
-                                            editingTrack = new Curve(playingmap, p);
+                                            editingTracks.Clear();
+                                            editingTracks.Add(new Curve(playingmap, p));
                                         }
                                     }
                                 }
                                 else
                                 {
                                     mainTrack = null;
-                                    editingTrack = new Track(playingmap, p);
+                                    editingTracks.Clear();
+                                    editingTracks.Add(new Track(playingmap, p));
                                 }
 
-                                if (editingTrack != null)
+                                if (editingTracks.Any())
                                     aaa = true;
                             }
 
@@ -503,13 +521,13 @@ public class Main : MonoBehaviour
 
                             if (aaa)
                             {
-                                editingTrack.rails.Add(-Main.main.gauge / 2);
-                                editingTrack.rails.Add(Main.main.gauge / 2);
+                                editingTracks[0].rails.Add(-Main.main.gauge / 2);
+                                editingTracks[0].rails.Add(Main.main.gauge / 2);
 
                                 if (editingRot != null)
-                                    editingTrack.rot = (Quaternion)editingRot;
-                                editingTrack.enableCollider = false;
-                                editingTrack.generate();
+                                    editingTracks[0].rot = (Quaternion)editingRot;
+                                editingTracks[0].enableCollider = false;
+                                editingTracks[0].generate();
 
                                 GameCanvas.trackSettingPanel.show(true);
                                 setPanelPosToMousePos((RectTransform)GameCanvas.trackSettingPanel.transform);
@@ -731,92 +749,118 @@ public class Main : MonoBehaviour
         return GetIntersectionPointCoordinates(A1.x, A1.z, A2.x, A2.z, B1.x, B1.z, B2.x, B2.z);
     }
 
+    // 線形敷設時に線形の繰り返し回数を設定する
+    public void setTrackRepeat(int repeat)
+    {
+        var t = editingTracks[0];
+        editingTracks.Clear();
+        t.reloadEntity();
+        editingTracks.Add(t);
+        for (var n = 1; n < repeat; n++)
+        {
+            Track t1 = t is Curve ? new Curve(t.map, t.getPoint(1), ((Curve)t).getRotation(1)) : new Track(t.map, t.getPoint(1), t.rot);
+            t1.length = t.length;
+            t1.rails = t.rails;
+            if (t1 is Curve)
+            {
+                ((Curve)t1).radius = ((Curve)t).radius;
+                ((Curve)t1).isVerticalCurve = ((Curve)t).isVerticalCurve;
+            }
+            t1.reloadEntity();
+            editingTracks.Add(t1);
+            t = t1;
+        }
+    }
+
     public void trackEdited0()
     {
-        if (editingTrack is Curve && ((Curve)editingTrack).isLinear())
-            print("!"); //TODO 作成する曲線が直線である場合、直線が作成されるようにする
-
-        if (mainTrack != null)
+        foreach (var track in editingTracks)
         {
-            if (mainTrack.pos == editingTrack.pos && mainTrack.rot.eulerAngles == editingTrack.rot.eulerAngles ||
-            mainTrack.pos == editingTrack.getPoint(1) && mainTrack.rot.eulerAngles == (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles))
+            if (track is Curve && ((Curve)track).isLinear())
+                print("!"); //TODO 作成する曲線が直線である場合、直線が作成されるようにする
+
+            if (mainTrack != null)
             {
-                mainTrack.prevTracks.Add(editingTrack);
-                if (mainTrack.prevTracks.Count == 1)
-                    mainTrack.connectingPrevTrack = 0;
-            }
-            else if (mainTrack.getPoint(1) == editingTrack.pos && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == editingTrack.rot.eulerAngles ||
-            mainTrack.getPoint(1) == editingTrack.getPoint(1) && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles))
-            {
-                mainTrack.nextTracks.Add(editingTrack);
-                if (mainTrack.nextTracks.Count == 1)
-                    mainTrack.connectingNextTrack = 0;
+                if (mainTrack.pos == track.pos && mainTrack.rot.eulerAngles == track.rot.eulerAngles ||
+                mainTrack.pos == track.getPoint(1) && mainTrack.rot.eulerAngles == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                {
+                    mainTrack.prevTracks.Add(track);
+                    if (mainTrack.prevTracks.Count == 1)
+                        mainTrack.connectingPrevTrack = 0;
+                }
+                else if (mainTrack.getPoint(1) == track.pos && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == track.rot.eulerAngles ||
+                mainTrack.getPoint(1) == track.getPoint(1) && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                {
+                    mainTrack.nextTracks.Add(track);
+                    if (mainTrack.nextTracks.Count == 1)
+                        mainTrack.connectingNextTrack = 0;
+                }
+
+                if (track.pos == mainTrack.pos && track.rot.eulerAngles == mainTrack.rot.eulerAngles ||
+                track.pos == mainTrack.getPoint(1) && track.rot.eulerAngles == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
+                {
+                    track.prevTracks.Add(mainTrack);
+                    if (track.prevTracks.Count == 1)
+                        track.connectingPrevTrack = 0;
+                }
+                else if (track.getPoint(1) == mainTrack.pos && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == mainTrack.rot.eulerAngles ||
+                track.getPoint(1) == mainTrack.getPoint(1) && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
+                {
+                    track.nextTracks.Add(mainTrack);
+                    if (track.nextTracks.Count == 1)
+                        track.connectingNextTrack = 0;
+                }
             }
 
-            if (editingTrack.pos == mainTrack.pos && editingTrack.rot.eulerAngles == mainTrack.rot.eulerAngles ||
-            editingTrack.pos == mainTrack.getPoint(1) && editingTrack.rot.eulerAngles == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
+            if (focused is Track)
             {
-                editingTrack.prevTracks.Add(mainTrack);
-                if (editingTrack.prevTracks.Count == 1)
-                    editingTrack.connectingPrevTrack = 0;
+                print(((Track)focused).pos);
+                print(track.getPoint(1));
+                print(track.getPoint(1) == ((Track)focused).pos);
+                if (track.pos == focused.pos && track.rot.eulerAngles == focused.rot.eulerAngles ||
+                track.pos == ((Track)focused).getPoint(1) && track.rot.eulerAngles == (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles))
+                {
+                    print("0");
+                    track.prevTracks.Add((Track)focused);
+                    if (track.prevTracks.Count == 1)
+                        track.connectingPrevTrack = 0;
+                }
+                else if (track.getPoint(1) == focused.pos && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == focused.rot.eulerAngles ||
+                track.getPoint(1) == ((Track)focused).getPoint(1) && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles))
+                {
+                    print("1");
+                    track.nextTracks.Add((Track)focused);
+                    if (track.nextTracks.Count == 1)
+                        track.connectingNextTrack = 0;
+                }
+
+                if (focused.pos == track.pos && focused.rot.eulerAngles == track.rot.eulerAngles ||
+                focused.pos == track.getPoint(1) && focused.rot.eulerAngles == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                {
+                    print("2");
+                    ((Track)focused).prevTracks.Add(track);
+                    if (((Track)focused).prevTracks.Count == 1)
+                        ((Track)focused).connectingPrevTrack = 0;
+                }
+                else if (((Track)focused).getPoint(1) == track.pos && (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles) == track.rot.eulerAngles ||
+                ((Track)focused).getPoint(1) == track.getPoint(1) && (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles) == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                {
+                    print("3");
+                    ((Track)focused).nextTracks.Add(track);
+                    if (((Track)focused).nextTracks.Count == 1)
+                        ((Track)focused).connectingNextTrack = 0;
+                }
             }
-            else if (editingTrack.getPoint(1) == mainTrack.pos && (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles) == mainTrack.rot.eulerAngles ||
-            editingTrack.getPoint(1) == mainTrack.getPoint(1) && (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles) == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
-            {
-                editingTrack.nextTracks.Add(mainTrack);
-                if (editingTrack.nextTracks.Count == 1)
-                    editingTrack.connectingNextTrack = 0;
-            }
+
+            //TODO 逆向きの線路の接続
+            //TODO editingTrackやfocusedだけでなく、マップ上のすべての線形との接続を試みる（バウンディングボックスの概念を考え、線形が多い場合などに高速で処理できるようにする）
+
+            playingmap.addObject(track);
+            track.enableCollider = true;
+            track.reloadCollider();
         }
 
-        if (focused is Track)
-        {
-            print(((Track)focused).pos);
-            print(editingTrack.getPoint(1));
-            print(editingTrack.getPoint(1) == ((Track)focused).pos);
-            if (editingTrack.pos == focused.pos && editingTrack.rot.eulerAngles == focused.rot.eulerAngles ||
-            editingTrack.pos == ((Track)focused).getPoint(1) && editingTrack.rot.eulerAngles == (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles))
-            {
-                print("0");
-                editingTrack.prevTracks.Add((Track)focused);
-                if (editingTrack.prevTracks.Count == 1)
-                    editingTrack.connectingPrevTrack = 0;
-            }
-            else if (editingTrack.getPoint(1) == focused.pos && (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles) == focused.rot.eulerAngles ||
-            editingTrack.getPoint(1) == ((Track)focused).getPoint(1) && (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles) == (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles))
-            {
-                print("1");
-                editingTrack.nextTracks.Add((Track)focused);
-                if (editingTrack.nextTracks.Count == 1)
-                    editingTrack.connectingNextTrack = 0;
-            }
-
-            if (focused.pos == editingTrack.pos && focused.rot.eulerAngles == editingTrack.rot.eulerAngles ||
-            focused.pos == editingTrack.getPoint(1) && focused.rot.eulerAngles == (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles))
-            {
-                print("2");
-                ((Track)focused).prevTracks.Add(editingTrack);
-                if (((Track)focused).prevTracks.Count == 1)
-                    ((Track)focused).connectingPrevTrack = 0;
-            }
-            else if (((Track)focused).getPoint(1) == editingTrack.pos && (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles) == editingTrack.rot.eulerAngles ||
-            ((Track)focused).getPoint(1) == editingTrack.getPoint(1) && (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles) == (editingTrack is Curve ? ((Curve)editingTrack).getRotation(1).eulerAngles : editingTrack.rot.eulerAngles))
-            {
-                print("3");
-                ((Track)focused).nextTracks.Add(editingTrack);
-                if (((Track)focused).nextTracks.Count == 1)
-                    ((Track)focused).connectingNextTrack = 0;
-            }
-        }
-
-        //TODO 逆向きの線路の接続
-        //TODO editingTrackやfocusedだけでなく、マップ上のすべての線形との接続を試みる（バウンディングボックスの概念を考え、線形が多い場合などに高速で処理できるようにする）
-
-        mainTrack = editingTrack;
-
-        playingmap.addObject(editingTrack);
-        editingTrack.enableCollider = true;
-        editingTrack.reloadCollider();
+        mainTrack = editingTracks.Last();
     }
 
     public static void selectObj(MapObject obj)
@@ -869,12 +913,10 @@ public class Main : MonoBehaviour
     {
         GameCanvas.trackSettingPanel.show(false);
 
-        if (editingTrack != null)
-        {
-            editingTrack.entity.Destroy();
-            editingTrack = null;
-        }
+        foreach (var track in editingTracks)
+            track.entity.Destroy();
 
+        editingTracks.Clear();
         editingRot = null;
     }
 }
