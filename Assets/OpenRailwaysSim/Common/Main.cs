@@ -48,6 +48,8 @@ public class Main : MonoBehaviour
     public const bool DEFAULT_BLOOM = true;
     public const bool DEFAULT_VIGNETTE = true;
 
+    public const float ALLOWABLE_RANGE = 0.0001f;
+
     public static Main main;
     public static Map playingmap { get; private set; }
     string ssdir;
@@ -814,38 +816,35 @@ public class Main : MonoBehaviour
 
             if (focused is Track)
             {
-                print(((Track)focused).pos);
-                print(track.getPoint(1));
-                print(track.getPoint(1) == ((Track)focused).pos);
-                if (track.pos == focused.pos && track.rot.eulerAngles == focused.rot.eulerAngles ||
-                track.pos == ((Track)focused).getPoint(1) && track.rot.eulerAngles == (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles))
+                var a = (track.pos - ((Track)focused).pos).sqrMagnitude < ALLOWABLE_RANGE;
+                var a1 = (track.pos - ((Track)focused).getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE;
+                var a2 = (track.getPoint(1) - ((Track)focused).pos).sqrMagnitude < ALLOWABLE_RANGE;
+                var a3 = (track.getPoint(1) - ((Track)focused).getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE;
+                var b = (track.rot.eulerAngles - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
+                var b1 = (track.rot.eulerAngles - (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE;
+                var b2 = ((track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
+                var b3 = ((track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) - (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE;
+                if (a && b || a1 && b1)
                 {
-                    print("0");
                     track.prevTracks.Add((Track)focused);
                     if (track.prevTracks.Count == 1)
                         track.connectingPrevTrack = 0;
                 }
-                else if (track.getPoint(1) == focused.pos && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == focused.rot.eulerAngles ||
-                track.getPoint(1) == ((Track)focused).getPoint(1) && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles))
+                else if (a2 && b2 || a3 && b3)
                 {
-                    print("1");
                     track.nextTracks.Add((Track)focused);
                     if (track.nextTracks.Count == 1)
                         track.connectingNextTrack = 0;
                 }
 
-                if (focused.pos == track.pos && focused.rot.eulerAngles == track.rot.eulerAngles ||
-                focused.pos == track.getPoint(1) && focused.rot.eulerAngles == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                if (a && b || a2 && b2)
                 {
-                    print("2");
                     ((Track)focused).prevTracks.Add(track);
                     if (((Track)focused).prevTracks.Count == 1)
                         ((Track)focused).connectingPrevTrack = 0;
                 }
-                else if (((Track)focused).getPoint(1) == track.pos && (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles) == track.rot.eulerAngles ||
-                ((Track)focused).getPoint(1) == track.getPoint(1) && (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles) == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                else if (a1 && b1 || a3 && b3)
                 {
-                    print("3");
                     ((Track)focused).nextTracks.Add(track);
                     if (((Track)focused).nextTracks.Count == 1)
                         ((Track)focused).connectingNextTrack = 0;
