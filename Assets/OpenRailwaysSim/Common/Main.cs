@@ -311,61 +311,46 @@ public class Main : MonoBehaviour
                     }
                     else
                     {
-                        Vector3 p = hit.point;
+                        var p = hit.point;
                         p.y = 0;
 
                         if (focused != null)
                         {
                             if (focused is Curve)
                             {
+                                var a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
+                                var r = ((Curve)focused).radius;
+                                float A;
+
                                 if (((Curve)focused).isVerticalCurve)
                                 {
-                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                    float r1 = ((Curve)focused).radius;
-                                    if (r1 < 0)
+                                    if (r < 0)
                                     {
-                                        r1 = -r1;
+                                        r = -r;
                                         a.y = -a.y;
                                     }
-
-                                    float r2 = Vector3.Distance(a, Vector3.up * r1);
-                                    float A = Mathf.Atan(a.z / (r2 - a.y));
-                                    if (A < 0)
-                                        A = Mathf.PI + A;
-                                    if (a.z < 0)
-                                        A += Mathf.PI;
-                                    focusedDist = A * r1;
-                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
-                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = 0;
-                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = ((Track)focused).length;
-                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
+                                    A = Mathf.Atan(a.z / (r - a.y));
                                 }
                                 else
                                 {
-                                    Vector3 a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                    float r1 = ((Curve)focused).radius;
-                                    if (r1 < 0)
+                                    if (r < 0)
                                     {
-                                        r1 = -r1;
+                                        r = -r;
                                         a.x = -a.x;
                                     }
-
-                                    float r2 = Vector3.Distance(a, Vector3.right * r1);
-                                    float A = Mathf.Atan(a.z / (r2 - a.x));
-                                    if (A < 0)
-                                        A = Mathf.PI + A;
-                                    if (a.z < 0)
-                                        A += Mathf.PI;
-                                    focusedDist = A * r1;
-                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
-                                        focusedDist > Mathf.PI * 2 * r1 - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = 0;
-                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                        focusedDist = ((Track)focused).length;
-                                    p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
+                                    A = Mathf.Atan(a.z / (r - a.x));
                                 }
+
+                                if (A < 0)
+                                    A = Mathf.PI + A;
+                                if (a.z < 0)
+                                    A += Mathf.PI;
+                                focusedDist = A * r;
+                                if (focusedDist < Track.MIN_TRACK_LENGTH ||
+                                    focusedDist > Mathf.PI * 2 * r - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = 0;
+                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                    focusedDist = ((Track)focused).length;
                             }
                             else if (focused is Track)
                             {
@@ -374,8 +359,9 @@ public class Main : MonoBehaviour
                                     focusedDist = 0;
                                 else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
                                     focusedDist = ((Track)focused).length;
-                                p = focused.pos + focused.rot * Vector3.forward * focusedDist;
                             }
+
+                            p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
                         }
 
                         point.transform.position = p;
