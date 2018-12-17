@@ -107,7 +107,8 @@ public class BogieFrame : MapObject
         foreach (var axle in axles)
         {
             axle.reloadOnDist();
-            axle.rot = rot;
+            var r = rot * Quaternion.AngleAxis(-180f, Vector3.up);
+            axle.rot = Mathf.Abs(Quaternion.Dot(axle.rot, rot)) < Mathf.Abs(Quaternion.Dot(axle.rot, r)) ? rot : r;
             axle.speed = s;
         }
         //車軸をレールに合わせると、台車枠がずれる。次のフレームで合わせるので省略している。
