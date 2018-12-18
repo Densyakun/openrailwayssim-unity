@@ -9,7 +9,7 @@ public class MapObject : ISerializable
     public const string KEY_POS = "POS";
     public const string KEY_ROTATION = "ROT";
 
-    public virtual MapEntity entity { get; protected set; }
+    public MapEntity entity;
 
     [NonSerialized] private Map _map;
 
@@ -101,6 +101,7 @@ public class MapObject : ISerializable
 
     public virtual void destroy()
     {
+        entity = null;
     }
 
     public virtual void reloadEntity()

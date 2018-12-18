@@ -56,5 +56,7 @@ public class MapPin : MapObject
     public override void destroy()
     {
         GameObject.Destroy(textEntity.gameObject);
+
+        base.destroy();
     }
 }

@@ -163,7 +163,7 @@ public class Main : MonoBehaviour
                 if (GameCanvas.trackSettingPanel.isShowing())
                 {
                     a = false;
-                    cancelEditingTrack();
+                    cancelEditingTracks();
                 }
                 else if (GameCanvas.couplerSettingPanel.isShowing())
                 {
@@ -316,52 +316,55 @@ public class Main : MonoBehaviour
 
                         if (focused != null)
                         {
-                            if (focused is Curve)
+                            if (focused is Track)
                             {
-                                var a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
-                                var r = ((Curve)focused).radius;
-                                float A;
-
-                                if (((Curve)focused).isVerticalCurve)
+                                if (focused is Curve)
                                 {
-                                    if (r < 0)
+                                    var a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
+                                    var r = ((Curve)focused).radius;
+                                    float A;
+
+                                    if (((Curve)focused).isVerticalCurve)
                                     {
-                                        r = -r;
-                                        a.y = -a.y;
+                                        if (r < 0)
+                                        {
+                                            r = -r;
+                                            a.y = -a.y;
+                                        }
+                                        A = Mathf.Atan(a.z / (r - a.y));
                                     }
-                                    A = Mathf.Atan(a.z / (r - a.y));
+                                    else
+                                    {
+                                        if (r < 0)
+                                        {
+                                            r = -r;
+                                            a.x = -a.x;
+                                        }
+                                        A = Mathf.Atan(a.z / (r - a.x));
+                                    }
+
+                                    if (A < 0)
+                                        A = Mathf.PI + A;
+                                    if (a.z < 0)
+                                        A += Mathf.PI;
+                                    focusedDist = A * r;
+                                    if (focusedDist < Track.MIN_TRACK_LENGTH ||
+                                        focusedDist > Mathf.PI * 2 * r - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = 0;
+                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = ((Track)focused).length;
                                 }
                                 else
                                 {
-                                    if (r < 0)
-                                    {
-                                        r = -r;
-                                        a.x = -a.x;
-                                    }
-                                    A = Mathf.Atan(a.z / (r - a.x));
+                                    focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
+                                    if (focusedDist < Track.MIN_TRACK_LENGTH)
+                                        focusedDist = 0;
+                                    else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                                        focusedDist = ((Track)focused).length;
                                 }
 
-                                if (A < 0)
-                                    A = Mathf.PI + A;
-                                if (a.z < 0)
-                                    A += Mathf.PI;
-                                focusedDist = A * r;
-                                if (focusedDist < Track.MIN_TRACK_LENGTH ||
-                                    focusedDist > Mathf.PI * 2 * r - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = 0;
-                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track)focused).length;
+                                p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
                             }
-                            else if (focused is Track)
-                            {
-                                focusedDist = (Quaternion.Inverse(focused.rot) * (hit.point - focused.pos)).z;
-                                if (focusedDist < Track.MIN_TRACK_LENGTH)
-                                    focusedDist = 0;
-                                else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
-                                    focusedDist = ((Track)focused).length;
-                            }
-
-                            p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
                         }
 
                         point.transform.position = p;
@@ -391,17 +394,13 @@ public class Main : MonoBehaviour
                                         track.entity.Destroy();
                                     var c = editingTracks.Count;
                                     editingTracks.Clear();
-                                    for (var a = 0; a < c; a++)
-                                    {
-                                        if (isCurve)
-                                            editingTracks.Add(new Track(playingmap, pos));
-                                        else
-                                            editingTracks.Add(new Curve(playingmap, pos));
-                                        var l = editingTracks.Last();
-                                        pos = l.getPoint(1);
-                                        if (isCurve)
-                                            rot = ((Curve)l).getRotation(1);
-                                    }
+
+                                    if (isCurve)
+                                        editingTracks.Add(new Track(playingmap, pos, rot));
+                                    else
+                                        editingTracks.Add(new Curve(playingmap, pos, rot));
+                                    isCurve = !isCurve;
+                                    setTrackRepeat(c);
 
                                     aaa = true;
                                 }
@@ -505,7 +504,7 @@ public class Main : MonoBehaviour
                             }
 
                             if (Input.GetMouseButtonUp(1))
-                                cancelEditingTrack();
+                                cancelEditingTracks();
 
                             if (aaa)
                             {
@@ -740,21 +739,34 @@ public class Main : MonoBehaviour
     // 線形敷設時に線形の繰り返し回数を設定する
     public void setTrackRepeat(int repeat)
     {
-        var t = editingTracks[0];
+        Track t = editingTracks[0] is Curve ? new Curve(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot) : new Track(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot);
+        t.rails = editingTracks[0].rails;
+        if (t is Curve)
+        {
+            ((Curve)t).radius = ((Curve)editingTracks[0]).radius;
+            ((Curve)t).isVerticalCurve = ((Curve)editingTracks[0]).isVerticalCurve;
+        }
+        t.length = editingTracks[0].length;
+
+        foreach (var track in editingTracks)
+            if (track.entity)
+                track.entity.Destroy();
         editingTracks.Clear();
-        t.reloadEntity();
+
+        t.generate();
         editingTracks.Add(t);
         for (var n = 1; n < repeat; n++)
         {
             Track t1 = t is Curve ? new Curve(t.map, t.getPoint(1), ((Curve)t).getRotation(1)) : new Track(t.map, t.getPoint(1), t.rot);
-            t1.length = t.length;
             t1.rails = t.rails;
             if (t1 is Curve)
             {
                 ((Curve)t1).radius = ((Curve)t).radius;
                 ((Curve)t1).isVerticalCurve = ((Curve)t).isVerticalCurve;
             }
-            t1.reloadEntity();
+            t1.length = t.length;
+
+            t1.generate();
             editingTracks.Add(t1);
             t = t1;
         }
@@ -843,6 +855,8 @@ public class Main : MonoBehaviour
             playingmap.addObject(track);
             track.enableCollider = true;
             track.reloadCollider();
+
+            mainTrack = track;
         }
 
         mainTrack = editingTracks.Last();
@@ -894,14 +908,14 @@ public class Main : MonoBehaviour
         GameCanvas.playingPanel.a();
     }
 
-    public static void cancelEditingTrack()
+    public static void cancelEditingTracks()
     {
         GameCanvas.trackSettingPanel.show(false);
 
         foreach (var track in editingTracks)
             track.entity.Destroy();
-
         editingTracks.Clear();
+
         editingRot = null;
     }
 }

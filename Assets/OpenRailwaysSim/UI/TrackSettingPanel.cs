@@ -14,7 +14,7 @@ public class TrackSettingPanel : GamePanel
     public Text lengthText;
     public InputField lengthInput;
     public Text repeatText;
-    public Slider repeatSlider;
+    public InputField repeatInput;
     public GameObject curveSettingPanel;
     public Text radiusText;
     public InputField radiusInput;
@@ -30,27 +30,15 @@ public class TrackSettingPanel : GamePanel
         reflect();
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            InputField input = null;
-            if (EventSystem.current.currentSelectedGameObject != null)
-                input = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>();
-            if (input != null && input.isFocused)
-            {
-                if (input == lengthInput)
-                {
-                    if (Main.editingTracks[0] is Curve)
-                        EventSystem.current.SetSelectedGameObject(radiusInput.gameObject);
-                }
-                else
-                    EventSystem.current.SetSelectedGameObject(lengthInput.gameObject);
-            }
-            else
-                EventSystem.current.SetSelectedGameObject(lengthInput.gameObject);
+            InputField input = EventSystem.current.currentSelectedGameObject != null ? EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() : null;
+            EventSystem.current.SetSelectedGameObject(((input != null && input.isFocused) ? input == lengthInput ? repeatInput : input == repeatInput ? Main.editingTracks[0] is Curve ? radiusInput : lengthInput : lengthInput : lengthInput).gameObject);
         }
     }
 
     public void load()
     {
         lengthInput.text = (lastLength = Main.editingTracks[0].length).ToString();
+        repeatInput.text = "1";
         if (Main.editingTracks[0] is Curve)
         {
             radiusInput.text = (lastRadius = ((Curve)Main.editingTracks[0]).radius).ToString();
@@ -63,6 +51,7 @@ public class TrackSettingPanel : GamePanel
         if (show)
         {
             lengthText.text = lengthText_DEF + ": ";
+            repeatText.text = repeatText_DEF + ": ";
             if (Main.editingTracks[0] is Curve)
             {
                 radiusText.text = radiusText_DEF + ": ";
@@ -99,12 +88,10 @@ public class TrackSettingPanel : GamePanel
                 ((Curve)Main.editingTracks[0]).radius = float.Parse(radiusInput.text);
                 ((Curve)Main.editingTracks[0]).isVerticalCurve = isVerticalCurveToggle.isOn;
             }
+            Main.main.setTrackRepeat(int.Parse(repeatInput.text));
         }
         catch (FormatException) { }
         catch (OverflowException) { }
-
-        repeatText.text = repeatText_DEF + ": " + (int)repeatSlider.value + " ";
-        Main.main.setTrackRepeat((int)repeatSlider.value);
     }
 
     public void save()
@@ -121,6 +108,7 @@ public class TrackSettingPanel : GamePanel
     public void cancel()
     {
         lengthInput.text = lastLength.ToString();
+        repeatInput.text = "1";
         radiusInput.text = lastRadius.ToString();
         isVerticalCurveToggle.isOn = lastIsVerticalCurve;
         reflect();

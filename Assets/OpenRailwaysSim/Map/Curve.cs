@@ -148,7 +148,8 @@ public class Curve : Track
         if (colliders.Length != l)
         {
             for (int a = 0; a < colliders.Length; a++)
-                GameObject.Destroy(colliders[a].gameObject);
+                if (colliders[a])
+                    GameObject.Destroy(colliders[a].gameObject);
             colliders = new BoxCollider[l];
         }
         for (int a = 0; a < l; a++)
