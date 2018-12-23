@@ -174,27 +174,14 @@ public class Curve : Track
 
     public override Vector3 getPoint(float a)
     {
-        var x = 0f;
-        var y = 0f;
-        var z = _length * a;
-        if (isVerticalCurve)
-        {
-            var d = _length * a / Mathf.Abs(_radius);
-            y = (1f - Mathf.Cos(d)) * _radius;
-            z = Mathf.Sin(d) * Mathf.Abs(_radius);
-        }
-        else
-        {
-            var d = _length * a / Mathf.Abs(_radius);
-            x = (1f - Mathf.Cos(d)) * _radius;
-            z = Mathf.Sin(d) * Mathf.Abs(_radius);
-        }
-        return pos + rot * new Vector3(x, y, z);
+        var d = _length * a;
+        var d1 = d / Mathf.Abs(_radius);
+        return isVerticalCurve ? pos + rot * new Vector3(0f, (1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(d1) * Mathf.Abs(_radius)) : pos + Quaternion.Euler(0, rot.eulerAngles.y, 0) * new Vector3((1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(-rot.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(_radius));
     }
 
     public virtual Quaternion getRotation(float a)
     {
-        return isVerticalCurve ? rot * Quaternion.Euler(new Vector3(-_length * a * Mathf.Rad2Deg / _radius, 0)) : rot * Quaternion.Euler(new Vector3(0, _length * a * Mathf.Rad2Deg / _radius));
+        return isVerticalCurve ? rot * Quaternion.Euler(-_length * a * Mathf.Rad2Deg / _radius, 0, 0) : Quaternion.Euler(0, rot.eulerAngles.y, 0) * Quaternion.Euler(rot.eulerAngles.x, _length * a * Mathf.Rad2Deg / _radius, 0);
     }
 
     public virtual bool isLinear()

@@ -320,7 +320,8 @@ public class Main : MonoBehaviour
                             {
                                 if (focused is Curve)
                                 {
-                                    var a = Quaternion.Inverse(focused.rot) * (hit.point - focused.pos);
+                                    var f = Quaternion.Inverse(focused.rot);
+                                    var a = f * (hit.point - focused.pos);
                                     var r = ((Curve)focused).radius;
                                     float A;
 
@@ -332,22 +333,37 @@ public class Main : MonoBehaviour
                                             a.y = -a.y;
                                         }
                                         A = Mathf.Atan(a.z / (r - a.y));
+
+                                        if (A < 0)
+                                            A = Mathf.PI + A;
+                                        if (a.z < 0)
+                                            A += Mathf.PI;
+                                        focusedDist = A * r;
                                     }
                                     else
                                     {
+                                        var b = f * (((Track)focused).getPoint(1) - focused.pos);
+
                                         if (r < 0)
                                         {
                                             r = -r;
                                             a.x = -a.x;
+                                            b.x = -b.x;
                                         }
                                         A = Mathf.Atan(a.z / (r - a.x));
+                                        var A1 = Mathf.Atan(b.z / (r - b.x));
+                                        if (A1 < 0)
+                                            A1 = Mathf.PI + A1;
+                                        if (b.z < 0)
+                                            A1 += Mathf.PI;
+
+                                        if (A < 0)
+                                            A = Mathf.PI + A;
+                                        if (a.z < 0)
+                                            A += Mathf.PI;
+                                        focusedDist = A * ((Track)focused).length / A1;
                                     }
 
-                                    if (A < 0)
-                                        A = Mathf.PI + A;
-                                    if (a.z < 0)
-                                        A += Mathf.PI;
-                                    focusedDist = A * r;
                                     if (focusedDist < Track.MIN_TRACK_LENGTH ||
                                         focusedDist > Mathf.PI * 2 * r - Track.MIN_TRACK_LENGTH)
                                         focusedDist = 0;
@@ -418,7 +434,7 @@ public class Main : MonoBehaviour
                                         {
                                             Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero,
                                                 Vector3.right * v.x, v,
-                                                v + Quaternion.Euler(new Vector3(0, a * 2 * Mathf.Rad2Deg)) *
+                                                v + Quaternion.Euler(0, a * 2 * Mathf.Rad2Deg, 0) *
                                                 Vector3.right * v.z);
                                             if (i != null)
                                             {
@@ -430,7 +446,7 @@ public class Main : MonoBehaviour
                                         {
                                             Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero,
                                                 Vector3.right * v.x, v,
-                                                v + Quaternion.Euler(new Vector3(0, a * 2 * Mathf.Rad2Deg)) *
+                                                v + Quaternion.Euler(0, a * 2 * Mathf.Rad2Deg, 0) *
                                                 Vector3.right * v.z);
                                             if (i != null)
                                                 editingTracks[0].length = Mathf.Abs(a * 2 * (((Curve)editingTracks[0]).radius = ((Vector2)i).x));
