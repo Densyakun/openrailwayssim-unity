@@ -400,7 +400,7 @@ public class Main : MonoBehaviour
                                     }
                                 }
 
-                                var isCurve = editingTracks[0] is Curve;
+                                var type = editingTracks[0] is Curve ? 1 : editingTracks[0] is TransitionCurve ? 2 : 0;
 
                                 if (Input.GetKeyDown(KeyCode.T))
                                 {
@@ -411,17 +411,19 @@ public class Main : MonoBehaviour
                                     var c = editingTracks.Count;
                                     editingTracks.Clear();
 
-                                    if (isCurve)
+                                    if (type == 1)
+                                        editingTracks.Add(new TransitionCurve(playingmap, pos, rot));
+                                    else if (type == 2)
                                         editingTracks.Add(new Track(playingmap, pos, rot));
                                     else
                                         editingTracks.Add(new Curve(playingmap, pos, rot));
-                                    isCurve = !isCurve;
+                                    type++;
                                     setTrackRepeat(c);
 
                                     aaa = true;
                                 }
 
-                                if (isCurve)
+                                if (type == 1)
                                 {
                                     Vector3 v = Quaternion.Inverse(editingTracks[0].rot) * (p - editingTracks[0].pos);
                                     if (v.z != 0)
@@ -755,9 +757,15 @@ public class Main : MonoBehaviour
     // 線形敷設時に線形の繰り返し回数を設定する
     public void setTrackRepeat(int repeat)
     {
-        Track t = editingTracks[0] is Curve ? new Curve(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot) : new Track(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot);
+        Track t = editingTracks[0] is TransitionCurve ? new TransitionCurve(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot) : editingTracks[0] is Curve ? new Curve(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot) : new Track(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot);
         t.rails = editingTracks[0].rails;
-        if (t is Curve)
+        if (t is TransitionCurve)
+        {
+            ((TransitionCurve)t).curvature1 = ((TransitionCurve)editingTracks[0]).curvature1;
+            ((TransitionCurve)t).curvature2 = ((TransitionCurve)editingTracks[0]).curvature2;
+            ((TransitionCurve)t).isVerticalCurve = ((TransitionCurve)editingTracks[0]).isVerticalCurve;
+        }
+        else if (t is Curve)
         {
             ((Curve)t).radius = ((Curve)editingTracks[0]).radius;
             ((Curve)t).isVerticalCurve = ((Curve)editingTracks[0]).isVerticalCurve;
@@ -779,6 +787,12 @@ public class Main : MonoBehaviour
             {
                 ((Curve)t1).radius = ((Curve)t).radius;
                 ((Curve)t1).isVerticalCurve = ((Curve)t).isVerticalCurve;
+            }
+            else if (t1 is TransitionCurve)
+            {
+                ((TransitionCurve)t1).curvature1 = ((TransitionCurve)editingTracks[0]).curvature1;
+                ((TransitionCurve)t1).curvature2 = ((TransitionCurve)editingTracks[0]).curvature2;
+                ((TransitionCurve)t1).isVerticalCurve = ((TransitionCurve)editingTracks[0]).isVerticalCurve;
             }
             t1.length = t.length;
 
