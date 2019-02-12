@@ -94,7 +94,7 @@ public class Body : MapObject
             if (bogieFrames.Count == 1)
                 rot = bogieFrames[0].rot;
             else
-                rot = Quaternion.LookRotation(bogieFrames[bogieFrames.Count - 1].pos - bogieFrames[0].pos);
+                rot = Quaternion.LookRotation(bogieFrames[bogieFrames.Count - 1].pos - bogieFrames[0].pos, Quaternion.Lerp(bogieFrames[0].rot, bogieFrames[bogieFrames.Count - 1].rot, 0.5f) * Vector3.up);
 
             for (var d = 0; d < bogieFrames.Count; d++)
                 p_ += (p + (bogieFrames.Count == 1 || d * 2 - (bogieFrames.Count - 1) == 0

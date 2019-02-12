@@ -25,7 +25,6 @@ public class Main : MonoBehaviour
     public const string KEY_MOTIONBLUR = "MOTIONBLUR";
     public const string KEY_BLOOM = "BLOOM";
     public const string KEY_VIGNETTE = "VIGNETTE";
-    public const string KEY_GAUGE = "GAUGE";
 
     public const int MIN_DRAW_DISTANCE = 1;
     public const int MAX_DRAW_DISTANCE = 8;
@@ -88,6 +87,8 @@ public class Main : MonoBehaviour
     public static MapObject focused;
     public static float focusedDist;
     public static List<MapObject> selectingObjs = new List<MapObject>();
+    public static float gauge = Track.defaultGauge;
+    public static float cant = 0f;
 
     public Gradient sunGradient;
     public Light sun; //太陽
@@ -101,8 +102,8 @@ public class Main : MonoBehaviour
     public Material rail_mat;
     public GameObject point;
     public GameObject grid;
-    public float gauge = 1.435f;
-    public GameObject railModel;
+    public GameObject railLModel;
+    public GameObject railRModel;
     public GameObject tieModel;
     public GameObject axleModel;
     public GameObject bogieFrameModel;
@@ -127,7 +128,6 @@ public class Main : MonoBehaviour
         motionBlur = PlayerPrefs.GetInt(KEY_MOTIONBLUR, DEFAULT_MOTIONBLUR ? 1 : 0) == 1;
         bloom = PlayerPrefs.GetInt(KEY_BLOOM, DEFAULT_BLOOM ? 1 : 0) == 1;
         vignette = PlayerPrefs.GetInt(KEY_VIGNETTE, DEFAULT_VIGNETTE ? 1 : 0) == 1;
-        gauge = PlayerPrefs.GetFloat(KEY_GAUGE, gauge);
         reflectSettings();
         saveSettings();
     }
@@ -464,7 +464,7 @@ public class Main : MonoBehaviour
                                 foreach (var track in editingTracks)
                                     track.reloadEntity();
                                 GameCanvas.trackSettingPanel.load();
-                                setPanelPosToMousePos((RectTransform)GameCanvas.trackSettingPanel.transform);
+                                setPanelPosToMousePos(GameCanvas.trackSettingPanel);
                             }
 
                             if (Input.GetMouseButtonUp(0))
@@ -524,16 +524,16 @@ public class Main : MonoBehaviour
 
                             if (aaa)
                             {
-                                editingTracks[0].rails.Add(-Main.main.gauge / 2);
-                                editingTracks[0].rails.Add(Main.main.gauge / 2);
-
                                 if (editingRot != null)
                                     editingTracks[0].rot = (Quaternion)editingRot;
+                                editingTracks[0].gauge = gauge;
+                                if (editingTracks[0] is Curve)
+                                    ((Curve)editingTracks[0]).cant = cant;
                                 editingTracks[0].enableCollider = false;
                                 editingTracks[0].generate();
 
                                 GameCanvas.trackSettingPanel.show(true);
-                                setPanelPosToMousePos((RectTransform)GameCanvas.trackSettingPanel.transform);
+                                setPanelPosToMousePos(GameCanvas.trackSettingPanel);
                             }
                         }
                         else if (mode == MODE_PLACE_AXLE)
@@ -552,7 +552,7 @@ public class Main : MonoBehaviour
                                 editingMapPin = new MapPin(playingmap, p);
                                 editingMapPin.generate();
                                 GameCanvas.mapPinSettingPanel.show(true);
-                                setPanelPosToMousePos((RectTransform)GameCanvas.mapPinSettingPanel.transform);
+                                setPanelPosToMousePos(GameCanvas.mapPinSettingPanel);
                             }
                         }
                         else if (mode == MODE_PLACE_STRUCTURE)
@@ -562,7 +562,7 @@ public class Main : MonoBehaviour
                                 editingStructure = new Structure(playingmap, p);
                                 editingStructure.generate();
                                 GameCanvas.structureSettingPanel.show(true);
-                                setPanelPosToMousePos((RectTransform)GameCanvas.structureSettingPanel.transform);
+                                setPanelPosToMousePos(GameCanvas.structureSettingPanel);
                             }
                         }
                     }
@@ -647,7 +647,6 @@ public class Main : MonoBehaviour
         PlayerPrefs.SetInt(KEY_MOTIONBLUR, motionBlur ? 1 : 0);
         PlayerPrefs.SetInt(KEY_BLOOM, bloom ? 1 : 0);
         PlayerPrefs.SetInt(KEY_VIGNETTE, vignette ? 1 : 0);
-        PlayerPrefs.SetFloat(KEY_GAUGE, gauge);
     }
 
     public IEnumerator openMap(string mapname)
@@ -704,10 +703,10 @@ public class Main : MonoBehaviour
         return 1 / Time.deltaTime <= Main.min_fps;
     }
 
-    public static void setPanelPosToMousePos(RectTransform panel)
+    public static void setPanelPosToMousePos(GamePanel panel)
     {
-        panel.position = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0, Screen.width - panel.rect.width),
-            Mathf.Clamp(Input.mousePosition.y, panel.rect.height, Screen.height));
+        panel.transform.position = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0, Screen.width - panel.getWidth()),
+            Mathf.Clamp(Input.mousePosition.y, panel.getHeight(), Screen.height));
     }
 
     public void setPause(bool pause)
@@ -756,13 +755,14 @@ public class Main : MonoBehaviour
     public void setTrackRepeat(int repeat)
     {
         Track t = editingTracks[0] is Curve ? new Curve(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot) : new Track(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot);
-        t.rails = editingTracks[0].rails;
         if (t is Curve)
         {
             ((Curve)t).radius = ((Curve)editingTracks[0]).radius;
+            ((Curve)t).cant = ((Curve)editingTracks[0]).cant;
             ((Curve)t).isVerticalCurve = ((Curve)editingTracks[0]).isVerticalCurve;
         }
         t.length = editingTracks[0].length;
+        t.gauge = editingTracks[0].gauge;
 
         foreach (var track in editingTracks)
             if (track.entity)
@@ -774,13 +774,14 @@ public class Main : MonoBehaviour
         for (var n = 1; n < repeat; n++)
         {
             Track t1 = t is Curve ? new Curve(t.map, t.getPoint(1), ((Curve)t).getRotation(1)) : new Track(t.map, t.getPoint(1), t.rot);
-            t1.rails = t.rails;
             if (t1 is Curve)
             {
                 ((Curve)t1).radius = ((Curve)t).radius;
+                ((Curve)t1).cant = ((Curve)t).cant;
                 ((Curve)t1).isVerticalCurve = ((Curve)t).isVerticalCurve;
             }
             t1.length = t.length;
+            t1.gauge = t.gauge;
 
             t1.generate();
             editingTracks.Add(t1);

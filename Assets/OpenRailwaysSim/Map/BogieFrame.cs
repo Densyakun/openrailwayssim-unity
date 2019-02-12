@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using UnityEngine;
 
@@ -79,7 +80,7 @@ public class BogieFrame : MapObject
         if (axles.Count == 1)
             rot = axles[0].rot;
         else
-            rot = Quaternion.LookRotation(axles[axles.Count - 1].pos - axles[0].pos);
+            rot = Quaternion.LookRotation(axles[axles.Count - 1].pos - axles[0].pos, Quaternion.Lerp(axles[0].rot, axles[axles.Count - 1].rot, 0.5f) * Vector3.up);
 
         for (var d = 0; d < axles.Count; d++)
             p_ += (p + (axles.Count == 1 || d * 2 - (axles.Count - 1) == 0
