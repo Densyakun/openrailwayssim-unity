@@ -164,7 +164,7 @@ public class Axle : MapObject
         Vector3 a = onTrack is Curve
             ? ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
-        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2;
+        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2;
         a.x = rotX;
         rot = Quaternion.Euler(a);
     }
@@ -252,7 +252,7 @@ public class Axle : MapObject
         Vector3 c = onTrack is Curve
             ? ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
-        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2;
+        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2;
         rot = Quaternion.Euler(c);
     }
 
@@ -261,7 +261,7 @@ public class Axle : MapObject
         if (onTrack is Curve)
         {
             Vector3 a;
-            var r = ((Curve)onTrack).radius;
+            var r = (((Curve)onTrack).radius);
             float A;
 
             if (((Curve)onTrack).isVerticalCurve)
@@ -288,6 +288,7 @@ public class Axle : MapObject
             {
                 var f = Quaternion.Inverse(Quaternion.Euler(0, onTrack.rot.eulerAngles.y, 0));
                 a = f * (pos - onTrack.pos);
+                a.y = 0f;
                 var b = f * (onTrack.getPoint(1) - onTrack.pos);
                 if (r < 0)
                 {

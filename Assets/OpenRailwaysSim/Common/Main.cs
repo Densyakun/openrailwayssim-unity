@@ -89,6 +89,7 @@ public class Main : MonoBehaviour
     public static List<MapObject> selectingObjs = new List<MapObject>();
     public static float gauge = Track.defaultGauge;
     public static float cant = 0f;
+    public static bool cantRotation = false;
 
     public Gradient sunGradient;
     public Light sun; //太陽
@@ -528,7 +529,10 @@ public class Main : MonoBehaviour
                                     editingTracks[0].rot = (Quaternion)editingRot;
                                 editingTracks[0].gauge = gauge;
                                 if (editingTracks[0] is Curve)
+                                {
                                     ((Curve)editingTracks[0]).cant = cant;
+                                    ((Curve)editingTracks[0]).cantRotation = cantRotation;
+                                }
                                 editingTracks[0].enableCollider = false;
                                 editingTracks[0].generate();
 
@@ -759,6 +763,7 @@ public class Main : MonoBehaviour
         {
             ((Curve)t).radius = ((Curve)editingTracks[0]).radius;
             ((Curve)t).cant = ((Curve)editingTracks[0]).cant;
+            ((Curve)t).cantRotation = ((Curve)editingTracks[0]).cantRotation;
             ((Curve)t).isVerticalCurve = ((Curve)editingTracks[0]).isVerticalCurve;
         }
         t.length = editingTracks[0].length;
@@ -778,6 +783,7 @@ public class Main : MonoBehaviour
             {
                 ((Curve)t1).radius = ((Curve)t).radius;
                 ((Curve)t1).cant = ((Curve)t).cant;
+                ((Curve)t1).cantRotation = ((Curve)t).cantRotation;
                 ((Curve)t1).isVerticalCurve = ((Curve)t).isVerticalCurve;
             }
             t1.length = t.length;

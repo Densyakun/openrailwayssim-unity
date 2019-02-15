@@ -12,6 +12,7 @@ public class TrackSettingPanel : GamePanel
     public static string repeatText_DEF = "繰り返す";
     public static string radiusText_DEF = "半径";
     public static string cantText_DEF = "カント";
+    public static string cantRotationText_DEF = "軌道の中心を カントの基準にする";
     public static string isVerticalCurveText_DEF = "縦曲線";
     public Text lengthText;
     public InputField lengthInput;
@@ -24,6 +25,8 @@ public class TrackSettingPanel : GamePanel
     public InputField radiusInput;
     public Text cantText;
     public InputField cantInput;
+    public Text cantRotationText;
+    public Toggle cantRotationToggle;
     public Text isVerticalCurveText;
     public Toggle isVerticalCurveToggle;
 
@@ -31,6 +34,7 @@ public class TrackSettingPanel : GamePanel
     private float lastGauge;
     private float lastRadius;
     private float lastCant;
+    private bool lastCantRotation;
     private bool lastIsVerticalCurve;
 
     void Update()
@@ -57,6 +61,7 @@ public class TrackSettingPanel : GamePanel
         {
             radiusInput.text = (lastRadius = ((Curve)Main.editingTracks[0]).radius).ToString();
             cantInput.text = (lastCant = ((Curve)Main.editingTracks[0]).cant).ToString();
+            cantRotationToggle.isOn = lastCantRotation = ((Curve)Main.editingTracks[0]).cantRotation;
             isVerticalCurveToggle.isOn = lastIsVerticalCurve = ((Curve)Main.editingTracks[0]).isVerticalCurve;
         }
     }
@@ -72,6 +77,7 @@ public class TrackSettingPanel : GamePanel
             {
                 radiusText.text = radiusText_DEF + ": ";
                 cantText.text = cantText_DEF + ": ";
+                cantRotationText.text = cantRotationText_DEF + ": ";
                 isVerticalCurveText.text = isVerticalCurveText_DEF + ": ";
             }
 
@@ -79,7 +85,7 @@ public class TrackSettingPanel : GamePanel
 
             if (Main.editingTracks[0] is Curve)
             {
-                ((RectTransform)transform).rect.Set(((RectTransform)transform).rect.x, ((RectTransform)transform).rect.y, ((RectTransform)transform).rect.width, 210);
+                ((RectTransform)transform).rect.Set(((RectTransform)transform).rect.x, ((RectTransform)transform).rect.y, ((RectTransform)transform).rect.width, 240);
                 curveSettingPanel.gameObject.SetActive(true);
             }
             else
@@ -94,7 +100,7 @@ public class TrackSettingPanel : GamePanel
 
     new public float getHeight()
     {
-        return (curveSettingPanel.activeSelf ? ((RectTransform)curveSettingPanel.transform).rect.width : 0f) + ((RectTransform)transform).rect.width;
+        return (curveSettingPanel.activeSelf ? ((RectTransform)curveSettingPanel.transform).rect.height : 0f) + ((RectTransform)transform).rect.height;
     }
 
     public void reflect()
@@ -110,6 +116,7 @@ public class TrackSettingPanel : GamePanel
             {
                 ((Curve)Main.editingTracks[0]).radius = float.Parse(radiusInput.text);
                 ((Curve)Main.editingTracks[0]).cant = float.Parse(cantInput.text);
+                ((Curve)Main.editingTracks[0]).cantRotation = cantRotationToggle.isOn;
                 ((Curve)Main.editingTracks[0]).isVerticalCurve = isVerticalCurveToggle.isOn;
             }
             Main.main.setTrackRepeat(int.Parse(repeatInput.text));
@@ -123,7 +130,10 @@ public class TrackSettingPanel : GamePanel
         reflect();
         Main.gauge = Main.editingTracks[0].gauge;
         if (Main.editingTracks[0] is Curve)
+        {
             Main.cant = ((Curve)Main.editingTracks[0]).cant;
+            Main.cantRotation = ((Curve)Main.editingTracks[0]).cantRotation;
+        }
         Main.main.trackEdited0();
         Main.editingTracks.Clear();
         Main.editingRot = null;
@@ -139,6 +149,7 @@ public class TrackSettingPanel : GamePanel
         repeatInput.text = "1";
         radiusInput.text = lastRadius.ToString();
         cantInput.text = lastCant.ToString();
+        cantRotationToggle.isOn = lastCantRotation;
         isVerticalCurveToggle.isOn = lastIsVerticalCurve;
         reflect();
 
