@@ -804,30 +804,30 @@ public class Main : MonoBehaviour
 
             if (mainTrack != null)
             {
-                if (mainTrack.pos == track.pos && mainTrack.rot.eulerAngles == track.rot.eulerAngles ||
-                mainTrack.pos == track.getPoint(1) && mainTrack.rot.eulerAngles == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                if ((mainTrack.pos - track.pos).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.rot.eulerAngles - track.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (mainTrack.pos - track.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.rot.eulerAngles - (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     mainTrack.prevTracks.Add(track);
                     if (mainTrack.prevTracks.Count == 1)
                         mainTrack.connectingPrevTrack = 0;
                 }
-                else if (mainTrack.getPoint(1) == track.pos && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == track.rot.eulerAngles ||
-                mainTrack.getPoint(1) == track.getPoint(1) && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                else if ((mainTrack.getPoint(1) - track.pos).sqrMagnitude < ALLOWABLE_RANGE && ((mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) - track.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (mainTrack.getPoint(1) - track.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && ((mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) - (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     mainTrack.nextTracks.Add(track);
                     if (mainTrack.nextTracks.Count == 1)
                         mainTrack.connectingNextTrack = 0;
                 }
 
-                if (track.pos == mainTrack.pos && track.rot.eulerAngles == mainTrack.rot.eulerAngles ||
-                track.pos == mainTrack.getPoint(1) && track.rot.eulerAngles == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
+                if ((track.pos - mainTrack.pos).sqrMagnitude < ALLOWABLE_RANGE && (track.rot.eulerAngles - mainTrack.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (track.pos - mainTrack.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (track.rot.eulerAngles - (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     track.prevTracks.Add(mainTrack);
                     if (track.prevTracks.Count == 1)
                         track.connectingPrevTrack = 0;
                 }
-                else if (track.getPoint(1) == mainTrack.pos && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == mainTrack.rot.eulerAngles ||
-                track.getPoint(1) == mainTrack.getPoint(1) && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
+                else if ((track.getPoint(1) - mainTrack.pos).sqrMagnitude < ALLOWABLE_RANGE && ((track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) - mainTrack.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (track.getPoint(1) - mainTrack.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && ((track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) - (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     track.nextTracks.Add(mainTrack);
                     if (track.nextTracks.Count == 1)
