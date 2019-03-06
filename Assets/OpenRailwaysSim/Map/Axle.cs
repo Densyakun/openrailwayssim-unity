@@ -288,7 +288,6 @@ public class Axle : MapObject
             {
                 var f = Quaternion.Inverse(Quaternion.Euler(0, onTrack.rot.eulerAngles.y, 0));
                 a = f * (pos - onTrack.pos);
-                a.y = 0f;
                 var b = f * (onTrack.getPoint(1) - onTrack.pos);
                 if (r < 0)
                 {
