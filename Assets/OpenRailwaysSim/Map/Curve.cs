@@ -194,7 +194,8 @@ public class Curve : Track
     public override Vector3 getPoint(float a)
     {
         var d = _length * a;
-        var d1 = d / Mathf.Abs(_radius) * Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad);
+        var d1 = d * Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad) / Mathf.Abs(_radius);
+        d *= Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad);
         return isVerticalCurve ?
         pos + rot * new Vector3(0f, (1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(d1) * Mathf.Abs(_radius)) :
         pos + Quaternion.Euler(0, rot.eulerAngles.y, 0) * new Vector3((1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(-rot.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(_radius));
@@ -203,7 +204,8 @@ public class Curve : Track
     public virtual Vector3 getPointCanted(float a)
     {
         var d = _length * a;
-        var d1 = d / Mathf.Abs(_radius) * Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad);
+        var d1 = d * Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad) / Mathf.Abs(_radius);
+        d *= Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad);
         if (isVerticalCurve)
             return pos + rot * new Vector3(0f, (1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(d1) * Mathf.Abs(_radius));
         else
