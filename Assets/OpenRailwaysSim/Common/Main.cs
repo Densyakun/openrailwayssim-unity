@@ -9,8 +9,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.PostProcessing;
 
-// TODO 線形を変えたときに繰り返す線形も適用させる
-
 //ゲームの動作を制御する中心的クラス
 public class Main : MonoBehaviour
 {
