@@ -1,22 +1,21 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class MapPinEntity : MonoBehaviour
+public class TextEntity : MonoBehaviour
 {
 
-    public MapPin mapPin;
-    public Text text;
-    public Button button;
+    public string str;
+    public MapObject obj;
+    public Color normalColor = new Color(1f, 1f, 1f, 0.75f);
 
-    void Start()
-    {
-    }
+    private Text text;
+    private Button button;
 
     void Update()
     {
         if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
         {
-            if ((Quaternion.Inverse(Camera.main.transform.rotation) * (mapPin.pos - Camera.main.transform.position)).z > 0)
+            if ((Quaternion.Inverse(Camera.main.transform.rotation) * (obj.pos - Camera.main.transform.position)).z > 0)
             {
                 if (text == null)
                 {
@@ -30,17 +29,19 @@ public class MapPinEntity : MonoBehaviour
 
                     (button = gameObject.AddComponent<Button>()).onClick.AddListener(TaskOnClick);
                     var a = button.colors;
-                    a.highlightedColor = new Color(1f, 1f, 0, 3f / 4f);
+                    a.highlightedColor = new Color(1f, 1f, 0, 0.75f);
                     button.colors = a;
+
+                    transform.SetParent(GameCanvas.canvas.transform);
                 }
-                text.text = mapPin.title;
-                if (mapPin.useSelectingMat)
-                    text.color = new Color(1f, 1f, 0, 3f / 4f);
+                text.text = str;
+                if (obj.useSelectingMat)
+                    text.color = new Color(1f, 1f, 0, 0.75f);
                 else
-                    text.color = new Color(1f, 1f, 1f, 3f / 4f);
+                    text.color = normalColor;
                 text.raycastTarget = Main.main.mode == 0;
 
-                var p = Camera.main.WorldToViewportPoint(mapPin.pos);
+                var p = Camera.main.WorldToViewportPoint(obj.pos);
                 transform.position = new Vector3(Screen.width * p.x, Screen.height * p.y);
             }
             else if (text != null)
@@ -62,6 +63,6 @@ public class MapPinEntity : MonoBehaviour
 
     void TaskOnClick()
     {
-        Main.selectObj(mapPin);
+        Main.selectObj(obj);
     }
 }

@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-//マップピン
+//ストラクチャ
 [Serializable]
 public class Structure : MapObject
 {
@@ -12,6 +12,8 @@ public class Structure : MapObject
     public string path;
 
     Mesh mesh;
+
+    public TextEntity textEntity;
 
     public Structure(Map map, Vector3 pos) : base(map, pos, new Quaternion())
     {
@@ -46,6 +48,13 @@ public class Structure : MapObject
         if (entity == null)
             return;
 
+        if (textEntity == null)
+        {
+            (textEntity = new GameObject("structureText").AddComponent<TextEntity>()).obj = this;
+            textEntity.str = "・";
+            textEntity.normalColor = new Color(0f, 1f, 0f, 0.75f);
+        }
+
         var filter = entity.GetComponent<MeshFilter>();
         if (!filter)
             filter = entity.gameObject.AddComponent<MeshFilter>();
@@ -63,13 +72,30 @@ public class Structure : MapObject
         base.reloadEntity();
     }
 
+    public override void destroy()
+    {
+        GameObject.Destroy(textEntity.gameObject);
+
+        base.destroy();
+    }
+
     public void importFile()
     {
-        try
+        if (entity)
+            foreach (var t in entity.GetComponentsInChildren<Transform>())
+                if (t != entity.transform)
+                    GameObject.Destroy(t.gameObject);
+        var p = Path.Combine(Application.persistentDataPath, path);
+        if (X3DImporter.isX3DFile(p))
+            new X3DImporter().load(p, entity.transform);
+        else
         {
-            mesh = new ObjImporter().ImportFile(Path.Combine(Application.persistentDataPath, path));
+            try
+            {
+                mesh = new ObjImporter().ImportFile(p);
+            }
+            catch (UnauthorizedAccessException) { }
+            catch (FileNotFoundException) { }
         }
-        catch (UnauthorizedAccessException) { }
-        catch (FileNotFoundException) { }
     }
 }
