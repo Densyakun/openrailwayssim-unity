@@ -46,7 +46,7 @@ public class MapPin : MapObject
 
         if (textEntity == null)
             (textEntity = new GameObject("mapPinText").AddComponent<TextEntity>()).obj = this;
-        textEntity.str = title;
+        textEntity.str = string.IsNullOrEmpty(title) ? "・" : title;
 
         base.reloadEntity();
     }
