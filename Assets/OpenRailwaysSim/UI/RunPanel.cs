@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+//運転中に表示される画面。運転中の操作はここに追加する
 public class RunPanel : GamePanel
 {
 
@@ -48,7 +49,8 @@ public class RunPanel : GamePanel
                     controller.reverser -= 1;
             }
 
-            if (Input.GetKeyDown(KeyCode.W))
+            int scroll = Mathf.FloorToInt(Input.GetAxis("Mouse ScrollWheel") * 10f);
+            for (var b = 0; b < (Input.GetKeyDown(KeyCode.W) ? 1 : scroll); b++)
             {
                 if (controller.brakeNotchs > -controller.notch)
                     controller.notch -= 1;
@@ -58,7 +60,7 @@ public class RunPanel : GamePanel
                 if (controller.notch != 0)
                     controller.notch += controller.notch < 0 ? 1 : -1;
             }
-            if (Input.GetKeyDown(KeyCode.X))
+            for (var b = 0; b < (Input.GetKeyDown(KeyCode.X) ? 1 : -scroll); b++)
             {
                 if (controller.powerNotchs > controller.notch)
                     controller.notch += 1;
