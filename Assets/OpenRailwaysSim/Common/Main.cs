@@ -77,12 +77,12 @@ public class Main : MonoBehaviour
 
     public bool showGuide = true;
 
-    public static List<Track> editingTracks = new List<Track>();
+    public static List<Shape> editingTracks = new List<Shape>();
     public static Quaternion? editingRot;
     public static Coupler editingCoupler;
     public static MapPin editingMapPin;
     public static Structure editingStructure;
-    public static Track mainTrack;
+    public static Shape mainTrack;
     public static MapObject focused;
     public static float focusedDist;
     public static List<MapObject> selectingObjs = new List<MapObject>();
@@ -109,6 +109,7 @@ public class Main : MonoBehaviour
     public GameObject permanentCouplerModel;
     public GameObject directControllerModel;
     public Font mapPinFont;
+    public SegmentSettingPanel segmentSettingPanelPrefab;
 
     void Awake()
     {
@@ -420,7 +421,7 @@ public class Main : MonoBehaviour
                 if (mode == MODE_CONSTRUCT_TRACK)
                 {
                     var aaa = false;
-                    if (editingTracks.Any())
+                    /*if (editingTracks.Any())
                     {
                         if (editingRot == null)
                         {
@@ -496,7 +497,7 @@ public class Main : MonoBehaviour
                             track.reloadEntity();
                         GameCanvas.trackSettingPanel.load();
                         setPanelPosToMousePos((RectTransform)GameCanvas.trackSettingPanel.transform);
-                    }
+                    }*/
 
                     if (Input.GetMouseButtonUp(0))
                     {
@@ -505,45 +506,26 @@ public class Main : MonoBehaviour
                             trackEdited0();
 
                             var l = editingTracks.Last();
-                            if (l is Curve)
-                                editingRot = ((Curve)l).getRotation(1);
-                            else
-                                editingRot = l.rot;
-
-                            Track newTrack;
-
-                            if (l.GetType() == typeof(Track))
-                                newTrack = new Curve(playingmap, l.getPoint(1));
-                            else
-                                newTrack = new Track(playingmap, l.getPoint(1));
+                            editingRot = l.getRotation(1);
 
                             editingTracks.Clear();
-                            editingTracks.Add(newTrack);
+                            editingTracks.Add(new Shape(playingmap, l.getPoint(1)));
                         }
                         else if (focused != null)
                         {
-                            if (focused is Track)
+                            if (focused is Shape)
                             {
-                                mainTrack = ((Track)focused);
-                                if (mainTrack is Curve)
-                                {
-                                    editingRot = ((Curve)mainTrack).getRotation(focusedDist / mainTrack.length);
-                                    editingTracks.Clear();
-                                    editingTracks.Add(new Track(playingmap, p));
-                                }
-                                else
-                                {
-                                    editingRot = mainTrack.rot;
-                                    editingTracks.Clear();
-                                    editingTracks.Add(new Curve(playingmap, p));
-                                }
+                                mainTrack = ((Shape)focused);
+                                editingRot = mainTrack.getRotation(focusedDist / mainTrack.length);
+                                editingTracks.Clear();
+                                editingTracks.Add(new Shape(playingmap, p));
                             }
                         }
                         else
                         {
                             mainTrack = null;
                             editingTracks.Clear();
-                            editingTracks.Add(new Track(playingmap, p));
+                            editingTracks.Add(new Shape(playingmap, p));
                         }
 
                         if (editingTracks.Any())
@@ -756,60 +738,21 @@ public class Main : MonoBehaviour
         return GetIntersectionPointCoordinates(A1.x, A1.z, A2.x, A2.z, B1.x, B1.z, B2.x, B2.z);
     }
 
-    // 線形敷設時に線形の繰り返し回数を設定する
-    public void setTrackRepeat(int repeat)
-    {
-        Track t = editingTracks[0] is Curve ? new Curve(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot) : new Track(editingTracks[0].map, editingTracks[0].pos, editingTracks[0].rot);
-        t.rails = editingTracks[0].rails;
-        if (t is Curve)
-        {
-            ((Curve)t).radius = ((Curve)editingTracks[0]).radius;
-            ((Curve)t).isVerticalCurve = ((Curve)editingTracks[0]).isVerticalCurve;
-        }
-        t.length = editingTracks[0].length;
-
-        foreach (var track in editingTracks)
-            if (track.entity)
-                track.entity.Destroy();
-        editingTracks.Clear();
-
-        t.generate();
-        editingTracks.Add(t);
-        for (var n = 1; n < repeat; n++)
-        {
-            Track t1 = t is Curve ? new Curve(t.map, t.getPoint(1), ((Curve)t).getRotation(1)) : new Track(t.map, t.getPoint(1), t.rot);
-            t1.rails = t.rails;
-            if (t1 is Curve)
-            {
-                ((Curve)t1).radius = ((Curve)t).radius;
-                ((Curve)t1).isVerticalCurve = ((Curve)t).isVerticalCurve;
-            }
-            t1.length = t.length;
-
-            t1.generate();
-            editingTracks.Add(t1);
-            t = t1;
-        }
-    }
-
     public void trackEdited0()
     {
         foreach (var track in editingTracks)
         {
-            if (track is Curve && ((Curve)track).isLinear())
-                print("!"); //TODO 作成する曲線が直線である場合、直線が作成されるようにする
-
             if (mainTrack != null)
             {
                 if (mainTrack.pos == track.pos && mainTrack.rot.eulerAngles == track.rot.eulerAngles ||
-                mainTrack.pos == track.getPoint(1) && mainTrack.rot.eulerAngles == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                mainTrack.pos == track.getPoint(1) && mainTrack.rot.eulerAngles == track.getRotation(1).eulerAngles)
                 {
                     mainTrack.prevTracks.Add(track);
                     if (mainTrack.prevTracks.Count == 1)
                         mainTrack.connectingPrevTrack = 0;
                 }
-                else if (mainTrack.getPoint(1) == track.pos && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == track.rot.eulerAngles ||
-                mainTrack.getPoint(1) == track.getPoint(1) && (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles) == (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles))
+                else if (mainTrack.getPoint(1) == track.pos && mainTrack.getRotation(1).eulerAngles == track.rot.eulerAngles ||
+                mainTrack.getPoint(1) == track.getPoint(1) && mainTrack.getRotation(1).eulerAngles == track.getRotation(1).eulerAngles)
                 {
                     mainTrack.nextTracks.Add(track);
                     if (mainTrack.nextTracks.Count == 1)
@@ -817,14 +760,14 @@ public class Main : MonoBehaviour
                 }
 
                 if (track.pos == mainTrack.pos && track.rot.eulerAngles == mainTrack.rot.eulerAngles ||
-                track.pos == mainTrack.getPoint(1) && track.rot.eulerAngles == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
+                track.pos == mainTrack.getPoint(1) && track.rot.eulerAngles == mainTrack.getRotation(1).eulerAngles)
                 {
                     track.prevTracks.Add(mainTrack);
                     if (track.prevTracks.Count == 1)
                         track.connectingPrevTrack = 0;
                 }
-                else if (track.getPoint(1) == mainTrack.pos && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == mainTrack.rot.eulerAngles ||
-                track.getPoint(1) == mainTrack.getPoint(1) && (track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) == (mainTrack is Curve ? ((Curve)mainTrack).getRotation(1).eulerAngles : mainTrack.rot.eulerAngles))
+                else if (track.getPoint(1) == mainTrack.pos && track.getRotation(1).eulerAngles == mainTrack.rot.eulerAngles ||
+                track.getPoint(1) == mainTrack.getPoint(1) && track.getRotation(1).eulerAngles == mainTrack.getRotation(1).eulerAngles)
                 {
                     track.nextTracks.Add(mainTrack);
                     if (track.nextTracks.Count == 1)
@@ -840,8 +783,8 @@ public class Main : MonoBehaviour
                 var a3 = (track.getPoint(1) - ((Track)focused).getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE;
                 var b = (track.rot.eulerAngles - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
                 var b1 = (track.rot.eulerAngles - (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE;
-                var b2 = ((track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
-                var b3 = ((track is Curve ? ((Curve)track).getRotation(1).eulerAngles : track.rot.eulerAngles) - (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE;
+                var b2 = (track.getRotation(1).eulerAngles - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
+                var b3 = (track.getRotation(1).eulerAngles - ((Shape)focused).getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
                 if (a && b || a1 && b1)
                 {
                     track.prevTracks.Add((Track)focused);

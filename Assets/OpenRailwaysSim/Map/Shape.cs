@@ -1,64 +1,64 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-//曲線
+/// <summary>
+/// 平面曲線と縦断曲線を設定する軌道。距離に勾配は関係しない
+/// </summary>
 [Serializable]
-public class Curve : Track
+public class Shape : Track
 {
-    public const string KEY_RADIUS = "RADIUS";
-    public const string KEY_IS_VERTICAL_CURVE = "IS_VERTICAL_CURVE";
+    public const string KEY_CURVE_LENGTH = "CURVE_L";
+    public const string KEY_CURVE_RADIUS = "CURVE_R";
+    public const string KEY_VERTICAL_CURVE_LENGTH = "V_CURVE_L";
+    public const string KEY_VERTICAL_CURVE_RADIUS = "V_CURVE_R";
     public const float MIN_RADIUS = 1f;
     public const float FINENESS_DISTANCE = 5f;
 
-    public override float length
-    {
-        get { return _length; }
-        set { _length = Mathf.Max(MIN_TRACK_LENGTH, Mathf.Min(value, 2 * Mathf.PI * Mathf.Abs(_radius))); }
-    }
-    private float _radius = MIN_RADIUS;
-    public float radius
-    {
-        get
-        {
-            return _radius;
-        }
-        set
-        {
-            if (value > 0)
-                _radius = Mathf.Max(MIN_RADIUS, value);
-            else
-                _radius = Mathf.Min(-MIN_RADIUS, value);
-        }
-    }
-    public bool isVerticalCurve = false;
+    public List<float> curveLength;
+    public List<float> curveRadius;
+    public List<float> verticalCurveLength;
+    public List<float> verticalCurveRadius;
     public BoxCollider[] colliders = new BoxCollider[0];
 
-    public Curve(Map map, Vector3 pos) : base(map, pos)
+    public Shape(Map map, Vector3 pos) : base(map, pos)
     {
+        curveLength = new List<float>();
+        curveRadius = new List<float>();
+        verticalCurveLength = new List<float>();
+        verticalCurveRadius = new List<float>();
     }
 
-    public Curve(Map map, Vector3 pos, Quaternion rot) : base(map, pos, rot)
+    public Shape(Map map, Vector3 pos, Quaternion rot) : base(map, pos, rot)
     {
+        curveLength = new List<float>();
+        curveRadius = new List<float>();
+        verticalCurveLength = new List<float>();
+        verticalCurveRadius = new List<float>();
     }
 
-    protected Curve(SerializationInfo info, StreamingContext context) : base(info, context)
+    protected Shape(SerializationInfo info, StreamingContext context) : base(info, context)
     {
-        _radius = info.GetSingle(KEY_RADIUS);
-        isVerticalCurve = info.GetBoolean(KEY_IS_VERTICAL_CURVE);
+        curveLength = (List<float>)info.GetValue(KEY_CURVE_LENGTH, typeof(List<float>));
+        curveRadius = (List<float>)info.GetValue(KEY_CURVE_RADIUS, typeof(List<float>));
+        verticalCurveLength = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_LENGTH, typeof(List<float>));
+        verticalCurveRadius = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_RADIUS, typeof(List<float>));
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
-        info.AddValue(KEY_RADIUS, _radius);
-        info.AddValue(KEY_IS_VERTICAL_CURVE, isVerticalCurve);
+        info.AddValue(KEY_CURVE_LENGTH, curveLength);
+        info.AddValue(KEY_CURVE_RADIUS, curveRadius);
+        info.AddValue(KEY_VERTICAL_CURVE_LENGTH, verticalCurveLength);
+        info.AddValue(KEY_VERTICAL_CURVE_RADIUS, verticalCurveRadius);
     }
 
     public override void generate()
     {
         if (entity == null)
-            (entity = new GameObject("curve").AddComponent<MapEntity>()).init(this);
+            (entity = new GameObject("shape").AddComponent<MapEntity>()).init(this);
         else
             reloadEntity();
     }
@@ -174,20 +174,107 @@ public class Curve : Track
         }
     }
 
+    // TODO 長さに勾配を考慮する（TrackSettingPanelも）
     public override Vector3 getPoint(float a)
     {
-        var d = _length * a;
-        var d1 = d / Mathf.Abs(_radius);
-        return isVerticalCurve ? pos + rot * new Vector3(0f, (1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(d1) * Mathf.Abs(_radius)) : pos + Quaternion.Euler(0, rot.eulerAngles.y, 0) * new Vector3((1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(-rot.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(_radius));
+        var p = pos;
+        var r = rot;
+
+        // 平面曲線を計算
+        var rad = 0f;
+        var l = 0f;
+        bool b = true;
+        float c;
+        float _l;
+        for (var n = 0; n < curveLength.Count; n++)
+        {
+            b = _length * a <= l + curveLength[n];
+            c = (b ? (_length * a - l) / curveLength[n] : 1f);
+            _l = curveLength[n] * c;
+            if ((rad = curveRadius[n]) == 0f)
+                p += r * Vector3.forward * _l;
+            else
+            {
+                var d = _l;
+                var d1 = d / Mathf.Abs(rad);
+                p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d1)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(rad));
+                r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, curveLength[n] * c * Mathf.Rad2Deg / rad, 0f);
+            }
+            l += _l;
+
+            if (b)
+                break;
+        }
+
+        // 縦断曲線を計算
+        var vr = rot;
+        rad = 0f;
+        l = 0f;
+        for (var n = 0; n < verticalCurveLength.Count; n++)
+        {
+            b = _length * a <= l + verticalCurveLength[n];
+            c = (b ? (_length * a - l) / verticalCurveLength[n] : 1f);
+            _l = verticalCurveLength[n] * c;
+            if ((rad = verticalCurveRadius[n]) == 0f)
+                p.y += (vr * Vector3.forward * _l).y;
+            else
+            {
+                var d = _l;
+                var d1 = d / Mathf.Abs(rad);
+                p.y += (vr * new Vector3(0f, (1f - Mathf.Cos(d1)) * rad, Mathf.Sin(d1) * Mathf.Abs(rad))).y;
+                vr *= Quaternion.Euler(-verticalCurveLength[n] * c * Mathf.Rad2Deg / rad, 0f, 0f);
+            }
+            l += _l;
+
+            if (b)
+                break;
+        }
+        if (!b)
+            p.y += (vr * Vector3.forward * (_length * a - l)).y;
+
+        return p;
     }
 
     public virtual Quaternion getRotation(float a)
     {
-        return isVerticalCurve ? rot * Quaternion.Euler(-_length * a * Mathf.Rad2Deg / _radius, 0, 0) : Quaternion.Euler(0, rot.eulerAngles.y, 0) * Quaternion.Euler(rot.eulerAngles.x, _length * a * Mathf.Rad2Deg / _radius, 0);
-    }
+        var r = rot;
 
-    public virtual bool isLinear()
-    {
-        return length / _radius <= Mathf.PI * 2 && rot == getRotation(1);
+        // 平面曲線を計算
+        var rad = 0f;
+        var l = 0f;
+        bool b;
+        float c;
+        float _l;
+        for (var n = 0; n < curveLength.Count; n++)
+        {
+            b = _length * a <= l + curveLength[n];
+            c = (b ? (_length * a - l) / curveLength[n] : 1f);
+            _l = curveLength[n] * c;
+            if ((rad = curveRadius[n]) != 0f)
+                r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, _l * Mathf.Rad2Deg / rad, 0f);
+            l += _l;
+
+            if (b)
+                break;
+        }
+
+        // 縦断曲線を計算
+        var vr = rot;
+        rad = 0f;
+        l = 0f;
+        for (var n = 0; n < verticalCurveLength.Count; n++)
+        {
+            b = _length * a <= l + verticalCurveLength[n];
+            c = (b ? (_length * a - l) / verticalCurveLength[n] : 1f);
+            _l = verticalCurveLength[n] * c;
+            if ((rad = verticalCurveRadius[n]) != 0f)
+                vr *= Quaternion.Euler(-_l * Mathf.Rad2Deg / rad, 0f, 0f);
+            l += _l;
+
+            if (b)
+                break;
+        }
+
+        return Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(vr.eulerAngles.x, 0f, 0f);
     }
 }

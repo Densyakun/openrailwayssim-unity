@@ -79,7 +79,9 @@ public class PermanentCoupler : MapObject
         var pos2 = body2.pos + body2.rot * new Vector3(0, height - body2.bogieHeight, (body2.carLength / 2 - length / 2) * ((Quaternion.Inverse(body2.rot) * (body1.pos - body2.pos)).z > 0 ? 1 : -1));
         pos = (pos1 + pos2) / 2;
 
-        rot = Quaternion.LookRotation(pos2 - pos1);
+        var f = pos2 - pos1;
+        if (f.sqrMagnitude != 0f)
+            rot = Quaternion.LookRotation(f);
     }
 
     public void snapFrom()

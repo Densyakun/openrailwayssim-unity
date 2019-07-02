@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -6,71 +7,61 @@ using UnityEngine.UI;
 //軌道の設定画面
 public class TrackSettingPanel : GamePanel
 {
-    //TODO 多言語対応化
-    public static string lengthText_DEF = "長さ";
-    public static string radiusText_DEF = "半径";
-    public static string repeatText_DEF = "繰り返す";
-    public static string isVerticalCurveText_DEF = "縦曲線";
-    public Text lengthText;
-    public InputField lengthInput;
-    public Text repeatText;
-    public InputField repeatInput;
-    public GameObject curveSettingPanel;
-    public Text radiusText;
-    public InputField radiusInput;
-    public Text isVerticalCurveText;
-    public Toggle isVerticalCurveToggle;
+    public List<SegmentSettingPanel> segmentPanels = new List<SegmentSettingPanel>();
+    public List<SegmentSettingPanel> verticalSegmentPanels = new List<SegmentSettingPanel>();
+    private List<float> curveLength;
+    private List<float> curveRadius;
+    private List<float> verticalCurveLength;
+    private List<float> verticalCurveRadius;
 
-    private float lastLength;
-    private float lastRadius;
-    private bool lastIsVerticalCurve;
+    private List<float> lastCurveLength;
+    private List<float> lastCurveRadius;
+    private List<float> lastVerticalCurveLength;
+    private List<float> lastVerticalCurveRadius;
 
     void Update()
     {
         reflect();
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            InputField input = EventSystem.current.currentSelectedGameObject != null ? EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() : null;
-            EventSystem.current.SetSelectedGameObject(((input != null && input.isFocused) ? input == lengthInput ? repeatInput : input == repeatInput ? Main.editingTracks[0] is Curve ? radiusInput : lengthInput : lengthInput : lengthInput).gameObject);
+            InputField input = null;
+            if (EventSystem.current.currentSelectedGameObject != null)
+                input = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>();
+            if (input != null && input.isFocused)
+            {
+                for (var n = 0; n < segmentPanels.Count; n++)
+                {
+                    if (input == segmentPanels[n].lengthInput)
+                        EventSystem.current.SetSelectedGameObject(segmentPanels[n].radiusInput.gameObject);
+                    else if (input == segmentPanels[n].radiusInput)
+                        EventSystem.current.SetSelectedGameObject(segmentPanels[n == segmentPanels.Count - 1 ? 0 : n + 1].lengthInput.gameObject);
+                }
+                for (var n = 0; n < verticalSegmentPanels.Count; n++)
+                {
+                    if (input == verticalSegmentPanels[n].lengthInput)
+                        EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n].radiusInput.gameObject);
+                    else if (input == verticalSegmentPanels[n].radiusInput)
+                        EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n == verticalSegmentPanels.Count - 1 ? 0 : n + 1].lengthInput.gameObject);
+                }
+            }
+            else
+                EventSystem.current.SetSelectedGameObject(segmentPanels[0].lengthInput.gameObject);
         }
     }
 
     public void load()
     {
-        lengthInput.text = (lastLength = Main.editingTracks[0].length).ToString();
-        repeatInput.text = "1";
-        if (Main.editingTracks[0] is Curve)
-        {
-            radiusInput.text = (lastRadius = ((Curve)Main.editingTracks[0]).radius).ToString();
-            isVerticalCurveToggle.isOn = lastIsVerticalCurve = ((Curve)Main.editingTracks[0]).isVerticalCurve;
-        }
+        curveLength = lastCurveLength = Main.editingTracks[0].curveLength;
+        curveRadius = lastCurveRadius = Main.editingTracks[0].curveRadius;
+        verticalCurveLength = lastVerticalCurveLength = Main.editingTracks[0].verticalCurveLength;
+        verticalCurveRadius = lastVerticalCurveRadius = Main.editingTracks[0].verticalCurveRadius;
+        reloadSegmentPanels();
     }
 
     new public void show(bool show)
     {
         if (show)
-        {
-            lengthText.text = lengthText_DEF + ": ";
-            repeatText.text = repeatText_DEF + ": ";
-            if (Main.editingTracks[0] is Curve)
-            {
-                radiusText.text = radiusText_DEF + ": ";
-                isVerticalCurveText.text = isVerticalCurveText_DEF + ": ";
-            }
-
             load();
-
-            if (Main.editingTracks[0] is Curve)
-            {
-                ((RectTransform)transform).rect.Set(((RectTransform)transform).rect.x, ((RectTransform)transform).rect.y, ((RectTransform)transform).rect.width, 60);
-                curveSettingPanel.gameObject.SetActive(true);
-            }
-            else
-            {
-                curveSettingPanel.gameObject.SetActive(false);
-                ((RectTransform)transform).rect.Set(((RectTransform)transform).rect.x, ((RectTransform)transform).rect.y, ((RectTransform)transform).rect.width, 30);
-            }
-        }
 
         base.show(show);
     }
@@ -82,13 +73,55 @@ public class TrackSettingPanel : GamePanel
 
         try
         {
-            Main.editingTracks[0].length = float.Parse(lengthInput.text);
-            if (Main.editingTracks[0] is Curve)
+            var lengthL = new List<float>();
+            var radiusL = new List<float>();
+            foreach (var p in segmentPanels)
             {
-                ((Curve)Main.editingTracks[0]).radius = float.Parse(radiusInput.text);
-                ((Curve)Main.editingTracks[0]).isVerticalCurve = isVerticalCurveToggle.isOn;
+                lengthL.Add(float.Parse(p.lengthInput.text));
+                radiusL.Add(float.Parse(p.radiusInput.text));
             }
-            Main.main.setTrackRepeat(int.Parse(repeatInput.text));
+            curveLength = lengthL;
+            curveRadius = radiusL;
+            lengthL = new List<float>();
+            radiusL = new List<float>();
+            for (var n = 0; n < curveLength.Count; n++)
+            {
+                if (curveLength[n] != 0f)
+                {
+                    lengthL.Add(curveLength[n]);
+                    radiusL.Add(curveRadius[n]);
+                }
+            }
+            Main.editingTracks[0].curveLength = lengthL;
+            Main.editingTracks[0].curveRadius = radiusL;
+            // TODO 長さに縦曲線、勾配を考慮
+            var length = 0f;
+            foreach (var l_ in lengthL)
+                length += l_;
+            Main.editingTracks[0].length = length;
+
+            lengthL = new List<float>();
+            radiusL = new List<float>();
+            foreach (var p in verticalSegmentPanels)
+            {
+                lengthL.Add(float.Parse(p.lengthInput.text));
+                radiusL.Add(float.Parse(p.radiusInput.text));
+            }
+            verticalCurveLength = lengthL;
+            verticalCurveRadius = radiusL;
+            lengthL = new List<float>();
+            radiusL = new List<float>();
+            for (var n = 0; n < verticalCurveLength.Count; n++)
+            {
+                if (verticalCurveLength[n] != 0f)
+                {
+                    lengthL.Add(verticalCurveLength[n]);
+                    radiusL.Add(verticalCurveRadius[n]);
+                }
+            }
+            Main.editingTracks[0].verticalCurveLength = lengthL;
+            Main.editingTracks[0].verticalCurveRadius = radiusL;
+            Main.editingTracks[0].reloadEntity();
         }
         catch (FormatException) { }
         catch (OverflowException) { }
@@ -107,12 +140,99 @@ public class TrackSettingPanel : GamePanel
 
     public void cancel()
     {
-        lengthInput.text = lastLength.ToString();
-        repeatInput.text = "1";
-        radiusInput.text = lastRadius.ToString();
-        isVerticalCurveToggle.isOn = lastIsVerticalCurve;
-        reflect();
+        // TODO 長さに縦曲線、勾配を考慮
+        var l = 0f;
+        foreach (var l_ in lastCurveLength)
+            l += l_;
+        Main.editingTracks[0].length = l;
+        Main.editingTracks[0].curveLength = lastCurveLength;
+        Main.editingTracks[0].curveRadius = lastCurveRadius;
+        Main.editingTracks[0].verticalCurveLength = lastVerticalCurveLength;
+        Main.editingTracks[0].verticalCurveRadius = lastVerticalCurveRadius;
 
         show(false);
+    }
+
+    private void reloadSegmentPanels()
+    {
+        foreach (var p in segmentPanels)
+            Destroy(p.gameObject);
+        segmentPanels.Clear();
+        for (var n = 0; n < curveLength.Count; n++)
+        {
+            var p = Instantiate(Main.main.segmentSettingPanelPrefab);
+            p.n = n;
+            segmentPanels.Add(p);
+            p.transform.SetParent(transform);
+            p.transform.localPosition = new Vector3(0f, -30f - 90f * n);
+            p.titleText.text = SegmentSettingPanel.segmentText_DEF + " " + (n + 1) + "/" + curveLength.Count;
+            p.lengthInput.text = curveLength[n].ToString();
+            p.radiusInput.text = curveRadius[n].ToString();
+        }
+        foreach (var p in verticalSegmentPanels)
+            Destroy(p.gameObject);
+        verticalSegmentPanels.Clear();
+        for (var n = 0; n < verticalCurveLength.Count; n++)
+        {
+            var p = Instantiate(Main.main.segmentSettingPanelPrefab);
+            p.n = n;
+            p.isVertical = true;
+            verticalSegmentPanels.Add(p);
+            p.transform.SetParent(transform);
+            p.transform.localPosition = new Vector3(0f, -30f - 90f * (n + curveLength.Count));
+            p.titleText.text = SegmentSettingPanel.verticalSegmentText_DEF + " " + (n + 1) + "/" + verticalCurveLength.Count;
+            p.lengthText.text = SegmentSettingPanel.lengthText_DEF + ": ";
+            p.radiusText.text = SegmentSettingPanel.radiusText_DEF + ": ";
+            p.lengthInput.text = verticalCurveLength[n].ToString();
+            p.radiusInput.text = verticalCurveRadius[n].ToString();
+        }
+    }
+
+    public void addSegment(int n = -1)
+    {
+        if (n == -1)
+        {
+            curveLength.Add(0f);
+            curveRadius.Add(0f);
+        }
+        else
+        {
+            curveLength.Insert(n, 0f);
+            curveRadius.Insert(n, 0f);
+        }
+        reloadSegmentPanels();
+        reflect();
+    }
+
+    public void removeSegment(int n)
+    {
+        curveLength.RemoveAt(n);
+        curveRadius.RemoveAt(n);
+        reloadSegmentPanels();
+        reflect();
+    }
+
+    public void addVerticalSegment(int n = -1)
+    {
+        if (n == -1)
+        {
+            verticalCurveLength.Add(0f);
+            verticalCurveRadius.Add(0f);
+        }
+        else
+        {
+            verticalCurveLength.Insert(n, 0f);
+            verticalCurveRadius.Insert(n, 0f);
+        }
+        reloadSegmentPanels();
+        reflect();
+    }
+
+    public void removeVerticalSegment(int n)
+    {
+        verticalCurveLength.RemoveAt(n);
+        verticalCurveRadius.RemoveAt(n);
+        reloadSegmentPanels();
+        reflect();
     }
 }

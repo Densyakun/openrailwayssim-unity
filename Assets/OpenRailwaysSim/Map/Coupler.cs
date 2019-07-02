@@ -82,7 +82,11 @@ public class Coupler : MapObject
             rot = e;
         }
         else
-            rot = Quaternion.LookRotation(connectingCoupler.pos - pos);
+        {
+            var f = connectingCoupler.pos - pos;
+            if (f.sqrMagnitude != 0f)
+                rot = Quaternion.LookRotation(f);
+        }
     }
 
     public void snapFrom()

@@ -219,6 +219,9 @@ public class Axle : MapObject
         reloadEntity();
     }
 
+    /// <summary>
+    /// 車軸を移動する
+    /// </summary>
     public void fixedMove()
     {
         if (lastFixed == Time.fixedTime)
@@ -256,8 +259,12 @@ public class Axle : MapObject
         rot = Quaternion.Euler(c);
     }
 
+    /// <summary>
+    /// 車軸を線路に合わせる
+    /// </summary>
     public void reloadOnDist()
     {
+        // TODO Shapeに対応する
         if (onTrack is Curve)
         {
             Vector3 a;
