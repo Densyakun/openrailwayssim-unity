@@ -94,11 +94,6 @@ public class TrackSettingPanel : GamePanel
             }
             Main.editingTracks[0].curveLength = lengthL;
             Main.editingTracks[0].curveRadius = radiusL;
-            // TODO 長さに縦曲線、勾配を考慮
-            var length = 0f;
-            foreach (var l_ in lengthL)
-                length += l_;
-            Main.editingTracks[0].length = length;
 
             lengthL = new List<float>();
             radiusL = new List<float>();
@@ -121,6 +116,8 @@ public class TrackSettingPanel : GamePanel
             }
             Main.editingTracks[0].verticalCurveLength = lengthL;
             Main.editingTracks[0].verticalCurveRadius = radiusL;
+
+            Main.editingTracks[0].reloadLength();
             Main.editingTracks[0].reloadEntity();
         }
         catch (FormatException) { }
@@ -141,15 +138,13 @@ public class TrackSettingPanel : GamePanel
 
     public void cancel()
     {
-        // TODO 長さに縦曲線、勾配を考慮
-        var l = 0f;
-        foreach (var l_ in lastCurveLength)
-            l += l_;
-        Main.editingTracks[0].length = l;
         Main.editingTracks[0].curveLength = lastCurveLength;
         Main.editingTracks[0].curveRadius = lastCurveRadius;
         Main.editingTracks[0].verticalCurveLength = lastVerticalCurveLength;
         Main.editingTracks[0].verticalCurveRadius = lastVerticalCurveRadius;
+
+        Main.editingTracks[0].reloadLength();
+        Main.editingTracks[0].reloadEntity();
 
         show(false);
     }

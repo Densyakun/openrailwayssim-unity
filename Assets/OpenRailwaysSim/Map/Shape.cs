@@ -116,7 +116,6 @@ public class Shape : Track
         if (railModelObjs != null)
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
-        var r_ = Quaternion.Inverse(rot);
         railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
         for (int a = 0; a < railModelObjs.Length / 2; a++)
@@ -126,10 +125,10 @@ public class Shape : Track
             setLOD(b, LOD_DISTANCE);
             var d = (float)a / (railModelObjs.Length / 2);
             var p = getPoint(d);
-            b.transform.localPosition = r_ * (p - pos);
+            b.transform.localPosition = p - pos;
             var f = getPoint(((float)a + 1) / (railModelObjs.Length / 2)) - p;
             if (f.sqrMagnitude != 0f)
-                b.transform.localRotation = r_ * Quaternion.LookRotation(f);
+                b.transform.localRotation = Quaternion.LookRotation(f);
         }
         for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
@@ -138,10 +137,10 @@ public class Shape : Track
             setLOD(b, LOD_DISTANCE);
             var d = (float)a / (railModelObjs.Length / 2);
             var p = getPoint(d);
-            b.transform.localPosition = r_ * (p - pos);
+            b.transform.localPosition = p - pos;
             var f = getPoint(((float)a + 1) / (railModelObjs.Length / 2)) - p;
             if (f.sqrMagnitude != 0f)
-                b.transform.localRotation = r_ * Quaternion.LookRotation(f);
+                b.transform.localRotation = Quaternion.LookRotation(f);
         }
 
         if (tieModelObjs != null)
@@ -153,8 +152,8 @@ public class Shape : Track
             (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
             setLOD(tieModelObjs[a], LOD_DISTANCE);
             var d = (float)a / tieModelObjs.Length;
-            tieModelObjs[a].transform.localPosition = r_ * (getPoint(d) - pos);
-            tieModelObjs[a].transform.localRotation = r_ * getRotation(d);
+            tieModelObjs[a].transform.localPosition = getPoint(d) - pos;
+            tieModelObjs[a].transform.localRotation = getRotation(d);
         }
     }
 
@@ -188,7 +187,7 @@ public class Shape : Track
         }
     }
 
-    // TODO 長さに勾配を考慮する（TrackSettingPanelも）
+    // TODO 長さに縦曲線、勾配を考慮
     public override Vector3 getPoint(float a)
     {
         var p = pos;
@@ -203,7 +202,7 @@ public class Shape : Track
         for (var n = 0; n < curveLength.Count; n++)
         {
             b = _length * a <= l + curveLength[n];
-            c = (b ? (_length * a - l) / curveLength[n] : 1f);
+            c = (b || n == curveLength.Count - 1 ? (_length * a - l) / curveLength[n] : 1f);
             _l = curveLength[n] * c;
             if ((rad = curveRadius[n]) == 0f)
                 p += r * Vector3.forward * _l;
@@ -227,7 +226,7 @@ public class Shape : Track
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
             b = _length * a <= l + verticalCurveLength[n];
-            c = (b ? (_length * a - l) / verticalCurveLength[n] : 1f);
+            c = (b || n == curveLength.Count - 1 ? (_length * a - l) / verticalCurveLength[n] : 1f);
             _l = verticalCurveLength[n] * c;
             if ((rad = verticalCurveRadius[n]) == 0f)
                 p.y += (vr * Vector3.forward * _l).y;
@@ -249,6 +248,7 @@ public class Shape : Track
         return p;
     }
 
+    // TODO 長さに縦曲線、勾配を考慮
     public virtual Quaternion getRotation(float a)
     {
         var r = rot;
@@ -262,7 +262,7 @@ public class Shape : Track
         for (var n = 0; n < curveLength.Count; n++)
         {
             b = _length * a <= l + curveLength[n];
-            c = (b ? (_length * a - l) / curveLength[n] : 1f);
+            c = (b || n == curveLength.Count - 1 ? (_length * a - l) / curveLength[n] : 1f);
             _l = curveLength[n] * c;
             if ((rad = curveRadius[n]) != 0f)
                 r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, _l * Mathf.Rad2Deg / rad, 0f);
@@ -279,7 +279,7 @@ public class Shape : Track
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
             b = _length * a <= l + verticalCurveLength[n];
-            c = (b ? (_length * a - l) / verticalCurveLength[n] : 1f);
+            c = (b || n == curveLength.Count - 1 ? (_length * a - l) / verticalCurveLength[n] : 1f);
             _l = verticalCurveLength[n] * c;
             if ((rad = verticalCurveRadius[n]) != 0f)
                 vr *= Quaternion.Euler(-_l * Mathf.Rad2Deg / rad, 0f, 0f);
@@ -290,5 +290,13 @@ public class Shape : Track
         }
 
         return Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(vr.eulerAngles.x, 0f, 0f);
+    }
+
+    public void reloadLength()
+    {
+        // TODO 長さに縦曲線、勾配を考慮
+        length = 0f;
+        foreach (var l_ in curveLength)
+            length += l_;
     }
 }
