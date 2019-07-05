@@ -81,8 +81,8 @@ public class Shape : Track
                 GameObject.Destroy(r.gameObject);
         if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
         {
-            railRenderers = new LineRenderer[rails.Count];
-            for (int a = 0; a < rails.Count; a++)
+            railRenderers = new LineRenderer[2];
+            for (int a = 0; a < 2; a++)
             {
                 GameObject o = new GameObject();
                 railRenderers[a] = o.AddComponent<LineRenderer>();
@@ -100,9 +100,9 @@ public class Shape : Track
 
                 int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
                 Vector3[] p = new Vector3[l + 1];
-                p[0] = pos + rot * Vector3.right * rails[a];
+                p[0] = pos + rot * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
                 for (int b = 1; b <= l; b++)
-                    p[b] = getPoint((float)b / (float)l) + getRotation((float)b / (float)l) * Vector3.right * rails[a];
+                    p[b] = getPoint((float)b / (float)l) + getRotation((float)b / (float)l) * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
                 railRenderers[a].positionCount = p.Length;
                 railRenderers[a].SetPositions(p);
             }
@@ -117,17 +117,31 @@ public class Shape : Track
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
         var r_ = Quaternion.Inverse(rot);
-        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL)];
-        for (int a = 0; a < railModelObjs.Length; a++)
+        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL) * 2];
+        GameObject b;
+        for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
-            (railModelObjs[a] = GameObject.Instantiate(Main.main.railModel)).transform.parent = entity.transform;
-            setLOD(railModelObjs[a], LOD_DISTANCE);
-            var d = (float)a / railModelObjs.Length;
+            railModelObjs[a] = b = GameObject.Instantiate(Main.main.railLModel);
+            b.transform.parent = entity.transform;
+            setLOD(b, LOD_DISTANCE);
+            var d = (float)a / (railModelObjs.Length / 2);
             var p = getPoint(d);
-            railModelObjs[a].transform.localPosition = r_ * (p - pos);
-            var f = getPoint(((float)a + 1) / railModelObjs.Length) - p;
+            b.transform.localPosition = r_ * (p - pos);
+            var f = getPoint(((float)a + 1) / (railModelObjs.Length / 2)) - p;
             if (f.sqrMagnitude != 0f)
-                railModelObjs[a].transform.localRotation = r_ * Quaternion.LookRotation(f);
+                b.transform.localRotation = r_ * Quaternion.LookRotation(f);
+        }
+        for (int a = 0; a < railModelObjs.Length / 2; a++)
+        {
+            railModelObjs[a + railModelObjs.Length / 2] = b = GameObject.Instantiate(Main.main.railRModel);
+            b.transform.parent = entity.transform;
+            setLOD(b, LOD_DISTANCE);
+            var d = (float)a / (railModelObjs.Length / 2);
+            var p = getPoint(d);
+            b.transform.localPosition = r_ * (p - pos);
+            var f = getPoint(((float)a + 1) / (railModelObjs.Length / 2)) - p;
+            if (f.sqrMagnitude != 0f)
+                b.transform.localRotation = r_ * Quaternion.LookRotation(f);
         }
 
         if (tieModelObjs != null)

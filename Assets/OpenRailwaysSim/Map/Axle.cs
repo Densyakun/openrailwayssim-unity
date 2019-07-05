@@ -162,9 +162,9 @@ public class Axle : MapObject
         runningResistanceB = 0.000015625f;
         rotX = 0;
         Vector3 a = onTrack is Curve
-            ? ((Curve)onTrack).getRotation(onDist / onTrack.length).eulerAngles
+            ? ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
-        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2;
+        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2;
         a.x = rotX;
         rot = Quaternion.Euler(a);
     }
@@ -253,9 +253,9 @@ public class Axle : MapObject
         lastFixed = Time.fixedTime;
 
         Vector3 c = onTrack is Curve
-            ? ((Curve)onTrack).getRotation(onDist / onTrack.length).eulerAngles
+            ? ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
-        pos = onTrack.getPoint(onDist / onTrack.length) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2;
+        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2;
         rot = Quaternion.Euler(c);
     }
 
@@ -268,7 +268,7 @@ public class Axle : MapObject
         if (onTrack is Curve)
         {
             Vector3 a;
-            var r = ((Curve)onTrack).radius;
+            var r = (((Curve)onTrack).radius);
             float A;
 
             if (((Curve)onTrack).isVerticalCurve)

@@ -82,7 +82,7 @@ public class BogieFrame : MapObject
         {
             var f = axles[axles.Count - 1].pos - axles[0].pos;
             if (f.sqrMagnitude != 0f)
-                rot = Quaternion.LookRotation(axles[axles.Count - 1].pos - axles[0].pos);
+                rot = Quaternion.LookRotation(f, Quaternion.Lerp(axles[0].rot, axles[axles.Count - 1].rot, 0.5f) * Vector3.up);
         }
 
         for (var d = 0; d < axles.Count; d++)

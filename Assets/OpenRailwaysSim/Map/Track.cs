@@ -7,12 +7,12 @@ using UnityEngine;
 [Serializable]
 public class Track : MapObject
 {
-    public const string KEY_LENGTH = "LENGTH";
-    public const string KEY_RAILS = "RAILS";
-    public const string KEY_NEXT_TRACKS = "NEXT_TRACKS";
-    public const string KEY_PREV_TRACKS = "PREV_TRACKS";
-    public const string KEY_CONNECTING_NEXT_TRACKS = "CONNECTING_NEXT_TRACKS";
-    public const string KEY_CONNECTING_PREV_TRACKS = "CONNECTING_PREV_TRACKS";
+    public const string KEY_LENGTH = "L";
+    public const string KEY_GAUGE = "G";
+    public const string KEY_NEXT_TRACKS = "N_T";
+    public const string KEY_PREV_TRACKS = "P_T";
+    public const string KEY_CONNECTING_NEXT_TRACKS = "C_N_T";
+    public const string KEY_CONNECTING_PREV_TRACKS = "C_P_T";
 
     public const float MIN_TRACK_LENGTH = 1f;
     public const float RENDER_WIDTH = 0.25f;
@@ -23,6 +23,8 @@ public class Track : MapObject
     public const float TIE_MODEL_INTERVAL = 25f / 37f;
     public const float LOD_DISTANCE = 0.03f;
 
+    public static float defaultGauge = 1.435f;
+
     protected float _length = MIN_TRACK_LENGTH;
 
     public virtual float length
@@ -30,11 +32,7 @@ public class Track : MapObject
         get { return _length; }
         set { _length = Mathf.Max(MIN_TRACK_LENGTH, value); }
     }
-
-    public LineRenderer trackRenderer;
-    public LineRenderer[] railRenderers;
-    public bool enableCollider = true;
-    public List<float> rails;
+    public float gauge;
 
     private List<Track> _nextTracks;
 
@@ -88,6 +86,9 @@ public class Track : MapObject
         }
     }
 
+    public LineRenderer trackRenderer;
+    public LineRenderer[] railRenderers;
+    public bool enableCollider = true;
     public GameObject[] railModelObjs;
     public GameObject[] tieModelObjs;
 
@@ -97,7 +98,7 @@ public class Track : MapObject
 
     public Track(Map map, Vector3 pos, Quaternion rot) : base(map, pos, rot)
     {
-        rails = new List<float>();
+        gauge = defaultGauge;
         _nextTracks = new List<Track>();
         _prevTracks = new List<Track>();
         _connectingPrevTrack = _connectingNextTrack = -1;
@@ -106,36 +107,18 @@ public class Track : MapObject
     protected Track(SerializationInfo info, StreamingContext context) : base(info, context)
     {
         _length = info.GetSingle(KEY_LENGTH);
-        try
-        {
-            rails = (List<float>)info.GetValue(KEY_RAILS, typeof(List<float>));
-        }
-        catch (SerializationException)
-        {
-            rails = new List<float>();
-            rails.Add(-Main.main.gauge / 2);
-            rails.Add(Main.main.gauge / 2);
-        }
-
+        gauge = info.GetSingle(KEY_GAUGE);
         _nextTracks = (List<Track>)info.GetValue(KEY_NEXT_TRACKS, typeof(List<Track>));
         _prevTracks = (List<Track>)info.GetValue(KEY_PREV_TRACKS, typeof(List<Track>));
-        try
-        {
-            _connectingNextTrack = info.GetInt32(KEY_CONNECTING_NEXT_TRACKS);
-            _connectingPrevTrack = info.GetInt32(KEY_CONNECTING_PREV_TRACKS);
-        }
-        catch (SerializationException)
-        {
-            _connectingNextTrack = -1;
-            _connectingPrevTrack = -1;
-        }
+        _connectingNextTrack = info.GetInt32(KEY_CONNECTING_NEXT_TRACKS);
+        _connectingPrevTrack = info.GetInt32(KEY_CONNECTING_PREV_TRACKS);
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
         info.AddValue(KEY_LENGTH, _length);
-        info.AddValue(KEY_RAILS, rails);
+        info.AddValue(KEY_GAUGE, gauge);
         info.AddValue(KEY_NEXT_TRACKS, _nextTracks);
         info.AddValue(KEY_PREV_TRACKS, _prevTracks);
         info.AddValue(KEY_CONNECTING_NEXT_TRACKS, _connectingNextTrack);
@@ -201,8 +184,8 @@ public class Track : MapObject
                 GameObject.Destroy(r.gameObject);
         if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
         {
-            railRenderers = new LineRenderer[rails.Count];
-            for (int a = 0; a < rails.Count; a++)
+            railRenderers = new LineRenderer[2];
+            for (int a = 0; a < 2; a++)
             {
                 GameObject o = new GameObject();
                 railRenderers[a] = o.AddComponent<LineRenderer>();
@@ -218,7 +201,7 @@ public class Track : MapObject
                 else
                     railRenderers[a].sharedMaterial = Main.main.rail_mat;
 
-                Vector3 b = rot * Vector3.right * rails[a];
+                Vector3 b = rot * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
                 railRenderers[a].SetPositions(new Vector3[] { pos + b, getPoint(1) + b });
             }
         }
@@ -232,13 +215,23 @@ public class Track : MapObject
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
         var r_ = Quaternion.Inverse(rot);
-        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL)];
-        for (int a = 0; a < railModelObjs.Length; a++)
+        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL) * 2];
+        GameObject b;
+        for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
-            (railModelObjs[a] = GameObject.Instantiate(Main.main.railModel)).transform.parent = entity.transform;
-            setLOD(railModelObjs[a], LOD_DISTANCE);
-            railModelObjs[a].transform.localPosition = r_ * (getPoint((float)a / railModelObjs.Length) - pos);
-            railModelObjs[a].transform.localEulerAngles = new Vector3();
+            railModelObjs[a] = b = GameObject.Instantiate(Main.main.railLModel);
+            b.transform.parent = entity.transform;
+            setLOD(b, LOD_DISTANCE);
+            b.transform.localPosition = r_ * (getPoint((float)a / (railModelObjs.Length / 2)) - pos);
+            b.transform.localEulerAngles = new Vector3();
+        }
+        for (int a = 0; a < railModelObjs.Length / 2; a++)
+        {
+            railModelObjs[a + railModelObjs.Length / 2] = b = GameObject.Instantiate(Main.main.railRModel);
+            b.transform.parent = entity.transform;
+            setLOD(b, LOD_DISTANCE);
+            b.transform.localPosition = r_ * (getPoint((float)a / (railModelObjs.Length / 2)) - pos);
+            b.transform.localEulerAngles = new Vector3();
         }
 
         if (tieModelObjs != null)

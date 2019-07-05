@@ -23,7 +23,6 @@ public class Main : MonoBehaviour
     public const string KEY_MOTIONBLUR = "MOTIONBLUR";
     public const string KEY_BLOOM = "BLOOM";
     public const string KEY_VIGNETTE = "VIGNETTE";
-    public const string KEY_GAUGE = "GAUGE";
 
     public const int MIN_DRAW_DISTANCE = 1;
     public const int MAX_DRAW_DISTANCE = 8;
@@ -86,6 +85,7 @@ public class Main : MonoBehaviour
     public static MapObject focused;
     public static float focusedDist;
     public static List<MapObject> selectingObjs = new List<MapObject>();
+    public static float gauge = Track.defaultGauge;
 
     public Gradient sunGradient;
     public Light sun; //太陽
@@ -99,8 +99,8 @@ public class Main : MonoBehaviour
     public Material rail_mat;
     public GameObject point;
     public GameObject grid;
-    public float gauge = 1.435f;
-    public GameObject railModel;
+    public GameObject railLModel;
+    public GameObject railRModel;
     public GameObject tieModel;
     public GameObject axleModel;
     public GameObject bogieFrameModel;
@@ -126,7 +126,6 @@ public class Main : MonoBehaviour
         motionBlur = PlayerPrefs.GetInt(KEY_MOTIONBLUR, DEFAULT_MOTIONBLUR ? 1 : 0) == 1;
         bloom = PlayerPrefs.GetInt(KEY_BLOOM, DEFAULT_BLOOM ? 1 : 0) == 1;
         vignette = PlayerPrefs.GetInt(KEY_VIGNETTE, DEFAULT_VIGNETTE ? 1 : 0) == 1;
-        gauge = PlayerPrefs.GetFloat(KEY_GAUGE, gauge);
         reflectSettings();
         saveSettings();
     }
@@ -421,84 +420,6 @@ public class Main : MonoBehaviour
                 if (mode == MODE_CONSTRUCT_TRACK)
                 {
                     var aaa = false;
-                    /*if (editingTracks.Any())
-                    {
-                        if (editingRot == null)
-                        {
-                            foreach (var track in editingTracks)
-                            {
-                                track.entity.transform.LookAt(p);
-                                track.SyncFromEntity();
-                            }
-                        }
-
-                        var isCurve = editingTracks[0] is Curve;
-
-                        if (Input.GetKeyDown(KeyCode.T))
-                        {
-                            var pos = editingTracks[0].pos;
-                            var rot = editingTracks[0].rot;
-                            foreach (var track in editingTracks)
-                                track.entity.Destroy();
-                            var c = editingTracks.Count;
-                            editingTracks.Clear();
-
-                            if (isCurve)
-                                editingTracks.Add(new Track(playingmap, pos, rot));
-                            else
-                                editingTracks.Add(new Curve(playingmap, pos, rot));
-                            isCurve = !isCurve;
-                            setTrackRepeat(c);
-
-                            aaa = true;
-                        }
-
-                        if (isCurve)
-                        {
-                            Vector3 v = Quaternion.Inverse(editingTracks[0].rot) * (p - editingTracks[0].pos);
-                            if (v.z != 0)
-                            {
-                                float a = Mathf.Atan(Mathf.Abs(v.x) / v.z);
-                                if (v.x < 0)
-                                    a = -a;
-
-                                if (v.z < 0)
-                                {
-                                    Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero,
-                                        Vector3.right * v.x, v,
-                                        v + Quaternion.Euler(0, a * 2 * Mathf.Rad2Deg, 0) *
-                                        Vector3.right * v.z);
-                                    if (i != null)
-                                    {
-                                        editingTracks[0].rot = Quaternion.Euler(-editingTracks[0].rot.eulerAngles.x, editingTracks[0].rot.eulerAngles.y - 180, 0);
-                                        editingTracks[0].length = Mathf.Abs(a * 2 * (((Curve)editingTracks[0]).radius = -((Vector2)i).x));
-                                    }
-                                }
-                                else
-                                {
-                                    Vector2? i = GetIntersectionPointCoordinatesXZ(Vector3.zero,
-                                        Vector3.right * v.x, v,
-                                        v + Quaternion.Euler(0, a * 2 * Mathf.Rad2Deg, 0) *
-                                        Vector3.right * v.z);
-                                    if (i != null)
-                                        editingTracks[0].length = Mathf.Abs(a * 2 * (((Curve)editingTracks[0]).radius = ((Vector2)i).x));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Vector3 v = Quaternion.Inverse(editingTracks[0].rot) * (p - editingTracks[0].pos);
-                            if (v.z < 0)
-                                editingTracks[0].rot = Quaternion.Euler(-editingTracks[0].rot.eulerAngles.x, editingTracks[0].rot.eulerAngles.y - 180, 0);
-                            editingTracks[0].length = Mathf.Abs(v.z);
-                        }
-
-                        foreach (var track in editingTracks)
-                            track.reloadEntity();
-                        GameCanvas.trackSettingPanel.load();
-                        setPanelPosToMousePos((RectTransform)GameCanvas.trackSettingPanel.transform);
-                    }*/
-
                     if (Input.GetMouseButtonUp(0))
                     {
                         if (editingTracks.Any())
@@ -537,8 +458,7 @@ public class Main : MonoBehaviour
 
                     if (aaa)
                     {
-                        editingTracks[0].rails.Add(-Main.main.gauge / 2);
-                        editingTracks[0].rails.Add(Main.main.gauge / 2);
+                        editingTracks[0].gauge = Main.gauge;
 
                         if (editingRot != null)
                             editingTracks[0].rot = (Quaternion)editingRot;
@@ -546,7 +466,7 @@ public class Main : MonoBehaviour
                         editingTracks[0].generate();
 
                         GameCanvas.trackSettingPanel.show(true);
-                        setPanelPosToMousePos((RectTransform)GameCanvas.trackSettingPanel.transform);
+                        setPanelPosToMousePos(GameCanvas.trackSettingPanel);
                     }
                 }
                 else if (mode == MODE_PLACE_AXLE)
@@ -565,7 +485,7 @@ public class Main : MonoBehaviour
                         editingMapPin = new MapPin(playingmap, p);
                         editingMapPin.generate();
                         GameCanvas.mapPinSettingPanel.show(true);
-                        setPanelPosToMousePos((RectTransform)GameCanvas.mapPinSettingPanel.transform);
+                        setPanelPosToMousePos(GameCanvas.mapPinSettingPanel);
                     }
                 }
                 else if (mode == MODE_PLACE_STRUCTURE)
@@ -575,7 +495,7 @@ public class Main : MonoBehaviour
                         editingStructure = new Structure(playingmap, p);
                         editingStructure.generate();
                         GameCanvas.structureSettingPanel.show(true);
-                        setPanelPosToMousePos((RectTransform)GameCanvas.structureSettingPanel.transform);
+                        setPanelPosToMousePos(GameCanvas.structureSettingPanel);
                     }
                 }
             }
@@ -633,7 +553,6 @@ public class Main : MonoBehaviour
         PlayerPrefs.SetInt(KEY_MOTIONBLUR, motionBlur ? 1 : 0);
         PlayerPrefs.SetInt(KEY_BLOOM, bloom ? 1 : 0);
         PlayerPrefs.SetInt(KEY_VIGNETTE, vignette ? 1 : 0);
-        PlayerPrefs.SetFloat(KEY_GAUGE, gauge);
     }
 
     public IEnumerator openMap(string mapname)
@@ -690,10 +609,10 @@ public class Main : MonoBehaviour
         return 1 / Time.deltaTime <= Main.min_fps;
     }
 
-    public static void setPanelPosToMousePos(RectTransform panel)
+    public static void setPanelPosToMousePos(GamePanel panel)
     {
-        panel.position = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0, Screen.width - panel.rect.width),
-            Mathf.Clamp(Input.mousePosition.y, panel.rect.height, Screen.height));
+        panel.transform.position = new Vector3(Mathf.Clamp(Input.mousePosition.x, 0, Screen.width - panel.getWidth()),
+            Mathf.Clamp(Input.mousePosition.y, panel.getHeight(), Screen.height));
     }
 
     public void setPause(bool pause)
@@ -744,30 +663,30 @@ public class Main : MonoBehaviour
         {
             if (mainTrack != null)
             {
-                if (mainTrack.pos == track.pos && mainTrack.rot.eulerAngles == track.rot.eulerAngles ||
-                mainTrack.pos == track.getPoint(1) && mainTrack.rot.eulerAngles == track.getRotation(1).eulerAngles)
+                if ((mainTrack.pos - track.pos).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.rot.eulerAngles - track.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (mainTrack.pos - track.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.rot.eulerAngles - track.getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     mainTrack.prevTracks.Add(track);
                     if (mainTrack.prevTracks.Count == 1)
                         mainTrack.connectingPrevTrack = 0;
                 }
-                else if (mainTrack.getPoint(1) == track.pos && mainTrack.getRotation(1).eulerAngles == track.rot.eulerAngles ||
-                mainTrack.getPoint(1) == track.getPoint(1) && mainTrack.getRotation(1).eulerAngles == track.getRotation(1).eulerAngles)
+                else if ((mainTrack.getPoint(1) - track.pos).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.getRotation(1).eulerAngles - track.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (mainTrack.getPoint(1) - track.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.getRotation(1).eulerAngles - track.getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     mainTrack.nextTracks.Add(track);
                     if (mainTrack.nextTracks.Count == 1)
                         mainTrack.connectingNextTrack = 0;
                 }
 
-                if (track.pos == mainTrack.pos && track.rot.eulerAngles == mainTrack.rot.eulerAngles ||
-                track.pos == mainTrack.getPoint(1) && track.rot.eulerAngles == mainTrack.getRotation(1).eulerAngles)
+                if ((track.pos - mainTrack.pos).sqrMagnitude < ALLOWABLE_RANGE && (track.rot.eulerAngles - mainTrack.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (track.pos - mainTrack.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (track.rot.eulerAngles - mainTrack.getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     track.prevTracks.Add(mainTrack);
                     if (track.prevTracks.Count == 1)
                         track.connectingPrevTrack = 0;
                 }
-                else if (track.getPoint(1) == mainTrack.pos && track.getRotation(1).eulerAngles == mainTrack.rot.eulerAngles ||
-                track.getPoint(1) == mainTrack.getPoint(1) && track.getRotation(1).eulerAngles == mainTrack.getRotation(1).eulerAngles)
+                else if ((track.getPoint(1) - mainTrack.pos).sqrMagnitude < ALLOWABLE_RANGE && (track.getRotation(1).eulerAngles - mainTrack.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (track.getPoint(1) - mainTrack.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (track.getRotation(1).eulerAngles - mainTrack.getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     track.nextTracks.Add(mainTrack);
                     if (track.nextTracks.Count == 1)

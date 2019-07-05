@@ -81,7 +81,7 @@ public class PermanentCoupler : MapObject
 
         var f = pos2 - pos1;
         if (f.sqrMagnitude != 0f)
-            rot = Quaternion.LookRotation(f);
+            rot = Quaternion.LookRotation(f, Quaternion.Lerp(body1.rot, body2.rot, 0.5f) * Vector3.up);
     }
 
     public void snapFrom()

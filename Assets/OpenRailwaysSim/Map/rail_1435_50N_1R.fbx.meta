@@ -1,28 +1,14 @@
 fileFormatVersion: 2
-guid: b3df939debea5884d953b31f1e9b15ea
-timeCreated: 1536261815
-licenseType: Free
+guid: 40fae89afe7edd54596af0595f4343fe
 ModelImporter:
-  serializedVersion: 22
+  serializedVersion: 23
   fileIDToRecycleName:
-    100000: Camera
-    100002: Lamp
-    100004: LeftRail
-    100006: //RootNode
-    100008: RightRail
-    400000: Camera
-    400002: Lamp
-    400004: LeftRail
-    400006: //RootNode
-    400008: RightRail
-    2000000: Camera
+    100000: //RootNode
+    400000: //RootNode
     2100000: Material
-    2300000: LeftRail
-    2300002: RightRail
-    3300000: LeftRail
-    3300002: RightRail
+    2300000: //RootNode
+    3300000: //RootNode
     4300000: RightRail
-    10800000: Lamp
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -42,6 +28,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -73,6 +60,8 @@ ModelImporter:
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -92,7 +81,6 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     rootMotionBoneName: 
-    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1

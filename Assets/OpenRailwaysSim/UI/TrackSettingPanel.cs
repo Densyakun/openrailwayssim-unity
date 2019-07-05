@@ -130,6 +130,7 @@ public class TrackSettingPanel : GamePanel
     public void save()
     {
         reflect();
+        Main.gauge = Main.editingTracks[0].gauge;
         Main.main.trackEdited0();
         Main.editingTracks.Clear();
         Main.editingRot = null;

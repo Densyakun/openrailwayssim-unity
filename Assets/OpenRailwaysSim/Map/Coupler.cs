@@ -85,7 +85,7 @@ public class Coupler : MapObject
         {
             var f = connectingCoupler.pos - pos;
             if (f.sqrMagnitude != 0f)
-                rot = Quaternion.LookRotation(f);
+                rot = Quaternion.LookRotation(f, Quaternion.Lerp(body.rot, connectingCoupler.rot, 0.5f) * Vector3.up);
         }
     }
 

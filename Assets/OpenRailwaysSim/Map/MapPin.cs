@@ -12,7 +12,7 @@ public class MapPin : MapObject
     public string title;
     public string description;
 
-    public MapPinEntity textEntity;
+    public TextEntity textEntity;
 
     public MapPin(Map map, Vector3 pos) : base(map, pos, new Quaternion())
     {
@@ -45,10 +45,8 @@ public class MapPin : MapObject
             return;
 
         if (textEntity == null)
-        {
-            (textEntity = new GameObject("mapPinText").AddComponent<MapPinEntity>()).mapPin = this;
-            textEntity.transform.SetParent(GameCanvas.canvas.transform);
-        }
+            (textEntity = new GameObject("mapPinText").AddComponent<TextEntity>()).obj = this;
+        textEntity.str = string.IsNullOrEmpty(title) ? "・" : title;
 
         base.reloadEntity();
     }
