@@ -15,6 +15,7 @@ public class Track : MapObject
     public const string KEY_CONNECTING_PREV_TRACKS = "C_P_T";
 
     public const float MIN_TRACK_LENGTH = 1f;
+    public const float MAX_TRACK_LENGTH = 1024f;
     public const float RENDER_WIDTH = 0.25f;
     public const float RAIL_RENDER_WIDTH = 0.05f;
     public const float COLLIDER_WIDTH = 2f;
@@ -30,7 +31,7 @@ public class Track : MapObject
     public virtual float length
     {
         get { return _length; }
-        set { _length = Mathf.Max(MIN_TRACK_LENGTH, value); }
+        set { _length = Mathf.Max(MIN_TRACK_LENGTH, Mathf.Min(MAX_TRACK_LENGTH, value)); }
     }
     public float gauge;
 
@@ -215,7 +216,7 @@ public class Track : MapObject
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
         var r_ = Quaternion.Inverse(rot);
-        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL) * 2];
+        railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
         for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
@@ -237,7 +238,7 @@ public class Track : MapObject
         if (tieModelObjs != null)
             foreach (var r in tieModelObjs)
                 GameObject.Destroy(r.gameObject);
-        tieModelObjs = new GameObject[Mathf.CeilToInt(length / TIE_MODEL_INTERVAL)];
+        tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
         for (int a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
@@ -253,8 +254,8 @@ public class Track : MapObject
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;
-        collider.center = Vector3.forward * length / 2;
-        collider.size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, length);
+        collider.center = Vector3.forward * _length / 2;
+        collider.size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, _length);
         collider.enabled = enableCollider;
     }
 

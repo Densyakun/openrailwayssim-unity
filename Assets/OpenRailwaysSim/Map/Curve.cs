@@ -124,7 +124,7 @@ public class Curve : Track
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
         var r_ = Quaternion.Inverse(rot);
-        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL) * 2];
+        railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
         for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
@@ -150,7 +150,7 @@ public class Curve : Track
         if (tieModelObjs != null)
             foreach (var r in tieModelObjs)
                 GameObject.Destroy(r.gameObject);
-        tieModelObjs = new GameObject[Mathf.CeilToInt(length / TIE_MODEL_INTERVAL)];
+        tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
         for (int a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
@@ -233,6 +233,6 @@ public class Curve : Track
 
     public virtual bool isLinear()
     {
-        return length / _radius <= Mathf.PI * 2f && rot == getRotation(1);
+        return _length / _radius <= Mathf.PI * 2f && rot == getRotation(1);
     }
 }

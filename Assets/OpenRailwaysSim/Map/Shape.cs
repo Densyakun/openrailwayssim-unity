@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using UnityEngine;
 
 /// <summary>
-/// 平面曲線と縦断曲線を設定する軌道。距離に勾配は関係しない
+/// 平面曲線と縦断曲線を設定する軌道
 /// </summary>
 [Serializable]
 public class Shape : Track
@@ -13,7 +13,6 @@ public class Shape : Track
     public const string KEY_CURVE_RADIUS = "CURVE_R";
     public const string KEY_VERTICAL_CURVE_LENGTH = "V_CURVE_L";
     public const string KEY_VERTICAL_CURVE_RADIUS = "V_CURVE_R";
-    public const float MIN_RADIUS = 1f;
     public const float FINENESS_DISTANCE = 5f;
 
     public List<float> curveLength;
@@ -44,6 +43,7 @@ public class Shape : Track
         curveRadius = (List<float>)info.GetValue(KEY_CURVE_RADIUS, typeof(List<float>));
         verticalCurveLength = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_LENGTH, typeof(List<float>));
         verticalCurveRadius = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_RADIUS, typeof(List<float>));
+        reloadLength(); // TODO 一時的。長さを計算する処理を修正したのを反映するため
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -116,7 +116,7 @@ public class Shape : Track
         if (railModelObjs != null)
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
-        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL) * 2];
+        railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
         for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
@@ -146,7 +146,7 @@ public class Shape : Track
         if (tieModelObjs != null)
             foreach (var r in tieModelObjs)
                 GameObject.Destroy(r.gameObject);
-        tieModelObjs = new GameObject[Mathf.CeilToInt(length / TIE_MODEL_INTERVAL)];
+        tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
         for (int a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
@@ -187,11 +187,14 @@ public class Shape : Track
         }
     }
 
-    // TODO 長さに縦曲線、勾配を考慮
     public override Vector3 getPoint(float a)
     {
         var p = pos;
         var r = rot;
+
+        var l1 = 0f;
+        foreach (var l_ in curveLength)
+            l1 += l_;
 
         // 平面曲線を計算
         var rad = 0f;
@@ -201,17 +204,16 @@ public class Shape : Track
         float _l;
         for (var n = 0; n < curveLength.Count; n++)
         {
-            b = _length * a <= l + curveLength[n];
-            c = (b || n == curveLength.Count - 1 ? (_length * a - l) / curveLength[n] : 1f);
+            b = l1 * a <= l + curveLength[n];
+            c = b ? (l1 * a - l) / curveLength[n] : 1f;
             _l = curveLength[n] * c;
             if ((rad = curveRadius[n]) == 0f)
                 p += r * Vector3.forward * _l;
             else
             {
-                var d = _l;
-                var d1 = d / Mathf.Abs(rad);
-                p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d1)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(rad));
-                r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, curveLength[n] * c * Mathf.Rad2Deg / rad, 0f);
+                var d1 = _l / Mathf.Abs(rad);
+                p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d1)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * _l, Mathf.Sin(d1) * Mathf.Abs(rad));
+                r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, _l * Mathf.Rad2Deg / rad, 0f);
             }
             l += _l;
 
@@ -220,22 +222,36 @@ public class Shape : Track
         }
 
         // 縦断曲線を計算
-        var vr = rot;
+        r = rot;
         rad = 0f;
         l = 0f;
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
-            b = _length * a <= l + verticalCurveLength[n];
-            c = (b || n == curveLength.Count - 1 ? (_length * a - l) / verticalCurveLength[n] : 1f);
+            b = l1 * a <= l + verticalCurveLength[n];
+            c = b ? (l1 * a - l) / verticalCurveLength[n] : 1f;
             _l = verticalCurveLength[n] * c;
             if ((rad = verticalCurveRadius[n]) == 0f)
-                p.y += (vr * Vector3.forward * _l).y;
+                p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * _l;
             else
             {
-                var d = _l;
-                var d1 = d / Mathf.Abs(rad);
-                p.y += (vr * new Vector3(0f, (1f - Mathf.Cos(d1)) * rad, Mathf.Sin(d1) * Mathf.Abs(rad))).y;
-                vr *= Quaternion.Euler(-verticalCurveLength[n] * c * Mathf.Rad2Deg / rad, 0f, 0f);
+                // TODO 勾配中の縦曲線が正しく処理されない
+                var t = -r.eulerAngles.x * Mathf.Deg2Rad; // 縦曲線始点の角度。負数なら始点は下り勾配
+                var l2 = Mathf.Tan(t) * rad; // 曲線中心を基準とした縦曲線始点の横位置。始点が上り勾配==上り縦曲線であれば正数
+                var l3 = l2 + _l; // 曲線中心を基準とした縦曲線終点の横位置
+
+                var r1 = Mathf.Abs(rad);
+                var h = Mathf.Sqrt(r1 * r1 - l2 * l2); // 曲線中心と縦曲線始点の高低差の絶対値
+                if (!float.IsNaN(h))
+                {
+                    var h1 = Mathf.Sqrt(r1 * r1 - l3 * l3); // 曲線中心と縦曲線終点の高低差の絶対値
+                    if (!float.IsNaN(h1))
+                    {
+                        p.y += t < 0f ? h1 - h : h - h1;
+
+                        var t1 = Mathf.Asin(l3 / rad); // 曲線中心から縦曲線終点までの角度
+                        r *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
+                    }
+                }
             }
             l += _l;
 
@@ -243,15 +259,18 @@ public class Shape : Track
                 break;
         }
         if (!b)
-            p.y += (vr * Vector3.forward * (_length * a - l)).y;
+            p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * (l1 * a - l);
 
         return p;
     }
 
-    // TODO 長さに縦曲線、勾配を考慮
     public virtual Quaternion getRotation(float a)
     {
         var r = rot;
+
+        var l1 = 0f;
+        foreach (var l_ in curveLength)
+            l1 += l_;
 
         // 平面曲線を計算
         var rad = 0f;
@@ -261,8 +280,8 @@ public class Shape : Track
         float _l;
         for (var n = 0; n < curveLength.Count; n++)
         {
-            b = _length * a <= l + curveLength[n];
-            c = (b || n == curveLength.Count - 1 ? (_length * a - l) / curveLength[n] : 1f);
+            b = l1 * a <= l + curveLength[n];
+            c = b ? (l1 * a - l) / curveLength[n] : 1f;
             _l = curveLength[n] * c;
             if ((rad = curveRadius[n]) != 0f)
                 r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, _l * Mathf.Rad2Deg / rad, 0f);
@@ -278,11 +297,19 @@ public class Shape : Track
         l = 0f;
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
-            b = _length * a <= l + verticalCurveLength[n];
-            c = (b || n == curveLength.Count - 1 ? (_length * a - l) / verticalCurveLength[n] : 1f);
+            b = l1 * a <= l + verticalCurveLength[n];
+            c = b ? (l1 * a - l) / verticalCurveLength[n] : 1f;
             _l = verticalCurveLength[n] * c;
             if ((rad = verticalCurveRadius[n]) != 0f)
-                vr *= Quaternion.Euler(-_l * Mathf.Rad2Deg / rad, 0f, 0f);
+            {
+                // TODO
+                var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
+                var l2 = _l - Mathf.Tan(-t) * Mathf.Abs(rad);
+
+                var f = l2 / rad;
+                if (-1f <= f && f <= 1f)
+                    vr *= Quaternion.Euler(-(Mathf.Asin(f) - t) * Mathf.Rad2Deg, 0f, 0f);
+            }
             l += _l;
 
             if (b)
@@ -294,9 +321,39 @@ public class Shape : Track
 
     public void reloadLength()
     {
-        // TODO 長さに縦曲線、勾配を考慮
-        length = 0f;
+        var l = 0f;
+
+        var l1 = 0f;
         foreach (var l_ in curveLength)
-            length += l_;
+            l1 += l_;
+
+        var vr = rot;
+        var rad = 0f;
+        var _l = 0f;
+        var l2 = 0f;
+        for (var n = 0; n < verticalCurveLength.Count; n++)
+        {
+            l2 += (_l = verticalCurveLength[n]);
+            if ((rad = verticalCurveRadius[n]) == 0f)
+                l += _l / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+            else
+            {
+                // TODO
+                var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
+                var r1 = Mathf.Abs(rad);
+                var l3 = _l - Mathf.Tan(-t) * r1;
+
+                var f = l3 / rad;
+                if (-1f <= f && f <= 1f)
+                {
+                    var t1 = Mathf.Asin(f);
+                    l += Mathf.Abs(t1 - t) * r1 * 2f;
+                    vr *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
+                }
+            }
+        }
+
+        l += (l1 - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+        length = l;
     }
 }

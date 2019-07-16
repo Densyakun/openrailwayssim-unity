@@ -34,18 +34,23 @@ public class TrackSettingPanel : GamePanel
                     if (input == segmentPanels[n].lengthInput)
                         EventSystem.current.SetSelectedGameObject(segmentPanels[n].radiusInput.gameObject);
                     else if (input == segmentPanels[n].radiusInput)
-                        EventSystem.current.SetSelectedGameObject(segmentPanels[n == segmentPanels.Count - 1 ? 0 : n + 1].lengthInput.gameObject);
+                        EventSystem.current.SetSelectedGameObject((n == segmentPanels.Count - 1 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[0] : segmentPanels[0] : segmentPanels[n + 1]).lengthInput.gameObject);
                 }
                 for (var n = 0; n < verticalSegmentPanels.Count; n++)
                 {
                     if (input == verticalSegmentPanels[n].lengthInput)
                         EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n].radiusInput.gameObject);
                     else if (input == verticalSegmentPanels[n].radiusInput)
-                        EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n == verticalSegmentPanels.Count - 1 ? 0 : n + 1].lengthInput.gameObject);
+                        EventSystem.current.SetSelectedGameObject((n == verticalSegmentPanels.Count - 1 ? segmentPanels.Count > 0 ? segmentPanels[0] : verticalSegmentPanels[0] : verticalSegmentPanels[n + 1]).lengthInput.gameObject);
                 }
             }
             else
-                EventSystem.current.SetSelectedGameObject(segmentPanels[0].lengthInput.gameObject);
+            {
+                if (segmentPanels.Count > 0)
+                    EventSystem.current.SetSelectedGameObject(segmentPanels[0].lengthInput.gameObject);
+                else if (verticalSegmentPanels.Count > 0)
+                    EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[0].lengthInput.gameObject);
+            }
         }
     }
 

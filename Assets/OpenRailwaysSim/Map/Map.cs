@@ -51,8 +51,9 @@ public class Map : ISerializable
         mapname = info.GetString(KEY_MAPNAME);
         created = new DateTime(info.GetInt64(KEY_CREATED));
         objs = (List<MapObject>)info.GetValue(KEY_OBJECTS, typeof(List<MapObject>));
-        foreach (MapObject obj in objs)
-            obj.map = this;
+        foreach (var obj in objs)
+            if (obj != null)
+                obj.map = this;
         time = info.GetInt64(KEY_TIME);
         fastForwarding = info.GetBoolean(KEY_FAST_FORWARDING);
         cameraPos = ((SerializableVector3)info.GetValue(KEY_CAMERA_POS, typeof(SerializableVector3))).toVector3();
