@@ -234,21 +234,20 @@ public class Shape : Track
                 p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * _l;
             else
             {
-                // TODO 勾配中の縦曲線が正しく処理されない
                 var t = -r.eulerAngles.x * Mathf.Deg2Rad; // 縦曲線始点の角度。負数なら始点は下り勾配
-                var l2 = Mathf.Tan(t) * rad; // 曲線中心を基準とした縦曲線始点の横位置。始点が上り勾配==上り縦曲線であれば正数
-                var l3 = l2 + _l; // 曲線中心を基準とした縦曲線終点の横位置
+                var l3 = Mathf.Tan(t) * rad; // 曲線中心を基準とした縦曲線始点の横位置
+                var l4 = l3 + _l; // 曲線中心を基準とした縦曲線終点の横位置
 
                 var r1 = Mathf.Abs(rad);
-                var h = Mathf.Sqrt(r1 * r1 - l2 * l2); // 曲線中心と縦曲線始点の高低差の絶対値
+                var h = Mathf.Sqrt(r1 * r1 - l3 * l3); // 曲線中心と縦曲線始点の高低差の絶対値
                 if (!float.IsNaN(h))
                 {
-                    var h1 = Mathf.Sqrt(r1 * r1 - l3 * l3); // 曲線中心と縦曲線終点の高低差の絶対値
+                    var h1 = Mathf.Sqrt(r1 * r1 - l4 * l4); // 曲線中心と縦曲線終点の高低差の絶対値
                     if (!float.IsNaN(h1))
                     {
-                        p.y += t < 0f ? h1 - h : h - h1;
+                        p.y += rad < 0f ? h1 - h : h - h1;
 
-                        var t1 = Mathf.Asin(l3 / rad); // 曲線中心から縦曲線終点までの角度
+                        var t1 = Mathf.Asin(l4 / rad); // 曲線中心から縦曲線終点までの角度
                         r *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
                     }
                 }
@@ -302,13 +301,15 @@ public class Shape : Track
             _l = verticalCurveLength[n] * c;
             if ((rad = verticalCurveRadius[n]) != 0f)
             {
-                // TODO
                 var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
-                var l2 = _l - Mathf.Tan(-t) * Mathf.Abs(rad);
+                var l4 = Mathf.Tan(t) * rad + _l;
 
-                var f = l2 / rad;
+                var f = l4 / rad;
                 if (-1f <= f && f <= 1f)
-                    vr *= Quaternion.Euler(-(Mathf.Asin(f) - t) * Mathf.Rad2Deg, 0f, 0f);
+                {
+                    var t1 = Mathf.Asin(l4 / rad);
+                    vr *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
+                }
             }
             l += _l;
 
@@ -338,17 +339,17 @@ public class Shape : Track
                 l += _l / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
             else
             {
-                // TODO
                 var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
-                var r1 = Mathf.Abs(rad);
-                var l3 = _l - Mathf.Tan(-t) * r1;
+                var l4 = Mathf.Tan(t) * rad + _l;
 
-                var f = l3 / rad;
+                var f = l4 / rad;
                 if (-1f <= f && f <= 1f)
                 {
-                    var t1 = Mathf.Asin(f);
-                    l += Mathf.Abs(t1 - t) * r1 * 2f;
+                    var r1 = Mathf.Abs(rad);
+                    var t1 = Mathf.Asin(l4 / r1);
                     vr *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
+                    var t2 = Mathf.Repeat(t1 - t, Mathf.PI); // TODO これでも長い
+                    l += t2 * r1 * 2f;
                 }
             }
         }
