@@ -88,7 +88,7 @@ public class MapObject : ISerializable
         if (entity)
             reloadEntity();
         else
-            (entity = new GameObject("mapobj").AddComponent<MapEntity>()).init(this);
+            (entity = new GameObject("MapObj").AddComponent<MapEntity>()).init(this);
     }
 
     public virtual void update()

@@ -202,10 +202,10 @@ public class Axle : MapObject
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("axle").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("Axle").AddComponent<MapEntity>()).init(this);
     }
 
     public override void update()

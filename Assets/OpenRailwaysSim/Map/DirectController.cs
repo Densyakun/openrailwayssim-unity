@@ -60,10 +60,10 @@ public class DirectController : MapObject
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("directController").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("DirectController").AddComponent<MapEntity>()).init(this);
     }
 
     public override void update()

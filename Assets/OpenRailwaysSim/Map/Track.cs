@@ -128,10 +128,10 @@ public class Track : MapObject
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("track").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("Track").AddComponent<MapEntity>()).init(this);
     }
 
     public override void reloadEntity()

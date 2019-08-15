@@ -65,10 +65,10 @@ public class Curve : Track
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("curve").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("Curve").AddComponent<MapEntity>()).init(this);
     }
 
     public override void reloadTrackRendererPositions()

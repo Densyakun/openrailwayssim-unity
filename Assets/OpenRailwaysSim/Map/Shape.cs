@@ -57,10 +57,10 @@ public class Shape : Track
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("shape").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("Shape").AddComponent<MapEntity>()).init(this);
     }
 
     public override void reloadTrackRendererPositions()

@@ -50,10 +50,10 @@ public class BogieFrame : MapObject
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("bogieFrame").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("BogieFrame").AddComponent<MapEntity>()).init(this);
     }
 
     public override void update()

@@ -58,10 +58,10 @@ public class PermanentCoupler : MapObject
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("permanentCoupler").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("PermanentCoupler").AddComponent<MapEntity>()).init(this);
     }
 
     public override void update()

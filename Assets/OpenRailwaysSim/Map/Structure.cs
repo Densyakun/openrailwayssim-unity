@@ -37,10 +37,10 @@ public class Structure : MapObject
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("Structure").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("Structure").AddComponent<MapEntity>()).init(this);
     }
 
     public override void reloadEntity()
@@ -50,7 +50,7 @@ public class Structure : MapObject
 
         if (textEntity == null)
         {
-            (textEntity = new GameObject("structureText").AddComponent<TextEntity>()).obj = this;
+            (textEntity = new GameObject("StructureText").AddComponent<TextEntity>()).obj = this;
             textEntity.str = "・";
             textEntity.normalColor = new Color(0f, 1f, 0f, 0.75f);
         }

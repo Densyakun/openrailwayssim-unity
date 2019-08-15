@@ -58,10 +58,10 @@ public class Coupler : MapObject
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("coupler").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("Coupler").AddComponent<MapEntity>()).init(this);
     }
 
     public override void update()

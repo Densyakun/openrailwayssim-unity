@@ -33,10 +33,10 @@ public class MapPin : MapObject
 
     public override void generate()
     {
-        if (entity == null)
-            (entity = new GameObject("mapPin").AddComponent<MapEntity>()).init(this);
-        else
+        if (entity)
             reloadEntity();
+        else
+            (entity = new GameObject("MapPin").AddComponent<MapEntity>()).init(this);
     }
 
     public override void reloadEntity()
@@ -45,7 +45,7 @@ public class MapPin : MapObject
             return;
 
         if (textEntity == null)
-            (textEntity = new GameObject("mapPinText").AddComponent<TextEntity>()).obj = this;
+            (textEntity = new GameObject("MapPinText").AddComponent<TextEntity>()).obj = this;
         textEntity.str = string.IsNullOrEmpty(title) ? "・" : title;
 
         base.reloadEntity();
