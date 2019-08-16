@@ -339,7 +339,7 @@ public class Shape : Track
                 l += verticalCurveLength[n] / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad); 
             else
             {
-                // TODO 角度がすでについている場合に、長さが間違っているバグがある
+                // TODO 角度がすでについている場合に、長さが間違っているバグがある->マップを読み込むと多分直る（長さに対する割合の位置がおかしい）
                 var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
                 var l5 = Mathf.Tan(t) * rad + verticalCurveLength[n];
 
