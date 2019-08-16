@@ -14,7 +14,7 @@ public class GameCanvas : MonoBehaviour
     public static TitleBackPanel titleBackPanel;
     public static UnsupportedMapPanel unsupportedMapPanel;
     public static DeleteMapPanel deleteMapPanel;
-    public static TrackSettingPanel trackSettingPanel;
+    public static ShapeSettingPanel shapeSettingPanel;
     public static CouplerSettingPanel couplerSettingPanel;
     public static RunPanel runPanel;
     public static MapPinSettingPanel mapPinSettingPanel;
@@ -33,7 +33,7 @@ public class GameCanvas : MonoBehaviour
         titleBackPanel = GetComponentInChildren<TitleBackPanel>(true);
         unsupportedMapPanel = GetComponentInChildren<UnsupportedMapPanel>(true);
         deleteMapPanel = GetComponentInChildren<DeleteMapPanel>(true);
-        trackSettingPanel = GetComponentInChildren<TrackSettingPanel>(true);
+        shapeSettingPanel = GetComponentInChildren<ShapeSettingPanel>(true);
         couplerSettingPanel = GetComponentInChildren<CouplerSettingPanel>(true);
         runPanel = GetComponentInChildren<RunPanel>(true);
         mapPinSettingPanel = GetComponentInChildren<MapPinSettingPanel>(true);

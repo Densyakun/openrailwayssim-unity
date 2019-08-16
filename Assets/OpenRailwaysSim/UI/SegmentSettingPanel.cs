@@ -23,16 +23,16 @@ public class SegmentSettingPanel : GamePanel
     public void addButton()
     {
         if (isVertical)
-            GameCanvas.trackSettingPanel.addVerticalSegment(n);
+            GameCanvas.shapeSettingPanel.addVerticalSegment(n);
         else
-            GameCanvas.trackSettingPanel.addSegment(n);
+            GameCanvas.shapeSettingPanel.addSegment(n);
     }
 
     public void removeButton()
     {
         if (isVertical)
-            GameCanvas.trackSettingPanel.removeVerticalSegment(n);
+            GameCanvas.shapeSettingPanel.removeVerticalSegment(n);
         else
-            GameCanvas.trackSettingPanel.removeSegment(n);
+            GameCanvas.shapeSettingPanel.removeSegment(n);
     }
 }

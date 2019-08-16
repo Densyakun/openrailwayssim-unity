@@ -109,7 +109,6 @@ public class Main : MonoBehaviour
     public GameObject permanentCouplerModel;
     public GameObject directControllerModel;
     public Font mapPinFont;
-    public SegmentSettingPanel segmentSettingPanelPrefab;
 
     void Awake()
     {
@@ -158,7 +157,7 @@ public class Main : MonoBehaviour
             if (playingmap != null && !GameCanvas.settingPanel.isShowing() && !GameCanvas.titleBackPanel.isShowing() && !GameCanvas.runPanel.isShowing())
             {
                 bool a = true;
-                if (GameCanvas.trackSettingPanel.isShowing())
+                if (GameCanvas.shapeSettingPanel.isShowing())
                 {
                     a = false;
                     cancelEditingTracks();
@@ -263,7 +262,7 @@ public class Main : MonoBehaviour
 
             if (!GameCanvas.pausePanel.isShowing() && !CameraMover.INSTANCE.dragging &&
                 !EventSystem.current.IsPointerOverGameObject() &&
-                !(GameCanvas.trackSettingPanel.isShowing() && EventSystem.current.currentSelectedGameObject != null &&
+                !(GameCanvas.shapeSettingPanel.isShowing() && EventSystem.current.currentSelectedGameObject != null &&
                   EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null))
                 update_ctrl();
             else
@@ -465,8 +464,8 @@ public class Main : MonoBehaviour
                         editingTracks[0].enableCollider = false;
                         editingTracks[0].generate();
 
-                        GameCanvas.trackSettingPanel.show(true);
-                        setPanelPosToMousePos(GameCanvas.trackSettingPanel);
+                        GameCanvas.shapeSettingPanel.show(true);
+                        setPanelPosToMousePos(GameCanvas.shapeSettingPanel);
                     }
                 }
                 else if (mode == MODE_PLACE_AXLE)
@@ -792,7 +791,7 @@ public class Main : MonoBehaviour
 
     public static void cancelEditingTracks()
     {
-        GameCanvas.trackSettingPanel.show(false);
+        GameCanvas.shapeSettingPanel.show(false);
 
         foreach (var track in editingTracks)
             track.entity.Destroy();

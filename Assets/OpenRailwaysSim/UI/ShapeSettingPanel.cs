@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-//軌道の設定画面
-public class TrackSettingPanel : GamePanel
+//線形の設定画面
+public class ShapeSettingPanel : GamePanel
 {
-    public List<SegmentSettingPanel> segmentPanels = new List<SegmentSettingPanel>();
-    public List<SegmentSettingPanel> verticalSegmentPanels = new List<SegmentSettingPanel>();
+    public SegmentSettingPanel segmentSettingPanelPrefab;
+    public RectTransform segmentParent;
+    private List<SegmentSettingPanel> segmentPanels = new List<SegmentSettingPanel>();
+    private List<SegmentSettingPanel> verticalSegmentPanels = new List<SegmentSettingPanel>();
     private List<float> curveLength;
     private List<float> curveRadius;
     private List<float> verticalCurveLength;
@@ -161,12 +163,14 @@ public class TrackSettingPanel : GamePanel
         segmentPanels.Clear();
         for (var n = 0; n < curveLength.Count; n++)
         {
-            var p = Instantiate(Main.main.segmentSettingPanelPrefab);
+            var p = Instantiate(segmentSettingPanelPrefab);
             p.n = n;
             segmentPanels.Add(p);
-            p.transform.SetParent(transform);
-            p.transform.localPosition = new Vector3(0f, -30f - 90f * n);
+            p.transform.SetParent(segmentParent);
+            p.transform.localPosition = new Vector3(0f, -90f * n);
             p.titleText.text = SegmentSettingPanel.segmentText_DEF + " " + (n + 1) + "/" + curveLength.Count;
+            p.lengthText.text = SegmentSettingPanel.lengthText_DEF + ": ";
+            p.radiusText.text = SegmentSettingPanel.radiusText_DEF + ": ";
             p.lengthInput.text = curveLength[n].ToString();
             p.radiusInput.text = curveRadius[n].ToString();
         }
@@ -175,18 +179,21 @@ public class TrackSettingPanel : GamePanel
         verticalSegmentPanels.Clear();
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
-            var p = Instantiate(Main.main.segmentSettingPanelPrefab);
+            var p = Instantiate(segmentSettingPanelPrefab);
             p.n = n;
             p.isVertical = true;
             verticalSegmentPanels.Add(p);
-            p.transform.SetParent(transform);
-            p.transform.localPosition = new Vector3(0f, -30f - 90f * (n + curveLength.Count));
+            p.transform.SetParent(segmentParent);
+            p.transform.localPosition = new Vector3(0f, -90f * (n + curveLength.Count));
             p.titleText.text = SegmentSettingPanel.verticalSegmentText_DEF + " " + (n + 1) + "/" + verticalCurveLength.Count;
             p.lengthText.text = SegmentSettingPanel.lengthText_DEF + ": ";
             p.radiusText.text = SegmentSettingPanel.radiusText_DEF + ": ";
             p.lengthInput.text = verticalCurveLength[n].ToString();
             p.radiusInput.text = verticalCurveRadius[n].ToString();
         }
+        var size = segmentParent.sizeDelta;
+        size.y = 90f * (curveLength.Count + verticalCurveLength.Count);
+        segmentParent.sizeDelta = size;
     }
 
     public void addSegment(int n = -1)
