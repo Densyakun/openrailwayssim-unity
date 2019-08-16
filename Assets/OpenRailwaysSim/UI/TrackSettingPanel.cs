@@ -122,7 +122,7 @@ public class TrackSettingPanel : GamePanel
             Main.editingTracks[0].verticalCurveLength = lengthL;
             Main.editingTracks[0].verticalCurveRadius = radiusL;
 
-            Main.editingTracks[0].reloadLength();
+            Main.editingTracks[0].reloadLength(); // TODO 正しく適応されていない？セーブされると長さが変わる
             Main.editingTracks[0].reloadEntity();
         }
         catch (FormatException) { }

@@ -198,24 +198,24 @@ public class Shape : Track
 
         // 平面曲線を計算
         var rad = 0f;
-        var l = 0f;
+        var l2 = 0f;
         bool b = true;
         float c;
-        float _l;
+        float l3;
         for (var n = 0; n < curveLength.Count; n++)
         {
-            b = l1 * a <= l + curveLength[n];
-            c = b ? (l1 * a - l) / curveLength[n] : 1f;
-            _l = curveLength[n] * c;
+            b = l1 * a <= l2 + curveLength[n];
+            c = b ? (l1 * a - l2) / curveLength[n] : 1f;
+            l3 = curveLength[n] * c;
             if ((rad = curveRadius[n]) == 0f)
-                p += r * Vector3.forward * _l;
+                p += r * Vector3.forward * l3;
             else
             {
-                var d1 = _l / Mathf.Abs(rad);
-                p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d1)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * _l, Mathf.Sin(d1) * Mathf.Abs(rad));
-                r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, _l * Mathf.Rad2Deg / rad, 0f);
+                var d1 = l3 / Mathf.Abs(rad);
+                p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d1)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * l3, Mathf.Sin(d1) * Mathf.Abs(rad));
+                r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, l3 * Mathf.Rad2Deg / rad, 0f);
             }
-            l += _l;
+            l2 += l3;
 
             if (b)
                 break;
@@ -224,41 +224,42 @@ public class Shape : Track
         // 縦断曲線を計算
         r = rot;
         rad = 0f;
-        l = 0f;
+        l2 = 0f;
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
-            b = l1 * a <= l + verticalCurveLength[n];
-            c = b ? (l1 * a - l) / verticalCurveLength[n] : 1f;
-            _l = verticalCurveLength[n] * c;
+            b = l1 * a <= l2 + verticalCurveLength[n];
+            c = b ? (l1 * a - l2) / verticalCurveLength[n] : 1f;
+            l3 = verticalCurveLength[n] * c;
             if ((rad = verticalCurveRadius[n]) == 0f)
-                p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * _l;
+                p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * l3;
             else
             {
                 var t = -r.eulerAngles.x * Mathf.Deg2Rad; // 縦曲線始点の角度。負数なら始点は下り勾配
-                var l3 = Mathf.Tan(t) * rad; // 曲線中心を基準とした縦曲線始点の横位置
-                var l4 = l3 + _l; // 曲線中心を基準とした縦曲線終点の横位置
+                var l4 = Mathf.Tan(t) * rad; // 曲線中心を基準とした縦曲線始点の横位置
+                var l5 = l4 + l3; // 曲線中心を基準とした縦曲線終点の横位置
 
                 var r1 = Mathf.Abs(rad);
-                var h = Mathf.Sqrt(r1 * r1 - l3 * l3); // 曲線中心と縦曲線始点の高低差の絶対値
+                var h = Mathf.Sqrt(r1 * r1 - l4 * l4); // 曲線中心と縦曲線始点の高低差の絶対値
                 if (!float.IsNaN(h))
                 {
-                    var h1 = Mathf.Sqrt(r1 * r1 - l4 * l4); // 曲線中心と縦曲線終点の高低差の絶対値
+                    var h1 = Mathf.Sqrt(r1 * r1 - l5 * l5); // 曲線中心と縦曲線終点の高低差の絶対値
                     if (!float.IsNaN(h1))
                     {
                         p.y += rad < 0f ? h1 - h : h - h1;
 
-                        var t1 = Mathf.Asin(l4 / rad); // 曲線中心から縦曲線終点までの角度
+                        var t1 = Mathf.Asin(l5 / rad); // 曲線中心から縦曲線終点までの角度
                         r *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
                     }
                 }
             }
-            l += _l;
+            l2 += l3;
 
             if (b)
                 break;
         }
+        // TODO なぜかセーブしてからモデルなどリロードすると直るが、角度の計算がおかしいことにより、縦曲線終点より先の位置がおかしくなる
         if (!b)
-            p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * (l1 * a - l);
+            p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * (l1 * a - l2);
 
         return p;
     }
@@ -273,18 +274,18 @@ public class Shape : Track
 
         // 平面曲線を計算
         var rad = 0f;
-        var l = 0f;
+        var l2 = 0f;
         bool b;
         float c;
-        float _l;
+        float l3;
         for (var n = 0; n < curveLength.Count; n++)
         {
-            b = l1 * a <= l + curveLength[n];
-            c = b ? (l1 * a - l) / curveLength[n] : 1f;
-            _l = curveLength[n] * c;
+            b = l1 * a <= l2 + curveLength[n];
+            c = b ? (l1 * a - l2) / curveLength[n] : 1f;
+            l3 = curveLength[n] * c;
             if ((rad = curveRadius[n]) != 0f)
-                r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, _l * Mathf.Rad2Deg / rad, 0f);
-            l += _l;
+                r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, l3 * Mathf.Rad2Deg / rad, 0f);
+            l2 += l3;
 
             if (b)
                 break;
@@ -293,25 +294,25 @@ public class Shape : Track
         // 縦断曲線を計算
         var vr = rot;
         rad = 0f;
-        l = 0f;
+        l2 = 0f;
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
-            b = l1 * a <= l + verticalCurveLength[n];
-            c = b ? (l1 * a - l) / verticalCurveLength[n] : 1f;
-            _l = verticalCurveLength[n] * c;
+            b = l1 * a <= l2 + verticalCurveLength[n];
+            c = b ? (l1 * a - l2) / verticalCurveLength[n] : 1f;
+            l3 = verticalCurveLength[n] * c;
             if ((rad = verticalCurveRadius[n]) != 0f)
             {
                 var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
-                var l4 = Mathf.Tan(t) * rad + _l;
+                var l5 = Mathf.Tan(t) * rad + l3;
 
-                var f = l4 / rad;
+                var f = l5 / rad;
                 if (-1f <= f && f <= 1f)
                 {
-                    var t1 = Mathf.Asin(l4 / rad);
+                    var t1 = Mathf.Asin(l5 / rad);
                     vr *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
                 }
             }
-            l += _l;
+            l2 += l3;
 
             if (b)
                 break;
@@ -330,25 +331,25 @@ public class Shape : Track
 
         var vr = rot;
         var rad = 0f;
-        var _l = 0f;
         var l2 = 0f;
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
-            l2 += (_l = verticalCurveLength[n]);
+            l2 += verticalCurveLength[n];
             if ((rad = verticalCurveRadius[n]) == 0f)
-                l += _l / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+                l += verticalCurveLength[n] / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad); 
             else
             {
+                // TODO 角度がすでについている場合に、長さが間違っているバグがある
                 var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
-                var l4 = Mathf.Tan(t) * rad + _l;
+                var l5 = Mathf.Tan(t) * rad + verticalCurveLength[n];
 
-                var f = l4 / rad;
+                var f = l5 / rad;
                 if (-1f <= f && f <= 1f)
                 {
                     var r1 = Mathf.Abs(rad);
-                    var t1 = Mathf.Asin(l4 / r1);
+                    var t1 = Mathf.Asin(l5 / r1);
                     vr *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
-                    var t2 = Mathf.Repeat(t1 - t, Mathf.PI); // TODO これでも長い
+                    var t2 = Mathf.Repeat(t1 - t, Mathf.PI);
                     l += t2 * r1 * 2f;
                 }
             }
