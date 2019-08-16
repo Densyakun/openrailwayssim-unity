@@ -204,6 +204,7 @@ public class Shape : Track
         float l3;
         for (var n = 0; n < curveLength.Count; n++)
         {
+            // TODO 長さに対する割合がおかしい。l1ではなく実際の長さをもとに計算する必要がある
             b = l1 * a <= l2 + curveLength[n];
             c = b ? (l1 * a - l2) / curveLength[n] : 1f;
             l3 = curveLength[n] * c;
