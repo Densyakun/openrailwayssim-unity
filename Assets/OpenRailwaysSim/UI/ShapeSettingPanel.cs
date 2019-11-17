@@ -124,7 +124,7 @@ public class ShapeSettingPanel : GamePanel
             Main.editingTracks[0].verticalCurveLength = lengthL;
             Main.editingTracks[0].verticalCurveRadius = radiusL;
 
-            Main.editingTracks[0].reloadLength(); // TODO 正しく適応されていない？セーブされると長さが変わる
+            Main.editingTracks[0].reloadLength();
             Main.editingTracks[0].reloadEntity();
         }
         catch (FormatException) { }
@@ -134,8 +134,12 @@ public class ShapeSettingPanel : GamePanel
     public void save()
     {
         reflect();
+
         Main.gauge = Main.editingTracks[0].gauge;
-        Main.main.trackEdited0();
+        if (Main.editingTracks[0].curveLength.Count == 0)
+            Main.cancelEditingTracks();
+        else
+            Main.main.trackEdited0();
         Main.editingTracks.Clear();
         Main.editingRot = null;
 

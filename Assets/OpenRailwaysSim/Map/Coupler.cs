@@ -32,7 +32,7 @@ public class Coupler : MapObject
         isFront = true;
         height = 0.845f;
         length = 0.92f;
-        localRot = new Quaternion();
+        localRot = Quaternion.identity;
     }
 
     protected Coupler(SerializationInfo info, StreamingContext context) : base(info, context)

@@ -51,11 +51,11 @@ public class MapObject : ISerializable
 
     public bool useSelectingMat = false;
 
-    public MapObject(Map map) : this(map, new Vector3(), new Quaternion())
+    public MapObject(Map map) : this(map, new Vector3(), Quaternion.identity)
     {
     }
 
-    public MapObject(Map map, Vector3 pos) : this(map, pos, new Quaternion())
+    public MapObject(Map map, Vector3 pos) : this(map, pos, Quaternion.identity)
     {
     }
 

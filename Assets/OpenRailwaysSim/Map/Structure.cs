@@ -15,7 +15,7 @@ public class Structure : MapObject
 
     public TextEntity textEntity;
 
-    public Structure(Map map, Vector3 pos) : base(map, pos, new Quaternion())
+    public Structure(Map map, Vector3 pos) : base(map, pos, Quaternion.identity)
     {
         path = "";
 

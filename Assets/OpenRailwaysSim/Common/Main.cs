@@ -423,13 +423,18 @@ public class Main : MonoBehaviour
                     {
                         if (editingTracks.Any())
                         {
-                            trackEdited0();
+                            if (editingTracks[0].curveLength.Count == 0)
+                                cancelEditingTracks();
+                            else
+                            {
+                                trackEdited0();
 
-                            var l = editingTracks.Last();
-                            editingRot = l.getRotation(1);
+                                var l = editingTracks.Last();
+                                editingRot = l.getRotation(1);
 
-                            editingTracks.Clear();
-                            editingTracks.Add(new Shape(playingmap, l.getPoint(1)));
+                                editingTracks.Clear();
+                                editingTracks.Add(new Shape(playingmap, l.getPoint(1)));
+                            }
                         }
                         else if (focused != null)
                         {

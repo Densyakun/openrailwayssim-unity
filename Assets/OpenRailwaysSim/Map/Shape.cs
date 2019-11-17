@@ -43,7 +43,6 @@ public class Shape : Track
         curveRadius = (List<float>)info.GetValue(KEY_CURVE_RADIUS, typeof(List<float>));
         verticalCurveLength = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_LENGTH, typeof(List<float>));
         verticalCurveRadius = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_RADIUS, typeof(List<float>));
-        reloadLength(); // TODO 一時的。長さを計算する処理を修正したのを反映するため
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -204,7 +203,6 @@ public class Shape : Track
         float l3;
         for (var n = 0; n < curveLength.Count; n++)
         {
-            // TODO 長さに対する割合がおかしい。l1ではなく実際の長さをもとに計算する必要がある
             b = l1 * a <= l2 + curveLength[n];
             c = b ? (l1 * a - l2) / curveLength[n] : 1f;
             l3 = curveLength[n] * c;
@@ -258,7 +256,6 @@ public class Shape : Track
             if (b)
                 break;
         }
-        // TODO なぜかセーブしてからモデルなどリロードすると直るが、角度の計算がおかしいことにより、縦曲線終点より先の位置がおかしくなる
         if (!b)
             p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * (l1 * a - l2);
 
@@ -340,7 +337,6 @@ public class Shape : Track
                 l += verticalCurveLength[n] / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad); 
             else
             {
-                // TODO 角度がすでについている場合に、長さが間違っているバグがある->マップを読み込むと多分直る（長さに対する割合の位置がおかしい）
                 var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
                 var l5 = Mathf.Tan(t) * rad + verticalCurveLength[n];
 

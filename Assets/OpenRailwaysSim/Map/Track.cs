@@ -93,7 +93,7 @@ public class Track : MapObject
     public GameObject[] railModelObjs;
     public GameObject[] tieModelObjs;
 
-    public Track(Map map, Vector3 pos) : this(map, pos, new Quaternion())
+    public Track(Map map, Vector3 pos) : this(map, pos, Quaternion.identity)
     {
     }
 
