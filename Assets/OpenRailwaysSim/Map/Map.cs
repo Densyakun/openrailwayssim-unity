@@ -24,6 +24,7 @@ public class Map : ISerializable
     public static Vector3 DEFAULT_CAMERA_ROT = new Vector3(30f, 0f, 0f);
 
     public string mapname;
+
     [Serializable]
     public class MapInfo
     {
