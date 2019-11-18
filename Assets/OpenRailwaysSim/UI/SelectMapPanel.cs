@@ -14,7 +14,7 @@ public class SelectMapPanel : GamePanel, ScrollController.Listener
     public Button deleteMapButton;
     public Text selectButtonText;
     public Text mapNameText;
-    public Image mapImage; // 未使用
+    public Text createdText;
     public ScrollController sc;
     string[] mapList = new string[0];
 
@@ -70,6 +70,8 @@ public class SelectMapPanel : GamePanel, ScrollController.Listener
         bool interactable = sc.n != -1;
         deleteMapButton.interactable = selectMapButton.interactable = interactable;
         mapNameText.text = interactable ? mapList[sc.n] : "";
+        var info = interactable ? MapManager.loadMapInfo(mapList[sc.n]) : null;
+        createdText.text = interactable ? info.created.ToString() : "";
     }
 
     public void reloadContents()

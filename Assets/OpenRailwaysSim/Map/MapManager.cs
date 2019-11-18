@@ -12,6 +12,7 @@ public class MapManager
 {
 
     public const string filename_map = "map.bin"; // マップのデータファイルの名前
+    public const string filename_info = "info.bin"; // マップの情報ファイルの名前
     public static string dir; // マップファイルを格納するフォルダ
 
     public static string[] randommapnames = new string[] {"hokkaido", "hakodate", "nemuro", "chitose", "muroran", "sekisho", "furano", "rumoi", "soya", "semmo", "sekihoku", "sassho", "hidaka", "kaikyo", "horonai", "matsumae", "utashinai", "shibetsu", "nayoro", "tempoku", "chihoku", "shimmei", "esashi",
@@ -58,27 +59,66 @@ public class MapManager
         return randommapnames[UnityEngine.Random.Range(0, randommapnames.Length)];
     }
 
+    public static Map.MapInfo loadMapInfo(string mapname)
+    {
+        reloadDir();
+        var mapdir = Path.Combine(dir, mapname);
+        if (Directory.Exists(mapdir))
+        {
+            var datpath = Path.Combine(mapdir, filename_info);
+            if (File.Exists(datpath))
+            {
+                var formatter = new BinaryFormatter();
+
+                var stream = new FileStream(datpath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                Map.MapInfo info = null;
+                try
+                {
+                    info = (Map.MapInfo)formatter.Deserialize(stream);
+                }
+                catch { }
+                stream.Close();
+
+                return info;
+            }
+        }
+        return null;
+    }
+
     public static Map loadMap(string mapname)
     {
         reloadDir();
-        string mapdir = Path.Combine(dir, mapname);
+        var mapdir = Path.Combine(dir, mapname);
         if (Directory.Exists(mapdir))
         {
-            string datpath = Path.Combine(mapdir, filename_map);
+            var datpath = Path.Combine(mapdir, filename_map);
             if (File.Exists(datpath))
             {
-                IFormatter formatter = new BinaryFormatter();
-                Stream stream = new FileStream(datpath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                var formatter = new BinaryFormatter();
+
+                var stream = new FileStream(Path.Combine(mapdir, filename_info), FileMode.Open, FileAccess.Read, FileShare.Read);
+                Map.MapInfo info = null;
+                try
+                {
+                    info = (Map.MapInfo)formatter.Deserialize(stream);
+                }
+                catch { }
+                stream.Close();
+
+                stream = new FileStream(datpath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 Map map = null;
                 try
                 {
                     map = (Map)formatter.Deserialize(stream);
+                    map.mapname = mapname;
+                    map.info = info;
                 }
                 catch (EndOfStreamException)
                 {
                     // TODO マップ非対応の表示
                 }
                 stream.Close();
+
                 return map;
             }
         }
@@ -88,10 +128,15 @@ public class MapManager
     public static void saveMap(Map map)
     {
         reloadDir();
-        string mapdir = Path.Combine(dir, map.mapname);
+        var mapdir = Path.Combine(dir, map.mapname);
         Directory.CreateDirectory(mapdir);
         IFormatter formatter = new BinaryFormatter();
-        Stream stream = new FileStream(Path.Combine(mapdir, filename_map), FileMode.Create, FileAccess.Write, FileShare.None);
+
+        Stream stream = new FileStream(Path.Combine(mapdir, filename_info), FileMode.Create, FileAccess.Write, FileShare.None);
+        formatter.Serialize(stream, map.info);
+        stream.Close();
+
+        stream = new FileStream(Path.Combine(mapdir, filename_map), FileMode.Create, FileAccess.Write, FileShare.None);
         formatter.Serialize(stream, map);
         stream.Close();
     }
@@ -106,6 +151,7 @@ public class MapManager
             if (File.Exists(datpath))
             {
                 File.Delete(datpath);
+                File.Delete(Path.Combine(mapdir, filename_info));
                 try
                 {
                     Directory.Delete(mapdir);
@@ -114,7 +160,6 @@ public class MapManager
                 {
                     // TODO フォルダの中身がある場合はフォルダを削除できない。
                 }
-                Debug.Log(DateTime.Now + " マップを削除しました: " + mapname);
                 return true;
             }
         }

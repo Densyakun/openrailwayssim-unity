@@ -10,8 +10,6 @@ using UnityEngine;
 public class Map : ISerializable
 {
 
-    public const string KEY_MAPNAME = "MAPNAME";
-    public const string KEY_CREATED = "CREATED";
     public const string KEY_OBJECTS = "OBJS";
     public const string KEY_TIME = "TIME";
     public const string KEY_FAST_FORWARDING = "FASTFORWARDING";
@@ -25,8 +23,14 @@ public class Map : ISerializable
     public static Vector3 DEFAULT_CAMERA_POS = new Vector3(0f, 10f, -20f);
     public static Vector3 DEFAULT_CAMERA_ROT = new Vector3(30f, 0f, 0f);
 
-    public string mapname { get; private set; }
-    public DateTime created { get; private set; }
+    public string mapname;
+    [Serializable]
+    public class MapInfo
+    {
+        public DateTime created;
+    }
+    public MapInfo info; // マップの情報
+
     public List<MapObject> objs { get; private set; } // オブジェクト
     public long time { get; private set; } // マップの時間。0時から始まり1tickが1msである。
     public bool fastForwarding { get; private set; } // 早送り
@@ -36,7 +40,10 @@ public class Map : ISerializable
     public Map(string mapname)
     {
         this.mapname = mapname;
-        created = DateTime.Now;
+
+        info = new MapInfo();
+        info.created = DateTime.Now;
+
         objs = new List<MapObject>();
         time = 6 * 60 * 60000; // 朝6時からスタート
         fastForwarding = false;
@@ -48,8 +55,6 @@ public class Map : ISerializable
     {
         if (info == null)
             throw new ArgumentNullException("info");
-        mapname = info.GetString(KEY_MAPNAME);
-        created = new DateTime(info.GetInt64(KEY_CREATED));
         objs = (List<MapObject>)info.GetValue(KEY_OBJECTS, typeof(List<MapObject>));
         foreach (var obj in objs)
             if (obj != null)
@@ -64,8 +69,6 @@ public class Map : ISerializable
     {
         if (info == null)
             throw new ArgumentNullException("info");
-        info.AddValue(KEY_MAPNAME, mapname);
-        info.AddValue(KEY_CREATED, created.Ticks);
         info.AddValue(KEY_OBJECTS, objs);
         info.AddValue(KEY_TIME, time);
         info.AddValue(KEY_FAST_FORWARDING, fastForwarding);
