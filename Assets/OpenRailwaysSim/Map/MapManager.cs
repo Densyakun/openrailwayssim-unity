@@ -11,7 +11,7 @@ using UnityEngine;
 public class MapManager
 {
 
-    public const string mapfilename = "map.bin";
+    public const string filename_map = "map.bin"; // マップのデータファイルの名前
     public static string dir; // マップファイルを格納するフォルダ
 
     public static string[] randommapnames = new string[] {"hokkaido", "hakodate", "nemuro", "chitose", "muroran", "sekisho", "furano", "rumoi", "soya", "semmo", "sekihoku", "sassho", "hidaka", "kaikyo", "horonai", "matsumae", "utashinai", "shibetsu", "nayoro", "tempoku", "chihoku", "shimmei", "esashi",
@@ -47,15 +47,7 @@ public class MapManager
         for (var a = 0; a < mapdirs.Length; a++)
         {
             var mapname = new DirectoryInfo(mapdirs[a]).Name;
-            var files = Directory.GetFiles(Path.Combine(dir, mapname));
-            string datpath = null;
-            for (var b = 0; b < files.Length; b++)
-                if (Path.GetFileName(files[b]).Equals(mapfilename))
-                {
-                    datpath = files[b];
-                    break;
-                }
-            if (datpath != null)
+            if (File.Exists(Path.Combine(mapdirs[a], filename_map)))
                 maplist.Add(mapname);
         }
         return maplist.ToArray();
@@ -70,34 +62,21 @@ public class MapManager
     {
         reloadDir();
         string mapdir = Path.Combine(dir, mapname);
-        if (Directory.Exists(mapdir))
+        if (Directory.Exists(mapdir) && File.Exists(Path.Combine(mapdir, filename_map)))
         {
-            string[] files = Directory.GetFiles(mapdir);
-            string datpath = null;
-            for (int a = 0; a < files.Length; a++)
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(Path.Combine(mapdir, filename_map), FileMode.Open, FileAccess.Read, FileShare.Read);
+            Map map = null;
+            try
             {
-                if (Path.GetFileName(files[a]).Equals(mapfilename))
-                {
-                    datpath = files[a];
-                    break;
-                }
+                map = (Map)formatter.Deserialize(stream);
             }
-            if (datpath != null)
+            catch (EndOfStreamException)
             {
-                IFormatter formatter = new BinaryFormatter();
-                Stream stream = new FileStream(Path.Combine(mapdir, mapfilename), FileMode.Open, FileAccess.Read, FileShare.Read);
-                Map map = null;
-                try
-                {
-                    map = (Map)formatter.Deserialize(stream);
-                }
-                catch (EndOfStreamException)
-                {
-					// TODO マップ非対応の表示
-                }
-                stream.Close();
-                return map;
+                // TODO マップ非対応の表示
             }
+            stream.Close();
+            return map;
         }
         return null;
     }
@@ -108,7 +87,7 @@ public class MapManager
         string mapdir = Path.Combine(dir, map.mapname);
         Directory.CreateDirectory(mapdir);
         IFormatter formatter = new BinaryFormatter();
-        Stream stream = new FileStream(Path.Combine(mapdir, mapfilename), FileMode.Create, FileAccess.Write, FileShare.None);
+        Stream stream = new FileStream(Path.Combine(mapdir, filename_map), FileMode.Create, FileAccess.Write, FileShare.None);
         formatter.Serialize(stream, map);
         stream.Close();
     }
@@ -119,17 +98,8 @@ public class MapManager
         string mapdir = Path.Combine(dir, mapname);
         if (Directory.Exists(mapdir))
         {
-            string[] files = Directory.GetFiles(mapdir);
-            string datpath = null;
-            for (int a = 0; a < files.Length; a++)
-            {
-                if (Path.GetFileName(files[a]).Equals(mapfilename))
-                {
-                    datpath = files[a];
-                    break;
-                }
-            }
-            if (datpath != null)
+            string datpath = Path.Combine(mapdir, filename_map);
+            if (File.Exists(datpath))
             {
                 File.Delete(datpath);
                 try
