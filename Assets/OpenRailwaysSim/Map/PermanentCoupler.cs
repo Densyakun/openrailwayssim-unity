@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
+/// <summary>
+/// 永久連結器
+/// </summary>
 [Serializable]
 public class PermanentCoupler : MapObject
 {
@@ -71,6 +73,9 @@ public class PermanentCoupler : MapObject
         reloadEntity();
     }
 
+    /// <summary>
+    /// 永久連結器を二つの車体に合わせる
+    /// </summary>
     public void snapTo()
     {
         body1.snapToBogieFrame();
@@ -84,6 +89,9 @@ public class PermanentCoupler : MapObject
             rot = Quaternion.LookRotation(f, Quaternion.Lerp(body1.rot, body2.rot, 0.5f) * Vector3.up);
     }
 
+    /// <summary>
+    /// 二つの車体を永久連結器に合わせる
+    /// </summary>
     public void snapFrom()
     {
         body1.pos = pos + rot * Vector3.back * length / 2 * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1) + body1.rot * new Vector3(0, body1.bogieHeight - height, (length / 2 - body1.carLength / 2) * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1));
@@ -99,7 +107,7 @@ public class PermanentCoupler : MapObject
 
         if (modelObj == null)
         {
-            (modelObj = GameObject.Instantiate(Main.main.permanentCouplerModel)).transform.parent = entity.transform;
+            (modelObj = GameObject.Instantiate(Main.INSTANCE.permanentCouplerModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
             modelObj.transform.localEulerAngles = Vector3.zero;
             reloadCollider();

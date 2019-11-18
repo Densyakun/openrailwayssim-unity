@@ -1,7 +1,11 @@
-﻿//タイトル画面
-public class TitlePanel : GamePanel {
+﻿/// <summary>
+/// タイトル画面
+/// </summary>
+public class TitlePanel : GamePanel
+{
 
-	public void quitButton () {
-		Main.quit ();
-	}
+    public void quitButton()
+    {
+        Main.quit();
+    }
 }

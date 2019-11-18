@@ -1,13 +1,16 @@
-﻿using UnityEngine;
+﻿/// <summary>
+/// ポーズしているときに表示される画面
+/// </summary>
+public class PausePanel : GamePanel
+{
 
-//ポーズしているときに表示される画面
-public class PausePanel : GamePanel {
+    public void ResumeButton()
+    {
+        Main.INSTANCE.setPause(false);
+    }
 
-	public void ResumeButton () {
-		Main.main.setPause (false);
-	}
-
-	public void SaveButton () {
-		MapManager.saveMap (Main.playingmap);
-	}
+    public void SaveButton()
+    {
+        MapManager.saveMap(Main.playingmap);
+    }
 }

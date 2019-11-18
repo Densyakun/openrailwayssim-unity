@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-//軌道(直線)
+/// <summary>
+/// 軌道（直線）
+/// </summary>
 [Serializable]
 public class Track : MapObject
 {
+
     public const string KEY_LENGTH = "L";
     public const string KEY_GAUGE = "G";
     public const string KEY_NEXT_TRACKS = "N_T";
@@ -36,7 +39,6 @@ public class Track : MapObject
     public float gauge;
 
     private List<Track> _nextTracks;
-
     public List<Track> nextTracks
     {
         get { return _nextTracks; }
@@ -48,7 +50,6 @@ public class Track : MapObject
     }
 
     private List<Track> _prevTracks;
-
     public List<Track> prevTracks
     {
         get { return _prevTracks; }
@@ -60,7 +61,6 @@ public class Track : MapObject
     }
 
     private int _connectingNextTrack;
-
     public int connectingNextTrack
     {
         get { return _connectingNextTrack; }
@@ -74,7 +74,6 @@ public class Track : MapObject
     }
 
     private int _connectingPrevTrack;
-
     public int connectingPrevTrack
     {
         get { return _connectingPrevTrack; }
@@ -149,7 +148,7 @@ public class Track : MapObject
 
     public void reloadTrackRenderer()
     {
-        if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
+        if (!Main.INSTANCE.runPanel.isShowing() && Main.showGuide)
         {
             if (trackRenderer == null)
                 trackRenderer = entity.gameObject.AddComponent<LineRenderer>();
@@ -158,11 +157,11 @@ public class Track : MapObject
             trackRenderer.endWidth = trackRenderer.startWidth = RENDER_WIDTH;
             trackRenderer.endColor = trackRenderer.startColor = Color.white;
             if (useSelectingMat)
-                trackRenderer.sharedMaterial = Main.main.selecting_track_mat;
+                trackRenderer.sharedMaterial = Main.INSTANCE.selecting_track_mat;
             else if (Main.focused == this)
-                trackRenderer.sharedMaterial = Main.main.focused_track_mat;
+                trackRenderer.sharedMaterial = Main.INSTANCE.focused_track_mat;
             else
-                trackRenderer.sharedMaterial = Main.main.track_mat;
+                trackRenderer.sharedMaterial = Main.INSTANCE.track_mat;
 
             reloadTrackRendererPositions();
         }
@@ -183,7 +182,7 @@ public class Track : MapObject
         if (railRenderers != null)
             foreach (var r in railRenderers)
                 GameObject.Destroy(r.gameObject);
-        if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
+        if (!Main.INSTANCE.runPanel.isShowing() && Main.showGuide)
         {
             railRenderers = new LineRenderer[2];
             for (int a = 0; a < 2; a++)
@@ -196,11 +195,11 @@ public class Track : MapObject
                 railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
                 railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
                 if (useSelectingMat)
-                    railRenderers[a].sharedMaterial = Main.main.selecting_track_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.selecting_track_mat;
                 else if (Main.focused == this)
-                    railRenderers[a].sharedMaterial = Main.main.focused_track_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.focused_track_mat;
                 else
-                    railRenderers[a].sharedMaterial = Main.main.rail_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.rail_mat;
 
                 Vector3 b = rot * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
                 railRenderers[a].SetPositions(new Vector3[] { pos + b, getPoint(1) + b });
@@ -220,7 +219,7 @@ public class Track : MapObject
         GameObject b;
         for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
-            railModelObjs[a] = b = GameObject.Instantiate(Main.main.railLModel);
+            railModelObjs[a] = b = GameObject.Instantiate(Main.INSTANCE.railLModel);
             b.transform.parent = entity.transform;
             setLOD(b, LOD_DISTANCE);
             b.transform.localPosition = r_ * (getPoint((float)a / (railModelObjs.Length / 2)) - pos);
@@ -228,7 +227,7 @@ public class Track : MapObject
         }
         for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
-            railModelObjs[a + railModelObjs.Length / 2] = b = GameObject.Instantiate(Main.main.railRModel);
+            railModelObjs[a + railModelObjs.Length / 2] = b = GameObject.Instantiate(Main.INSTANCE.railRModel);
             b.transform.parent = entity.transform;
             setLOD(b, LOD_DISTANCE);
             b.transform.localPosition = r_ * (getPoint((float)a / (railModelObjs.Length / 2)) - pos);
@@ -241,7 +240,7 @@ public class Track : MapObject
         tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
         for (int a = 0; a < tieModelObjs.Length; a++)
         {
-            (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
+            (tieModelObjs[a] = GameObject.Instantiate(Main.INSTANCE.tieModel)).transform.parent = entity.transform;
             setLOD(tieModelObjs[a], LOD_DISTANCE);
             tieModelObjs[a].transform.localPosition = r_ * (getPoint((float)a / tieModelObjs.Length) - pos);
             tieModelObjs[a].transform.localEulerAngles = new Vector3();

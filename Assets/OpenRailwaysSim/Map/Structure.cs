@@ -3,10 +3,13 @@ using System.IO;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-//ストラクチャ
+/// <summary>
+/// ストラクチャ
+/// </summary>
 [Serializable]
 public class Structure : MapObject
 {
+
     public const string KEY_PATH = "PATH";
 
     public string path;

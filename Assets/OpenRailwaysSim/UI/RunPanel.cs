@@ -1,9 +1,9 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-//運転中に表示される画面。運転中の操作はここに追加する
+/// <summary>
+/// 運転中に表示される画面。運転中の操作はここに追加する
+/// </summary>
 public class RunPanel : GamePanel
 {
 
@@ -18,7 +18,7 @@ public class RunPanel : GamePanel
 
     void OnEnable()
     {
-        GameCanvas.playingPanel.show(false);
+        Main.INSTANCE.playingPanel.show(false);
         foreach (var obj in Main.selectingObjs)
         {
             if (obj is DirectController)
@@ -34,7 +34,7 @@ public class RunPanel : GamePanel
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             show(false);
-            GameCanvas.playingPanel.show(true);
+            Main.INSTANCE.playingPanel.show(true);
         }
         else
         {

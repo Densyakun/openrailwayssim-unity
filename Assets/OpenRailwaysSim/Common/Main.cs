@@ -9,10 +9,22 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.PostProcessing;
 
-//ゲームの動作を制御する中心的クラス
+/// <summary>
+/// ゲームを動作するクラス
+/// </summary>
 public class Main : MonoBehaviour
 {
+
     public const string VERSION = "0.001alpha";
+    public const float ALLOWABLE_RANGE = 0.0001f;
+
+    public static Main INSTANCE;
+    public static Map playingmap { get; private set; }
+    public static string ssdir;
+    public static int min_fps = 15;
+
+
+    // Game settings
     public const string KEY_DRAW_DISTANCE = "DRAWDISTANCE";
     public const string KEY_BGM_VOLUME = "BGM_VOL";
     public const string KEY_SE_VOLUME = "SE_VOL";
@@ -45,36 +57,29 @@ public class Main : MonoBehaviour
     public const bool DEFAULT_BLOOM = true;
     public const bool DEFAULT_VIGNETTE = true;
 
-    public const float ALLOWABLE_RANGE = 0.0001f;
+    public static int drawDistance = DEFAULT_DRAW_DISTANCE;
+    public static float bgmVolume = DEFAULT_BGM_VOLUME;
+    public static float seVolume = DEFAULT_SE_VOLUME;
+    public static float cameraMoveSpeed = DEFAULT_CAMERA_MOVE_SPEED;
+    public static float dragRotSpeed = DEFAULT_DRAG_ROT_SPEED;
+    public static bool antialiasing = DEFAULT_ANTIALIASING;
+    public static bool ao = DEFAULT_AO;
+    public static bool motionBlur = DEFAULT_MOTIONBLUR;
+    public static bool bloom = DEFAULT_BLOOM;
+    public static bool vignette = DEFAULT_VIGNETTE;
 
-    public static Main main;
-    public static Map playingmap { get; private set; }
-    string ssdir;
-    static int min_fps = 15;
 
-    public int drawDistance = DEFAULT_DRAW_DISTANCE;
-    public float bgmVolume = DEFAULT_BGM_VOLUME;
-    public float seVolume = DEFAULT_SE_VOLUME;
-    public float cameraMoveSpeed = DEFAULT_CAMERA_MOVE_SPEED;
-    public float dragRotSpeed = DEFAULT_DRAG_ROT_SPEED;
-    public bool antialiasing = DEFAULT_ANTIALIASING;
-    public bool ao = DEFAULT_AO;
-    public bool motionBlur = DEFAULT_MOTIONBLUR;
-    public bool bloom = DEFAULT_BLOOM;
-    public bool vignette = DEFAULT_VIGNETTE;
+    public static bool pause { get; private set; } // ポーズ
+    private float lasttick = 0; // 時間を進ませた時の余り
+    private float lasttick_few = 0; // 頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
+    public static bool showGuide = true;
 
-    public bool pause { get; private set; } //ポーズ
-    private float lasttick = 0; //時間を進ませた時の余り
-    private float lasttick_few = 0; //頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
-
-    public static int MODE_NONE = 0;
-    public static int MODE_CONSTRUCT_TRACK = 11;
-    public static int MODE_PLACE_AXLE = 21;
-    public static int MODE_PLACE_MAPPIN = 31;
-    public static int MODE_PLACE_STRUCTURE = 41;
-    public int mode = MODE_NONE; // 操作モード 0=なし 11=軌道敷設 21=車軸設置 31=マップピンを置く 41=ストラクチャーを設置
-
-    public bool showGuide = true;
+    public const int MODE_NONE = 0;
+    public const int MODE_CONSTRUCT_TRACK = 11;
+    public const int MODE_PLACE_AXLE = 21;
+    public const int MODE_PLACE_MAPPIN = 31;
+    public const int MODE_PLACE_STRUCTURE = 41;
+    public static int mode = MODE_NONE; // 操作モード 0=なし 11=軌道敷設 21=車軸設置 31=マップピンを置く 41=ストラクチャーを設置
 
     public static List<Shape> editingTracks = new List<Shape>();
     public static Quaternion? editingRot;
@@ -87,8 +92,10 @@ public class Main : MonoBehaviour
     public static List<MapObject> selectingObjs = new List<MapObject>();
     public static float gauge = Track.defaultGauge;
 
+
+    // settings by Inspector
     public Gradient sunGradient;
-    public Light sun; //太陽
+    public Light sun; // 太陽
     public Camera mainCamera;
     public AudioClip[] titleClips;
     public AudioSource bgmSource;
@@ -110,9 +117,26 @@ public class Main : MonoBehaviour
     public GameObject directControllerModel;
     public Font mapPinFont;
 
+    public Canvas canvas;
+    public TitlePanel titlePanel;
+    public SelectMapPanel selectMapPanel;
+    public SettingPanel settingPanel;
+    public AddMapPanel addMapPanel;
+    public GamePanel loadingMapPanel;
+    public PlayingPanel playingPanel;
+    public PausePanel pausePanel;
+    public TitleBackPanel titleBackPanel;
+    public UnsupportedMapPanel unsupportedMapPanel;
+    public DeleteMapPanel deleteMapPanel;
+    public ShapeSettingPanel shapeSettingPanel;
+    public CouplerSettingPanel couplerSettingPanel;
+    public RunPanel runPanel;
+    public MapPinSettingPanel mapPinSettingPanel;
+    public StructureSettingPanel structureSettingPanel;
+
     void Awake()
     {
-        main = this;
+        INSTANCE = this;
         ssdir = Path.Combine(Application.persistentDataPath, "screenshots");
 
         drawDistance = PlayerPrefs.GetInt(KEY_DRAW_DISTANCE, DEFAULT_DRAW_DISTANCE);
@@ -131,21 +155,15 @@ public class Main : MonoBehaviour
 
     void Start()
     {
-        /*if (isSetupped) {
-			GameCanvas.titlePanel.show (true);
-		} else {
-			//TODO 初期設定
-		}*/
-
-        GameCanvas.titlePanel.show(true);
+        titlePanel.show(true);
     }
 
     void Update()
     {
 #if UNITY_EDITOR
-        main = this;
+        INSTANCE = this;
 #endif
-        //操作（カメラを除く）
+        // カメラを除く操作
         if (Input.GetKeyDown(KeyCode.F2))
         {
             Directory.CreateDirectory(ssdir);
@@ -154,38 +172,41 @@ public class Main : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (playingmap != null && !GameCanvas.settingPanel.isShowing() && !GameCanvas.titleBackPanel.isShowing() && !GameCanvas.runPanel.isShowing())
+            if (playingmap != null &&
+                !settingPanel.isShowing() &&
+                !titleBackPanel.isShowing() &&
+                !runPanel.isShowing())
             {
                 bool a = true;
-                if (GameCanvas.shapeSettingPanel.isShowing())
+                if (shapeSettingPanel.isShowing())
                 {
                     a = false;
                     cancelEditingTracks();
                 }
-                else if (GameCanvas.couplerSettingPanel.isShowing())
+                else if (couplerSettingPanel.isShowing())
                 {
                     a = false;
-                    GameCanvas.couplerSettingPanel.show(false);
+                    couplerSettingPanel.show(false);
                     if (editingCoupler != null)
                     {
                         editingCoupler.entity.Destroy();
                         editingCoupler = null;
                     }
                 }
-                else if (GameCanvas.mapPinSettingPanel.isShowing())
+                else if (mapPinSettingPanel.isShowing())
                 {
                     a = false;
-                    GameCanvas.mapPinSettingPanel.show(false);
+                    mapPinSettingPanel.show(false);
                     if (editingMapPin != null)
                     {
                         editingMapPin.entity.Destroy();
                         editingMapPin = null;
                     }
                 }
-                else if (GameCanvas.structureSettingPanel.isShowing())
+                else if (structureSettingPanel.isShowing())
                 {
                     a = false;
-                    GameCanvas.structureSettingPanel.show(false);
+                    structureSettingPanel.show(false);
                     if (editingStructure != null)
                     {
                         editingStructure.entity.Destroy();
@@ -210,7 +231,7 @@ public class Main : MonoBehaviour
 
                     selectingObjs.Clear();
 
-                    GameCanvas.playingPanel.a();
+                    playingPanel.a();
                 }
 
                 if (a)
@@ -225,12 +246,12 @@ public class Main : MonoBehaviour
         {
             if (pause)
             {
-                playingmap.cameraPos = main.mainCamera.transform.position;
-                playingmap.cameraRot = main.mainCamera.transform.eulerAngles;
+                playingmap.cameraPos = INSTANCE.mainCamera.transform.position;
+                playingmap.cameraRot = INSTANCE.mainCamera.transform.eulerAngles;
             }
             else
             {
-                //時間を進ませる
+                // 時間を進ませる
                 lasttick += Time.deltaTime * 1000f;
                 lasttick_few += Time.deltaTime;
                 if (playingmap.fastForwarding)
@@ -250,20 +271,22 @@ public class Main : MonoBehaviour
                 if (ticks != 0)
                     playingmap.TimePasses(ticks);
 
-                var p = main.mainCamera.transform.position;
+                var p = INSTANCE.mainCamera.transform.position;
                 grid.transform.position = new Vector3(Mathf.RoundToInt(p.x), 0, Mathf.RoundToInt(p.z));
             }
 
             if (Input.GetKeyDown(KeyCode.G))
             {
                 showGuide = !showGuide;
-                GameCanvas.playingPanel.b();
+                playingPanel.b();
             }
 
-            if (!GameCanvas.pausePanel.isShowing() && !CameraMover.INSTANCE.dragging &&
+            if (!pausePanel.isShowing() &&
+                !CameraMover.INSTANCE.dragging &&
                 !EventSystem.current.IsPointerOverGameObject() &&
-                !(GameCanvas.shapeSettingPanel.isShowing() && EventSystem.current.currentSelectedGameObject != null &&
-                  EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null))
+                !(shapeSettingPanel.isShowing() &&
+                EventSystem.current.currentSelectedGameObject != null &&
+                EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null))
                 update_ctrl();
             else
             {
@@ -462,15 +485,15 @@ public class Main : MonoBehaviour
 
                     if (aaa)
                     {
-                        editingTracks[0].gauge = Main.gauge;
+                        editingTracks[0].gauge = gauge;
 
                         if (editingRot != null)
                             editingTracks[0].rot = (Quaternion)editingRot;
                         editingTracks[0].enableCollider = false;
                         editingTracks[0].generate();
 
-                        GameCanvas.shapeSettingPanel.show(true);
-                        setPanelPosToMousePos(GameCanvas.shapeSettingPanel);
+                        shapeSettingPanel.show(true);
+                        setPanelPosToMousePos(shapeSettingPanel);
                     }
                 }
                 else if (mode == MODE_PLACE_AXLE)
@@ -488,8 +511,8 @@ public class Main : MonoBehaviour
                     {
                         editingMapPin = new MapPin(playingmap, p);
                         editingMapPin.generate();
-                        GameCanvas.mapPinSettingPanel.show(true);
-                        setPanelPosToMousePos(GameCanvas.mapPinSettingPanel);
+                        mapPinSettingPanel.show(true);
+                        setPanelPosToMousePos(mapPinSettingPanel);
                     }
                 }
                 else if (mode == MODE_PLACE_STRUCTURE)
@@ -498,8 +521,8 @@ public class Main : MonoBehaviour
                     {
                         editingStructure = new Structure(playingmap, p);
                         editingStructure.generate();
-                        GameCanvas.structureSettingPanel.show(true);
-                        setPanelPosToMousePos(GameCanvas.structureSettingPanel);
+                        structureSettingPanel.show(true);
+                        setPanelPosToMousePos(structureSettingPanel);
                     }
                 }
             }
@@ -564,19 +587,19 @@ public class Main : MonoBehaviour
         if (playingmap != null)
             closeMap();
 
-        GameCanvas.titlePanel.show(false);
-        GameCanvas.loadingMapPanel.show(true);
+        titlePanel.show(false);
+        loadingMapPanel.show(true);
 
-        yield return null; //読み込み画面を表示する
+        yield return null; // 読み込み画面を表示する
         Map map = MapManager.loadMap(mapname);
         if (map == null)
         {
-            //マップが対応していない
-            GameCanvas.loadingMapPanel.show(false);
-            GameCanvas.titlePanel.show(true);
-            GameCanvas.selectMapPanel.setOpenMap();
-            GameCanvas.selectMapPanel.show(true);
-            GameCanvas.unsupportedMapPanel.show(true);
+            // マップが対応していない
+            loadingMapPanel.show(false);
+            titlePanel.show(true);
+            selectMapPanel.setOpenMap();
+            selectMapPanel.show(true);
+            unsupportedMapPanel.show(true);
         }
         else
         {
@@ -587,13 +610,13 @@ public class Main : MonoBehaviour
             lasttick_few = 0;
             mode = 0;
             playingmap.generate();
-            main.reloadLighting();
+            INSTANCE.reloadLighting();
 
             mainCamera.transform.position = map.cameraPos;
             mainCamera.transform.eulerAngles = map.cameraRot;
             mainCamera.GetComponent<PostProcessingBehaviour>().enabled = true;
-            GameCanvas.loadingMapPanel.show(false);
-            GameCanvas.playingPanel.show(true);
+            loadingMapPanel.show(false);
+            playingPanel.show(true);
         }
     }
 
@@ -603,14 +626,16 @@ public class Main : MonoBehaviour
         {
             playingmap.DestroyAll();
             playingmap = null;
-            main.mainCamera.GetComponent<PostProcessingBehaviour>().enabled = false;
+            INSTANCE.mainCamera.GetComponent<PostProcessingBehaviour>().enabled = false;
         }
     }
 
-    //描画を優先して負荷のかかる処理を行うため、描画状態に応じてyield returnを行う条件を返すメソッド
+    /// <summary>
+    /// 描画を優先して負荷のかかる処理を行うため、描画状態に応じてyield returnを行う条件を返すメソッド
+    /// </summary>
     public static bool yrCondition()
     {
-        return 1 / Time.deltaTime <= Main.min_fps;
+        return 1 / Time.deltaTime <= min_fps;
     }
 
     public static void setPanelPosToMousePos(GamePanel panel)
@@ -621,25 +646,27 @@ public class Main : MonoBehaviour
 
     public void setPause(bool pause)
     {
-        if (this.pause = pause)
+        if (Main.pause = pause)
             Time.timeScale = 0;
         else
             Time.timeScale = 1;
-        GameCanvas.playingPanel.show(!pause);
-        GameCanvas.pausePanel.show(pause);
+        playingPanel.show(!pause);
+        pausePanel.show(pause);
     }
 
     public void reloadLighting()
     {
-        float t = Mathf.Repeat(playingmap.time, 86400000f); //86400000ms = 1日
+        float t = Mathf.Repeat(playingmap.time, 86400000f); // 86400000ms = 1日
         float r = t * 360f / 86400000f - 90f;
         sun.transform.localEulerAngles = new Vector3(r, -90f, 0f);
 
-        //頻繁に変更すると重くなる
+        // 頻繁に変更すると重くなる
         sun.shadowStrength = sun.intensity = sunGradient.Evaluate(1f - Mathf.Abs((r + 90f) / 180f - 1)).grayscale;
     }
 
-    //2直線の交点を求める関数
+    /// <summary>
+    /// 2直線の交点を求める
+    /// </summary>
     public Vector2? GetIntersectionPointCoordinates(float a1x, float a1y, float a2x, float a2y, float b1x, float b1y,
         float b2x, float b2y)
     {
@@ -651,11 +678,17 @@ public class Main : MonoBehaviour
         return new Vector2(b1x + (b2x - b1x) * mu, b1y + (b2y - b1y) * mu);
     }
 
+    /// <summary>
+    /// 2直線の交点を求める
+    /// </summary>
     public Vector2? GetIntersectionPointCoordinates(Vector2 A1, Vector2 A2, Vector2 B1, Vector2 B2)
     {
         return GetIntersectionPointCoordinates(A1.x, A1.y, A2.x, A2.y, B1.x, B1.y, B2.x, B2.y);
     }
 
+    /// <summary>
+    /// 2直線の交点を求める
+    /// </summary>
     public Vector2? GetIntersectionPointCoordinatesXZ(Vector3 A1, Vector3 A2, Vector3 B1, Vector3 B2)
     {
         return GetIntersectionPointCoordinates(A1.x, A1.z, A2.x, A2.z, B1.x, B1.z, B2.x, B2.z);
@@ -735,9 +768,6 @@ public class Main : MonoBehaviour
                 }
             }
 
-            //TODO 逆向きの線路の接続
-            //TODO editingTrackやfocusedだけでなく、マップ上のすべての線形との接続を試みる（バウンディングボックスの概念を考え、線形が多い場合などに高速で処理できるようにする）
-
             playingmap.addObject(track);
             track.enableCollider = true;
             track.reloadCollider();
@@ -748,9 +778,9 @@ public class Main : MonoBehaviour
         mainTrack = editingTracks.Last();
     }
 
-    public static void selectObj(MapObject obj)
+    public void selectObj(MapObject obj)
     {
-        bool s = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        var s = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
         if (!s)
         {
             foreach (var o in selectingObjs)
@@ -778,10 +808,10 @@ public class Main : MonoBehaviour
             }
         }
 
-        GameCanvas.playingPanel.a();
+        playingPanel.a();
     }
 
-    public static void removeSelectingObjs()
+    public void removeSelectingObjs()
     {
         foreach (var obj in selectingObjs)
         {
@@ -791,12 +821,12 @@ public class Main : MonoBehaviour
         }
 
         selectingObjs.Clear();
-        GameCanvas.playingPanel.a();
+        playingPanel.a();
     }
 
-    public static void cancelEditingTracks()
+    public void cancelEditingTracks()
     {
-        GameCanvas.shapeSettingPanel.show(false);
+        shapeSettingPanel.show(false);
 
         foreach (var track in editingTracks)
             track.entity.Destroy();

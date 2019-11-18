@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-//豆知識を表示するスクリプト。TextコンポーネントのあるGameObjectに追加して使用する
+/// <summary>
+/// 豆知識を表示するスクリプト。TextコンポーネントのあるGameObjectに追加して使用する
+/// </summary>
 public class TipsText : MonoBehaviour
 {
+
     public static string[] tips = new string[] { "メニューはEscキーで戻ることが出来ます", "ポーズメニューはEscキーで開きます", "F2でスクリーンショットを撮ることが出来ます", "保存したスクリーンショットは設定から見ることが出来ます" };
 
     public static float changeIntervalperChar = 0.4f;

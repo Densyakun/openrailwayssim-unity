@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
+/// <summary>
+/// 直接制御器
+/// </summary>
 [Serializable]
 public class DirectController : MapObject
 {
@@ -95,6 +98,9 @@ public class DirectController : MapObject
         reloadEntity();
     }
 
+    /// <summary>
+    /// 直接制御器を車体に合わせる
+    /// </summary>
     public void snapTo()
     {
         body.snapToBogieFrame();
@@ -109,7 +115,7 @@ public class DirectController : MapObject
 
         if (modelObj == null)
         {
-            (modelObj = GameObject.Instantiate(Main.main.directControllerModel)).transform.parent = entity.transform;
+            (modelObj = GameObject.Instantiate(Main.INSTANCE.directControllerModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
             modelObj.transform.localEulerAngles = Vector3.zero;
             reloadCollider();

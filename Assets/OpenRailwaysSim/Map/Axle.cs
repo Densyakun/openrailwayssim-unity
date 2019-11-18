@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
+/// <summary>
+/// 車軸
+/// </summary>
 [Serializable]
 public class Axle : MapObject
 {
@@ -210,7 +212,7 @@ public class Axle : MapObject
 
     public override void update()
     {
-        //Editor上で移動するテスト
+        // Editor上で移動するテスト
         //SyncFromEntity();
         //reloadOnDist();
         //fixedMove();
@@ -341,7 +343,7 @@ public class Axle : MapObject
 
         if (modelObj == null)
         {
-            (modelObj = GameObject.Instantiate(Main.main.axleModel)).transform.parent = entity.transform;
+            (modelObj = GameObject.Instantiate(Main.INSTANCE.axleModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
             reloadCollider();
         }

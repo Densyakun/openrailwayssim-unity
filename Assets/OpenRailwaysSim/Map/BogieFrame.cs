@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
+/// <summary>
+/// 台車枠
+/// </summary>
 [Serializable]
 public class BogieFrame : MapObject
 {
@@ -63,6 +66,9 @@ public class BogieFrame : MapObject
         reloadEntity();
     }
 
+    /// <summary>
+    /// 台車枠を車軸に合わせる
+    /// </summary>
     public void snapToAxle()
     {
         var p = Vector3.zero;
@@ -93,6 +99,9 @@ public class BogieFrame : MapObject
         pos = (p_ / axles.Count) + rot * Vector3.up * height;
     }
 
+    /// <summary>
+    /// 車軸を台車枠に合わせる
+    /// </summary>
     public void snapFromAxle()
     {
         float s = 0;
@@ -107,7 +116,7 @@ public class BogieFrame : MapObject
 
         s /= axles.Count;
 
-        //車軸をレールに合わせると、ホイールベースを失う
+        // 車軸をレールに合わせる。台車枠とずれホイールベースを失うが、次のフレームで合わせるので省略している。
         foreach (var axle in axles)
         {
             axle.reloadOnDist();
@@ -115,7 +124,6 @@ public class BogieFrame : MapObject
             axle.rot = Mathf.Abs(Quaternion.Dot(axle.rot, rot)) < Mathf.Abs(Quaternion.Dot(axle.rot, r)) ? rot : r;
             axle.speed = s;
         }
-        //車軸をレールに合わせると、台車枠がずれる。次のフレームで合わせるので省略している。
     }
 
     public override void reloadEntity()
@@ -125,7 +133,7 @@ public class BogieFrame : MapObject
 
         if (modelObj == null)
         {
-            (modelObj = GameObject.Instantiate(Main.main.bogieFrameModel)).transform.parent = entity.transform;
+            (modelObj = GameObject.Instantiate(Main.INSTANCE.bogieFrameModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
             modelObj.transform.localEulerAngles = Vector3.zero;
             reloadCollider();

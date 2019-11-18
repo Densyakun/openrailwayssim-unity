@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
+/// <summary>
+/// 連結器
+/// </summary>
 [Serializable]
 public class Coupler : MapObject
 {
@@ -71,6 +73,9 @@ public class Coupler : MapObject
         reloadEntity();
     }
 
+    /// <summary>
+    /// 連結器を車体と相手の連結器に合わせる
+    /// </summary>
     public void snapTo()
     {
         body.snapToBogieFrame();
@@ -89,6 +94,9 @@ public class Coupler : MapObject
         }
     }
 
+    /// <summary>
+    /// 車体を連結器に合わせる
+    /// </summary>
     public void snapFrom()
     {
         body.pos = pos + body.rot * new Vector3(0, body.bogieHeight - height, (length - body.carLength / 2) * (isFront ? 1 : -1));
@@ -102,7 +110,7 @@ public class Coupler : MapObject
 
         if (modelObj == null)
         {
-            (modelObj = GameObject.Instantiate(Main.main.couplerModel)).transform.parent = entity.transform;
+            (modelObj = GameObject.Instantiate(Main.INSTANCE.couplerModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
             modelObj.transform.localEulerAngles = Vector3.zero;
             reloadCollider();

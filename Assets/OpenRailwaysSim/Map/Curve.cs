@@ -2,10 +2,13 @@
 using System.Runtime.Serialization;
 using UnityEngine;
 
-//曲線
+/// <summary>
+/// 曲線（現在未使用）
+/// </summary>
 [Serializable]
 public class Curve : Track
 {
+
     public const string KEY_RADIUS = "R";
     public const string KEY_IS_VERTICAL_CURVE = "IS_V_C";
     public const string KEY_CANT = "C";
@@ -87,7 +90,7 @@ public class Curve : Track
         if (railRenderers != null)
             foreach (var r in railRenderers)
                 GameObject.Destroy(r.gameObject);
-        if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
+        if (!Main.INSTANCE.runPanel.isShowing() && Main.showGuide)
         {
             railRenderers = new LineRenderer[2];
             for (int a = 0; a < 2; a++)
@@ -100,11 +103,11 @@ public class Curve : Track
                 railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
                 railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
                 if (useSelectingMat)
-                    railRenderers[a].sharedMaterial = Main.main.selecting_track_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.selecting_track_mat;
                 else if (Main.focused == this)
-                    railRenderers[a].sharedMaterial = Main.main.focused_track_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.focused_track_mat;
                 else
-                    railRenderers[a].sharedMaterial = Main.main.rail_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.rail_mat;
 
                 int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
                 Vector3[] p = new Vector3[l + 1];
@@ -128,7 +131,7 @@ public class Curve : Track
         GameObject b;
         for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
-            railModelObjs[a] = b = GameObject.Instantiate(Main.main.railLModel);
+            railModelObjs[a] = b = GameObject.Instantiate(Main.INSTANCE.railLModel);
             b.transform.parent = entity.transform;
             setLOD(b, LOD_DISTANCE);
             var d = (float)a / (railModelObjs.Length / 2);
@@ -138,7 +141,7 @@ public class Curve : Track
         }
         for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
-            railModelObjs[a + railModelObjs.Length / 2] = b = GameObject.Instantiate(Main.main.railRModel);
+            railModelObjs[a + railModelObjs.Length / 2] = b = GameObject.Instantiate(Main.INSTANCE.railRModel);
             b.transform.parent = entity.transform;
             setLOD(b, LOD_DISTANCE);
             var d = (float)a / (railModelObjs.Length / 2);
@@ -153,7 +156,7 @@ public class Curve : Track
         tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
         for (int a = 0; a < tieModelObjs.Length; a++)
         {
-            (tieModelObjs[a] = GameObject.Instantiate(Main.main.tieModel)).transform.parent = entity.transform;
+            (tieModelObjs[a] = GameObject.Instantiate(Main.INSTANCE.tieModel)).transform.parent = entity.transform;
             setLOD(tieModelObjs[a], LOD_DISTANCE);
             var d = (float)a / tieModelObjs.Length;
             tieModelObjs[a].transform.localPosition = r_ * (getPointCanted(d) - pos);

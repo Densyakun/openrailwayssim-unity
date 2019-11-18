@@ -2,10 +2,13 @@
 using System.Runtime.Serialization;
 using UnityEngine;
 
-//マップピン
+/// <summary>
+/// マップピン
+/// </summary>
 [Serializable]
 public class MapPin : MapObject
 {
+
     public const string KEY_TITLE = "TITLE";
     public const string KEY_DESCRIPTION = "DESCRIPTION";
 

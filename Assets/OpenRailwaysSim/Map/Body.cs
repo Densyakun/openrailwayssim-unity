@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
+/// <summary>
+/// 車体
+/// </summary>
 [Serializable]
 public class Body : MapObject
 {
@@ -77,6 +80,9 @@ public class Body : MapObject
         reloadEntity();
     }
 
+    /// <summary>
+    /// 車体を台車枠に合わせる
+    /// </summary>
     public void snapToBogieFrame()
     {
         if (bogieFrames.Count > 0)
@@ -109,9 +115,11 @@ public class Body : MapObject
         }
     }
 
+    /// <summary>
+    /// 台車枠を車体に合わせる
+    /// </summary>
     public void snapFromBogieFrame()
     {
-        //台車枠を車軸に合わせると、台車中心間距離を失う
         for (var d = 0; d < bogieFrames.Count; d++)
         {
             bogieFrames[d].pos = pos + bogieFrames[d].rot * (Vector3.up * (bogieFrames[d].height - bogieHeight)) +
@@ -119,9 +127,8 @@ public class Body : MapObject
                                      ? Vector3.zero
                                      : rot * Vector3.forward * bogieCenterDist *
                                        ((float)-(bogieFrames.Count - 1) / 2 + d));
-            bogieFrames[d].snapFromAxle();
+            bogieFrames[d].snapFromAxle(); // 台車枠を車軸に合わせる。車体とずれ台車中心間距離を失うが、次のフレームで合わせるので省略している。
         }
-        //台車枠を車軸に合わせると、車体がずれる。次のフレームで合わせるので省略している。
     }
 
     public override void reloadEntity()
@@ -131,7 +138,7 @@ public class Body : MapObject
 
         if (modelObj == null)
         {
-            (modelObj = GameObject.Instantiate(Main.main.bodyModel)).transform.parent = entity.transform;
+            (modelObj = GameObject.Instantiate(Main.INSTANCE.bodyModel)).transform.parent = entity.transform;
             modelObj.transform.localPosition = Vector3.zero;
             modelObj.transform.localEulerAngles = Vector3.zero;
             reloadCollider();

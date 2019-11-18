@@ -3,7 +3,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-//ゲーム中に表示される画面
+/// <summary>
+/// ゲーム中に表示される画面
+/// </summary>
 public class PlayingPanel : GamePanel
 {
 
@@ -18,7 +20,7 @@ public class PlayingPanel : GamePanel
 
     public void GuideButton()
     {
-        Main.main.grid.SetActive(Main.main.showGuide = guideToggle.isOn);
+        Main.INSTANCE.grid.SetActive(Main.showGuide = guideToggle.isOn);
         List<Track> objs = Main.playingmap.objs.Where(obj => obj is Track).OfType<Track>().ToList();
         foreach (var obj in objs)
         {
@@ -29,27 +31,27 @@ public class PlayingPanel : GamePanel
 
     public void ConstTrackButton()
     {
-        Main.main.mode = Main.main.mode == Main.MODE_CONSTRUCT_TRACK ? 0 : Main.MODE_CONSTRUCT_TRACK;
+        Main.mode = Main.mode == Main.MODE_CONSTRUCT_TRACK ? 0 : Main.MODE_CONSTRUCT_TRACK;
     }
 
     public void PlaceAxleButton()
     {
-        Main.main.mode = Main.main.mode == Main.MODE_PLACE_AXLE ? 0 : Main.MODE_PLACE_AXLE;
+        Main.mode = Main.mode == Main.MODE_PLACE_AXLE ? 0 : Main.MODE_PLACE_AXLE;
     }
 
     public void PlaceMapPinButton()
     {
-        Main.main.mode = Main.main.mode == Main.MODE_PLACE_MAPPIN ? 0 : Main.MODE_PLACE_MAPPIN;
+        Main.mode = Main.mode == Main.MODE_PLACE_MAPPIN ? 0 : Main.MODE_PLACE_MAPPIN;
     }
 
     public void PlaceStructureButton()
     {
-        Main.main.mode = Main.main.mode == Main.MODE_PLACE_STRUCTURE ? 0 : Main.MODE_PLACE_STRUCTURE;
+        Main.mode = Main.mode == Main.MODE_PLACE_STRUCTURE ? 0 : Main.MODE_PLACE_STRUCTURE;
     }
 
     public void RemoveButton()
     {
-        Main.removeSelectingObjs();
+        Main.INSTANCE.removeSelectingObjs();
     }
 
     public void PlaceBFButton()
@@ -76,13 +78,13 @@ public class PlayingPanel : GamePanel
             Main.editingCoupler = c;
             c.generate();
 
-            GameCanvas.couplerSettingPanel.show(true);
-            GameCanvas.couplerSettingPanel.transform.position = new Vector3(
+            Main.INSTANCE.couplerSettingPanel.show(true);
+            Main.INSTANCE.couplerSettingPanel.transform.position = new Vector3(
                 Mathf.Clamp(Input.mousePosition.x, 0,
-                    Screen.width - ((RectTransform)GameCanvas.couplerSettingPanel.transform).rect
+                    Screen.width - ((RectTransform)Main.INSTANCE.couplerSettingPanel.transform).rect
                     .width),
                 Mathf.Clamp(Input.mousePosition.y,
-                    ((RectTransform)GameCanvas.couplerSettingPanel.transform).rect.height,
+                    ((RectTransform)Main.INSTANCE.couplerSettingPanel.transform).rect.height,
                     Screen.height));
             break;
         }
@@ -121,7 +123,7 @@ public class PlayingPanel : GamePanel
         {
             if (obj is DirectController)
             {
-                GameCanvas.runPanel.show(true);
+                Main.INSTANCE.runPanel.show(true);
                 break;
             }
         }
@@ -148,6 +150,6 @@ public class PlayingPanel : GamePanel
 
     public void b()
     {
-        guideToggle.isOn = Main.main.showGuide;
+        guideToggle.isOn = Main.showGuide;
     }
 }

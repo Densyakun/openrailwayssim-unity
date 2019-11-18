@@ -4,9 +4,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-//線形の設定画面
+/// <summary>
+/// 線形の設定画面
+/// </summary>
 public class ShapeSettingPanel : GamePanel
 {
+
     public SegmentSettingPanel segmentSettingPanelPrefab;
     public RectTransform segmentParent;
     private List<SegmentSettingPanel> segmentPanels = new List<SegmentSettingPanel>();
@@ -137,9 +140,9 @@ public class ShapeSettingPanel : GamePanel
 
         Main.gauge = Main.editingTracks[0].gauge;
         if (Main.editingTracks[0].curveLength.Count == 0)
-            Main.cancelEditingTracks();
+            Main.INSTANCE.cancelEditingTracks();
         else
-            Main.main.trackEdited0();
+            Main.INSTANCE.trackEdited0();
         Main.editingTracks.Clear();
         Main.editingRot = null;
 

@@ -2,12 +2,15 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-//カメラを制御するクラス
+/// <summary>
+/// カメラを制御するクラス
+/// </summary>
 public class CameraMover : MonoBehaviour
 {
-    public static float maxDistance = 5f; //カメラの追跡が遅れたときに対象から離れない距離
-    public static float min_t = 1f / 5f; //カメラの追跡力(0=動かない、1=瞬時に追跡)
-    public static float free_time = 0.8f; //手動回転後に自動回転するまでの時間
+
+    public static float maxDistance = 5f; // カメラの追跡が遅れたときに対象から離れない距離
+    public static float min_t = 1f / 5f; // カメラの追跡力(0=動かない、1=瞬時に追跡)
+    public static float free_time = 0.8f; // 手動回転後に自動回転するまでの時間
     public static CameraMover INSTANCE;
 
     //Transform target;
@@ -25,10 +28,10 @@ public class CameraMover : MonoBehaviour
         INSTANCE = this;
     }
 
-    //カメラは後からついてくる挙動になっており、カメラが一定距離以上離れないようになっているため、乗り物向けなカメラになっている。
+    // カメラは後からついてくる挙動になっており、カメラが一定距離以上離れないようになっているため、乗り物向けなカメラになっている。
     void LateUpdate()
     {
-        bool c = Main.playingmap != null && !Main.main.pause && !GameCanvas.runPanel.isShowing(); //操作可能か
+        bool c = Main.playingmap != null && !Main.pause && !Main.INSTANCE.runPanel.isShowing(); // 操作可能か
         if (c && EventSystem.current.currentSelectedGameObject != null)
         {
             InputField input = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>();
@@ -54,7 +57,7 @@ public class CameraMover : MonoBehaviour
                 move += Vector3.down;
             if (Input.GetKey(KeyCode.Space))
                 move += Vector3.up;
-            transform.Translate(move * Main.main.cameraMoveSpeed * Time.deltaTime);
+            transform.Translate(move * Main.cameraMoveSpeed * Time.deltaTime);
             //}
 
             //float h = Input.GetAxis ("Horizontal");
@@ -71,7 +74,7 @@ public class CameraMover : MonoBehaviour
                     //f = 0;
                 }
 
-                Vector3 m = (Input.mousePosition - lastMousePos) * Main.main.dragRotSpeed; //カメラの移動量
+                Vector3 m = (Input.mousePosition - lastMousePos) * Main.dragRotSpeed; // カメラの移動量
                 if (m != Vector3.zero)
                 {
                     dragging = true;

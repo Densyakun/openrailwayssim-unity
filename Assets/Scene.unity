@@ -440,6 +440,22 @@ MonoBehaviour:
   directControllerModel: {fileID: 1508862306689808, guid: 02258fb8490206645af66160cce62b23,
     type: 3}
   mapPinFont: {fileID: 12800000, guid: f018cbb18c9f3664fa825b7bdfa92eb8, type: 3}
+  canvas: {fileID: 1056666633}
+  titlePanel: {fileID: 1166821556}
+  selectMapPanel: {fileID: 772577678}
+  settingPanel: {fileID: 1849788655}
+  addMapPanel: {fileID: 1861790199}
+  loadingMapPanel: {fileID: 1778563402}
+  playingPanel: {fileID: 1800391908}
+  pausePanel: {fileID: 1571362187}
+  titleBackPanel: {fileID: 949425604}
+  unsupportedMapPanel: {fileID: 820413200}
+  deleteMapPanel: {fileID: 553829329}
+  shapeSettingPanel: {fileID: 2084530851}
+  couplerSettingPanel: {fileID: 1915192484}
+  runPanel: {fileID: 565442676}
+  mapPinSettingPanel: {fileID: 829422446}
+  structureSettingPanel: {fileID: 52621365}
 --- !u!4 &51358973
 Transform:
   m_ObjectHideFlags: 0
@@ -10306,7 +10322,6 @@ GameObject:
   - component: {fileID: 1056666633}
   - component: {fileID: 1056666632}
   - component: {fileID: 1056666631}
-  - component: {fileID: 1056666630}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -10314,18 +10329,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1056666630
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1056666629}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe3f448e609e67647a8e4b76c85dcea8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1056666631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17240,7 +17243,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1778563400}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86207a27b5637a04e880de4676b2f8ef, type: 3}
+  m_Script: {fileID: 11500000, guid: f195d6df0f8cfb548951b11a0295c967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1778563403

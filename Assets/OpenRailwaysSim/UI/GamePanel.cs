@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 
-//画面を管理するスクリプト
+/// <summary>
+/// 画面を管理するスクリプト
+/// </summary>
 public class GamePanel : MonoBehaviour
 {
 

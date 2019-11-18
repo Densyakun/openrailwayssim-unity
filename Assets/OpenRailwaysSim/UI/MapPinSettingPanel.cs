@@ -1,12 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-//マップピンの設定画面
+/// <summary>
+/// マップピンの設定画面
+/// </summary>
 public class MapPinSettingPanel : GamePanel
 {
-    //TODO 多言語対応化
+
     public static string titleText_DEF = "タイトル";
     public static string descriptionText_DEF = "説明";
     public Text titleText;

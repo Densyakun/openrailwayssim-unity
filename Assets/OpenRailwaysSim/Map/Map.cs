@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-//マップ
+/// <summary>
+/// マップ
+/// </summary>
 [Serializable]
 public class Map : ISerializable
 {
+
     public const string KEY_MAPNAME = "MAPNAME";
     public const string KEY_CREATED = "CREATED";
     public const string KEY_OBJECTS = "OBJS";
@@ -17,28 +20,25 @@ public class Map : ISerializable
     public const string KEY_CAMERA_ROT = "CAMERA_ROT";
 
     //public const float ABYSS_HEIGHT = -100f;
-    public const float FAST_FORWARDING_SPEED = 72f; //早送り中の速度。実時間20分でゲームが1日進む
+    public const float FAST_FORWARDING_SPEED = 72f; // 早送り中の速度。実時間20分でゲームが1日進む
 
     public static Vector3 DEFAULT_CAMERA_POS = new Vector3(0f, 10f, -20f);
     public static Vector3 DEFAULT_CAMERA_ROT = new Vector3(30f, 0f, 0f);
 
     public string mapname { get; private set; }
-
-    //TODO マップ全体を読み込まなくてもファイルヘッダにマップの基本情報を書き込む。
-    //マップの基本情報にはマップのチャンクやプレイヤーデータを除いたマップの作成日時などがある。
     public DateTime created { get; private set; }
-    public List<MapObject> objs { get; private set; } //オブジェクト
-    public long time { get; private set; } //マップの時間。0時から始まり1tickが1msである。
-    public bool fastForwarding { get; private set; } //早送り
-    public Vector3 cameraPos; //カメラの位置（マップ読み込み時用）
-    public Vector3 cameraRot; //カメラの角度（マップ読み込み時用）
+    public List<MapObject> objs { get; private set; } // オブジェクト
+    public long time { get; private set; } // マップの時間。0時から始まり1tickが1msである。
+    public bool fastForwarding { get; private set; } // 早送り
+    public Vector3 cameraPos; // カメラの位置（マップ読み込み時用）
+    public Vector3 cameraRot; // カメラの角度（マップ読み込み時用）
 
     public Map(string mapname)
     {
         this.mapname = mapname;
         created = DateTime.Now;
         objs = new List<MapObject>();
-        time = 6 * 60 * 60000; //朝6時からスタート
+        time = 6 * 60 * 60000; // 朝6時からスタート
         fastForwarding = false;
         cameraPos = DEFAULT_CAMERA_POS;
         cameraRot = DEFAULT_CAMERA_ROT;
@@ -105,7 +105,7 @@ public class Map : ISerializable
             e.Destroy();
     }
 
-    //時間が経過するメソッド。ticksには経過時間を指定。
+    // 時間が経過するメソッド。ticksには経過時間を指定。
     public void TimePasses(long ticks)
     {
         time += ticks;

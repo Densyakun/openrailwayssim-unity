@@ -1,11 +1,12 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-//軌道の設定画面
+/// <summary>
+/// 連結器の設定画面
+/// </summary>
 public class CouplerSettingPanel : GamePanel
 {
+
     public static string isFrontText_DEF = "前面";
     public Text isFrontText;
     public Toggle isFrontToggle;

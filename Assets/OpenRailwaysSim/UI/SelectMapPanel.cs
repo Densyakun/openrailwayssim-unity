@@ -1,100 +1,119 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-//マップを選択する画面
-public class SelectMapPanel : GamePanel, ScrollController.Listener {
-	public static string selectedMap; //最後に選択されたマップ
-	private static bool openMap = false;
-	public Button addMapButton;
-	public Button selectMapButton;
-	public Button deleteMapButton;
-	public Text selectButtonText;
-	public Text mapNameText;
-	public Image mapImage; //TODO 未使用
-	public ScrollController sc;
-	string[] mapList = new string[0];
+/// <summary>
+/// マップを選択する画面
+/// </summary>
+public class SelectMapPanel : GamePanel, ScrollController.Listener
+{
 
-	void OnEnable () {
-		sc.listeners.Add (this);
-		reloadContents ();
-	}
+    public static string selectedMap; // 最後に選択されたマップ
+    private static bool openMap = false;
+    public Button addMapButton;
+    public Button selectMapButton;
+    public Button deleteMapButton;
+    public Text selectButtonText;
+    public Text mapNameText;
+    public Image mapImage; // 未使用
+    public ScrollController sc;
+    string[] mapList = new string[0];
 
-	void Update () {
-		//TODO Window(Panel)のフォーカス機能を追加し、一番手前に出ているWindowでのみ操作が機能するようにする。そのためにはCanvasに各WindowやPanelをまとめる。
-		if (Input.GetKeyDown (KeyCode.Escape) &&
-		    !GameCanvas.addMapPanel.gameObject.activeInHierarchy &&
-		    !GameCanvas.unsupportedMapPanel.gameObject.activeInHierarchy &&
-		    !GameCanvas.deleteMapPanel.gameObject.activeInHierarchy) {
-			show (false);
-		}
-	}
+    void OnEnable()
+    {
+        sc.listeners.Add(this);
+        reloadContents();
+    }
 
-	new public void show (bool show) {
-		base.show (show);
-		if (!show) {
-			resetSetting ();
-		}
-	}
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) &&
+            !Main.INSTANCE.addMapPanel.gameObject.activeInHierarchy &&
+            !Main.INSTANCE.unsupportedMapPanel.gameObject.activeInHierarchy &&
+            !Main.INSTANCE.deleteMapPanel.gameObject.activeInHierarchy)
+        {
+            show(false);
+        }
+    }
 
-	public void show (bool show, string selectText) {
-		this.show (show);
-		selectButtonText.text = selectText;
-	}
+    new public void show(bool show)
+    {
+        base.show(show);
+        if (!show)
+            resetSetting();
+    }
 
-	public void show (bool show, string selectText, bool addable) {
-		this.show (show);
-		selectButtonText.text = selectText;
-		setMapAddable (addable);
-	}
+    public void show(bool show, string selectText)
+    {
+        this.show(show);
+        selectButtonText.text = selectText;
+    }
 
-	private static void resetSetting () {
-		openMap = false;
-	}
+    public void show(bool show, string selectText, bool addable)
+    {
+        this.show(show);
+        selectButtonText.text = selectText;
+        setMapAddable(addable);
+    }
 
-	public void setOpenMap () {
-		openMap = true;
-	}
+    private static void resetSetting()
+    {
+        openMap = false;
+    }
 
-	void a () {
-		bool interactable = sc.n != -1;
-		deleteMapButton.interactable = selectMapButton.interactable = interactable;
-		mapNameText.text = interactable ? mapList [sc.n] : "";
-	}
+    public void setOpenMap()
+    {
+        openMap = true;
+    }
 
-	public void reloadContents () {
-		a ();
-		mapList = MapManager.getMapList ();
-		sc.setContents (mapList);
-	}
+    void a()
+    {
+        bool interactable = sc.n != -1;
+        deleteMapButton.interactable = selectMapButton.interactable = interactable;
+        mapNameText.text = interactable ? mapList[sc.n] : "";
+    }
 
-	public void setMapAddable (bool addable) {
-		addMapButton.interactable = addable;
-	}
+    public void reloadContents()
+    {
+        a();
+        mapList = MapManager.getMapList();
+        sc.setContents(mapList);
+    }
 
-	void ScrollController.Listener.Select(ScrollController sc) {
-		a ();
-	}
+    public void setMapAddable(bool addable)
+    {
+        addMapButton.interactable = addable;
+    }
 
-	public void OKButton () {
-		selectedMap = sc.n == -1 ? null : mapList [sc.n];
-		sc.n = -1;
-		a ();
+    void ScrollController.Listener.Select(ScrollController sc)
+    {
+        a();
+    }
 
-		if (openMap) {
-			show (false);
-			Main.main.StartCoroutine (Main.main.openMap (SelectMapPanel.selectedMap));
-		}
-	}
+    public void OKButton()
+    {
+        selectedMap = sc.n == -1 ? null : mapList[sc.n];
+        sc.n = -1;
+        a();
 
-	public void DeleteButton () {
-		GameCanvas.deleteMapPanel.show (true);
-	}
+        if (openMap)
+        {
+            show(false);
+            Main.INSTANCE.StartCoroutine(Main.INSTANCE.openMap(SelectMapPanel.selectedMap));
+        }
+    }
 
-	public void Delete () {
-		selectedMap = null;
-		if (MapManager.deleteMap (mapList [sc.n])) {
-			sc.n = -1;
-			reloadContents ();
-		}
-	}
+    public void DeleteButton()
+    {
+        Main.INSTANCE.deleteMapPanel.show(true);
+    }
+
+    public void Delete()
+    {
+        selectedMap = null;
+        if (MapManager.deleteMap(mapList[sc.n]))
+        {
+            sc.n = -1;
+            reloadContents();
+        }
+    }
 }

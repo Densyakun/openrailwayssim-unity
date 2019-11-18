@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 画面上に表示されるラベル。マップピンに使用する
+/// </summary>
 public class TextEntity : MonoBehaviour
 {
 
@@ -13,13 +16,13 @@ public class TextEntity : MonoBehaviour
 
     void Update()
     {
-        if (!GameCanvas.runPanel.isShowing() && Main.main.showGuide)
+        if (!Main.INSTANCE.runPanel.isShowing() && Main.showGuide)
         {
             if ((Quaternion.Inverse(Camera.main.transform.rotation) * (obj.pos - Camera.main.transform.position)).z > 0)
             {
                 if (text == null)
                 {
-                    (text = gameObject.AddComponent<Text>()).font = Main.main.mapPinFont;
+                    (text = gameObject.AddComponent<Text>()).font = Main.INSTANCE.mapPinFont;
                     text.rectTransform.sizeDelta = new Vector2(160f, 20f);
                     text.alignment = TextAnchor.MiddleCenter;
                     text.resizeTextForBestFit = true;
@@ -32,14 +35,14 @@ public class TextEntity : MonoBehaviour
                     a.highlightedColor = new Color(1f, 1f, 0, 0.75f);
                     button.colors = a;
 
-                    transform.SetParent(GameCanvas.canvas.transform);
+                    transform.SetParent(Main.INSTANCE.canvas.transform);
                 }
                 text.text = str;
                 if (obj.useSelectingMat)
                     text.color = new Color(1f, 1f, 0, 0.75f);
                 else
                     text.color = normalColor;
-                text.raycastTarget = Main.main.mode == 0;
+                text.raycastTarget = Main.mode == 0;
 
                 var p = Camera.main.WorldToViewportPoint(obj.pos);
                 transform.position = new Vector3(Screen.width * p.x, Screen.height * p.y);
@@ -63,6 +66,6 @@ public class TextEntity : MonoBehaviour
 
     void TaskOnClick()
     {
-        Main.selectObj(obj);
+        Main.INSTANCE.selectObj(obj);
     }
 }

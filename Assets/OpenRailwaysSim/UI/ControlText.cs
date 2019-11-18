@@ -1,19 +1,25 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-//操作方法を表示するスクリプト
-public class ControlText : MonoBehaviour {
-	public RectTransform bgImage;
+/// <summary>
+/// 操作方法を表示するスクリプト
+/// </summary>
+public class ControlText : MonoBehaviour
+{
 
-	void Update () {
-		string text = "";
-		if (Main.playingmap != null && !GameCanvas.pausePanel.isShowing ()) {
-			//text += "E: メニューを開く ";
-		}
+    public RectTransform bgImage;
 
-		text = text.Trim ();
+    void Update()
+    {
+        string text = "";
+        if (Main.playingmap != null && !Main.INSTANCE.pausePanel.isShowing())
+        {
+            //text += "E: メニューを開く ";
+        }
 
-		bgImage.gameObject.SetActive (text != "");
-		GetComponent<Text> ().text = text;
-	}
+        text = text.Trim();
+
+        bgImage.gameObject.SetActive(text != "");
+        GetComponent<Text>().text = text;
+    }
 }

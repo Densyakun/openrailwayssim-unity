@@ -1,12 +1,15 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-//ストラクチャの設定画面
+/// <summary>
+/// ストラクチャの設定画面
+/// </summary>
 public class StructureSettingPanel : GamePanel
 {
-    //TODO 多言語対応化
+
     public static string pathText_DEF = "パス";
+
+    // settings by Inspector
     public Text pathText;
     public InputField pathInput;
 

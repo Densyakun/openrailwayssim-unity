@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 
-//MapObjectの実体
+/// <summary>
+// MapObjectの実体
+/// </summary>
 public class MapEntity : MonoBehaviour
 {
+
     public virtual MapObject obj { get; protected set; }
 
     void Start()
@@ -12,7 +15,7 @@ public class MapEntity : MonoBehaviour
 
     void Update()
     {
-        if (!Main.main.pause)
+        if (!Main.pause)
             obj.update();
     }
 
@@ -21,7 +24,9 @@ public class MapEntity : MonoBehaviour
         obj.fixedUpdate();
     }
 
-    //Startメソッドが実行される前に、MapObjectを設定する
+    /// <summary>
+    /// Startメソッドが実行される前に、MapObjectを設定する
+    /// </summary>
     public virtual void init(MapObject obj)
     {
         this.obj = obj;
