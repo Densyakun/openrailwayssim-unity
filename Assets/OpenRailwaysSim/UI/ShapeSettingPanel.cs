@@ -32,26 +32,51 @@ public class ShapeSettingPanel : GamePanel
             InputField input = null;
             if (EventSystem.current.currentSelectedGameObject != null)
                 input = EventSystem.current.currentSelectedGameObject.GetComponent<InputField>();
-            if (input != null && input.isFocused)
+
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
-                for (var n = 0; n < segmentPanels.Count; n++)
+                if (input != null && input.isFocused)
                 {
-                    if (input == segmentPanels[n].lengthInput)
-                        EventSystem.current.SetSelectedGameObject(segmentPanels[n].radiusInput.gameObject);
-                    else if (input == segmentPanels[n].radiusInput)
-                        EventSystem.current.SetSelectedGameObject((n == segmentPanels.Count - 1 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[0] : segmentPanels[0] : segmentPanels[n + 1]).lengthInput.gameObject);
+                    for (var n = 0; n < segmentPanels.Count; n++)
+                    {
+                        if (input == segmentPanels[n].lengthInput)
+                            EventSystem.current.SetSelectedGameObject((n == 0 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[verticalSegmentPanels.Count - 1] : segmentPanels[segmentPanels.Count - 1] : segmentPanels[n - 1]).radiusInput.gameObject);
+                        else if (input == segmentPanels[n].radiusInput)
+                            EventSystem.current.SetSelectedGameObject(segmentPanels[n].lengthInput.gameObject);
+                    }
+                    for (var n = 0; n < verticalSegmentPanels.Count; n++)
+                    {
+                        if (input == verticalSegmentPanels[n].lengthInput)
+                            EventSystem.current.SetSelectedGameObject((n == 0 ? segmentPanels.Count > 0 ? segmentPanels[segmentPanels.Count - 1] : verticalSegmentPanels[verticalSegmentPanels.Count - 1] : verticalSegmentPanels[n - 1]).radiusInput.gameObject);
+                        else if (input == verticalSegmentPanels[n].radiusInput)
+                            EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n].lengthInput.gameObject);
+                    }
                 }
-                for (var n = 0; n < verticalSegmentPanels.Count; n++)
-                {
-                    if (input == verticalSegmentPanels[n].lengthInput)
-                        EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n].radiusInput.gameObject);
-                    else if (input == verticalSegmentPanels[n].radiusInput)
-                        EventSystem.current.SetSelectedGameObject((n == verticalSegmentPanels.Count - 1 ? segmentPanels.Count > 0 ? segmentPanels[0] : verticalSegmentPanels[0] : verticalSegmentPanels[n + 1]).lengthInput.gameObject);
-                }
+                else if (verticalSegmentPanels.Count > 0)
+                    EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[verticalSegmentPanels.Count - 1].radiusInput.gameObject);
+                else if (segmentPanels.Count > 0)
+                    EventSystem.current.SetSelectedGameObject(segmentPanels[segmentPanels.Count - 1].radiusInput.gameObject);
             }
             else
             {
-                if (segmentPanels.Count > 0)
+                if (input != null && input.isFocused)
+                {
+                    for (var n = 0; n < segmentPanels.Count; n++)
+                    {
+                        if (input == segmentPanels[n].lengthInput)
+                            EventSystem.current.SetSelectedGameObject(segmentPanels[n].radiusInput.gameObject);
+                        else if (input == segmentPanels[n].radiusInput)
+                            EventSystem.current.SetSelectedGameObject((n == segmentPanels.Count - 1 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[0] : segmentPanels[0] : segmentPanels[n + 1]).lengthInput.gameObject);
+                    }
+                    for (var n = 0; n < verticalSegmentPanels.Count; n++)
+                    {
+                        if (input == verticalSegmentPanels[n].lengthInput)
+                            EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n].radiusInput.gameObject);
+                        else if (input == verticalSegmentPanels[n].radiusInput)
+                            EventSystem.current.SetSelectedGameObject((n == verticalSegmentPanels.Count - 1 ? segmentPanels.Count > 0 ? segmentPanels[0] : verticalSegmentPanels[0] : verticalSegmentPanels[n + 1]).lengthInput.gameObject);
+                    }
+                }
+                else if (segmentPanels.Count > 0)
                     EventSystem.current.SetSelectedGameObject(segmentPanels[0].lengthInput.gameObject);
                 else if (verticalSegmentPanels.Count > 0)
                     EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[0].lengthInput.gameObject);
