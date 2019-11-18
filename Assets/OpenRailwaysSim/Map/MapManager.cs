@@ -62,21 +62,25 @@ public class MapManager
     {
         reloadDir();
         string mapdir = Path.Combine(dir, mapname);
-        if (Directory.Exists(mapdir) && File.Exists(Path.Combine(mapdir, filename_map)))
+        if (Directory.Exists(mapdir))
         {
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(Path.Combine(mapdir, filename_map), FileMode.Open, FileAccess.Read, FileShare.Read);
-            Map map = null;
-            try
+            string datpath = Path.Combine(mapdir, filename_map);
+            if (File.Exists(datpath))
             {
-                map = (Map)formatter.Deserialize(stream);
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(datpath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                Map map = null;
+                try
+                {
+                    map = (Map)formatter.Deserialize(stream);
+                }
+                catch (EndOfStreamException)
+                {
+                    // TODO マップ非対応の表示
+                }
+                stream.Close();
+                return map;
             }
-            catch (EndOfStreamException)
-            {
-                // TODO マップ非対応の表示
-            }
-            stream.Close();
-            return map;
         }
         return null;
     }
