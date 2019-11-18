@@ -132,6 +132,7 @@ public class MapManager
         Directory.CreateDirectory(mapdir);
         IFormatter formatter = new BinaryFormatter();
 
+        map.info.update();
         Stream stream = new FileStream(Path.Combine(mapdir, filename_info), FileMode.Create, FileAccess.Write, FileShare.None);
         formatter.Serialize(stream, map.info);
         stream.Close();

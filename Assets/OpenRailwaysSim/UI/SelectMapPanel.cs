@@ -15,6 +15,7 @@ public class SelectMapPanel : GamePanel, ScrollController.Listener
     public Text selectButtonText;
     public Text mapNameText;
     public Text createdText;
+    public Text updatedText;
     public ScrollController sc;
     string[] mapList = new string[0];
 
@@ -71,7 +72,8 @@ public class SelectMapPanel : GamePanel, ScrollController.Listener
         deleteMapButton.interactable = selectMapButton.interactable = interactable;
         mapNameText.text = interactable ? mapList[sc.n] : "";
         var info = interactable ? MapManager.loadMapInfo(mapList[sc.n]) : null;
-        createdText.text = interactable ? info.created.ToString() : "";
+        createdText.text = interactable ? "Created: " + info.created.ToString() : "";
+        updatedText.text = interactable ? "Updated: " + info.updated.ToString() : "";
     }
 
     public void reloadContents()

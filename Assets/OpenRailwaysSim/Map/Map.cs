@@ -28,6 +28,12 @@ public class Map : ISerializable
     public class MapInfo
     {
         public DateTime created;
+        public DateTime updated;
+
+        public void update()
+        {
+            updated = DateTime.Now;
+        }
     }
     public MapInfo info; // マップの情報
 
@@ -42,7 +48,7 @@ public class Map : ISerializable
         this.mapname = mapname;
 
         info = new MapInfo();
-        info.created = DateTime.Now;
+        info.created = info.updated = DateTime.Now;
 
         objs = new List<MapObject>();
         time = 6 * 60 * 60000; // 朝6時からスタート
