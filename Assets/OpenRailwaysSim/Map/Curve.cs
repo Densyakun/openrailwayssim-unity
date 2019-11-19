@@ -194,6 +194,10 @@ public class Curve : Track
         }
     }
 
+    /// <summary>
+    /// 軌道の座標を返す
+    /// </summary>
+    /// <param name="a">位置</param>
     public override Vector3 getPoint(float a)
     {
         var d = _length * a;
@@ -204,6 +208,10 @@ public class Curve : Track
         pos + Quaternion.Euler(0, rot.eulerAngles.y, 0) * new Vector3((1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(-rot.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(_radius));
     }
 
+    /// <summary>
+    /// 軌道の座標をカント付きで返す
+    /// </summary>
+    /// <param name="a">位置</param>
     public virtual Vector3 getPointCanted(float a)
     {
         var d = _length * a;
@@ -220,6 +228,10 @@ public class Curve : Track
         }
     }
 
+    /// <summary>
+    /// 軌道の回転を返す
+    /// </summary>
+    /// <param name="a">位置</param>
     public virtual Quaternion getRotation(float a)
     {
         return isVerticalCurve ?
@@ -227,6 +239,10 @@ public class Curve : Track
         Quaternion.Euler(0f, rot.eulerAngles.y, 0f) * Quaternion.Euler(rot.eulerAngles.x, _length * a * Mathf.Rad2Deg / _radius, 0f);
     }
 
+    /// <summary>
+    /// 軌道の回転をカント付きで返す
+    /// </summary>
+    /// <param name="a">位置</param>
     public virtual Quaternion getRotationCanted(float a)
     {
         return isVerticalCurve ?

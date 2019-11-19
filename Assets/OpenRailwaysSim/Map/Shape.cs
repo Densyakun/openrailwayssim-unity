@@ -44,6 +44,7 @@ public class Shape : Track
         curveRadius = (List<float>)info.GetValue(KEY_CURVE_RADIUS, typeof(List<float>));
         verticalCurveLength = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_LENGTH, typeof(List<float>));
         verticalCurveRadius = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_RADIUS, typeof(List<float>));
+        reloadLength();
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -187,6 +188,10 @@ public class Shape : Track
         }
     }
 
+    /// <summary>
+    /// 軌道の座標を返す
+    /// </summary>
+    /// <param name="a">平面における位置</param>
     public override Vector3 getPoint(float a)
     {
         var p = pos;
@@ -263,6 +268,10 @@ public class Shape : Track
         return p;
     }
 
+    /// <summary>
+    /// 軌道の回転を返す
+    /// </summary>
+    /// <param name="a">平面における位置</param>
     public virtual Quaternion getRotation(float a)
     {
         var r = rot;
@@ -320,6 +329,9 @@ public class Shape : Track
         return Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(vr.eulerAngles.x, 0f, 0f);
     }
 
+    /// <summary>
+    /// 軌道の実際の長さを更新する
+    /// </summary>
     public void reloadLength()
     {
         var l = 0f;
@@ -335,7 +347,7 @@ public class Shape : Track
         {
             l2 += verticalCurveLength[n];
             if ((rad = verticalCurveRadius[n]) == 0f)
-                l += verticalCurveLength[n] / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad); 
+                l += verticalCurveLength[n] / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
             else
             {
                 var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
@@ -347,7 +359,7 @@ public class Shape : Track
                     var r1 = Mathf.Abs(rad);
                     var t1 = Mathf.Asin(l5 / r1);
                     vr *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
-                    var t2 = Mathf.Repeat(t1 - t, Mathf.PI);
+                    var t2 = Mathf.Abs(Mathf.Repeat(Mathf.Abs(t1 - t) + Mathf.PI / 2f, Mathf.PI) - Mathf.PI / 2f);
                     l += t2 * r1 * 2f;
                 }
             }

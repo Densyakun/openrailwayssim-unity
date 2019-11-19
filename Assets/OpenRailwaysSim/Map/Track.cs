@@ -258,6 +258,10 @@ public class Track : MapObject
         collider.enabled = enableCollider;
     }
 
+    /// <summary>
+    /// 軌道の座標を返す
+    /// </summary>
+    /// <param name="a">位置</param>
     public virtual Vector3 getPoint(float a)
     {
         return pos + rot * Vector3.forward * _length * a;

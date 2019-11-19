@@ -266,8 +266,10 @@ public class Axle : MapObject
     /// </summary>
     public void reloadOnDist()
     {
-        // TODO Shapeに対応する
-        if (onTrack is Curve)
+        if (onTrack is Shape)
+        {
+        }
+        else if (onTrack is Curve)
         {
             Vector3 a;
             var r = (((Curve)onTrack).radius);
