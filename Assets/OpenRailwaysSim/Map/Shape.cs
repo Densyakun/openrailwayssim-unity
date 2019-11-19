@@ -330,7 +330,7 @@ public class Shape : Track
     }
 
     /// <summary>
-    /// 座標から軌道上の位置を求める
+    /// 座標から軌道上の平面における位置を求める
     /// </summary>
     /// <param name="pos">座標</param>
     public override float getLength(Vector3 pos)
