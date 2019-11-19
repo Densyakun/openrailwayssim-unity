@@ -195,9 +195,9 @@ public class Curve : Track
     }
 
     /// <summary>
-    /// 軌道の座標を返す
+    /// 軌道の指定した位置の座標を返す
     /// </summary>
-    /// <param name="a">位置</param>
+    /// <param name="a">位置(0-1)</param>
     public override Vector3 getPoint(float a)
     {
         var d = _length * a;
@@ -209,9 +209,9 @@ public class Curve : Track
     }
 
     /// <summary>
-    /// 軌道の座標をカント付きで返す
+    /// 軌道の指定した位置の座標をカント付きで返す
     /// </summary>
-    /// <param name="a">位置</param>
+    /// <param name="a">位置(0-1)</param>
     public virtual Vector3 getPointCanted(float a)
     {
         var d = _length * a;
@@ -229,9 +229,9 @@ public class Curve : Track
     }
 
     /// <summary>
-    /// 軌道の回転を返す
+    /// 軌道の指定した位置の回転を返す
     /// </summary>
-    /// <param name="a">位置</param>
+    /// <param name="a">位置(0-1)</param>
     public override Quaternion getRotation(float a)
     {
         return isVerticalCurve ?
@@ -240,14 +240,65 @@ public class Curve : Track
     }
 
     /// <summary>
-    /// 軌道の回転をカント付きで返す
+    /// 軌道の指定した位置の回転をカント付きで返す
     /// </summary>
-    /// <param name="a">位置</param>
+    /// <param name="a">位置(0-1)</param>
     public virtual Quaternion getRotationCanted(float a)
     {
         return isVerticalCurve ?
         rot * Quaternion.Euler(-_length * a * Mathf.Rad2Deg / _radius, 0f, 0f) :
         Quaternion.Euler(0f, rot.eulerAngles.y, 0f) * Quaternion.Euler(rot.eulerAngles.x, _length * a * Mathf.Rad2Deg / _radius, -Mathf.Atan(cant / gauge) * Mathf.Rad2Deg);
+    }
+
+    /// <summary>
+    /// 座標から軌道上の位置を求める
+    /// </summary>
+    /// <param name="pos">座標</param>
+    public override float getLength(Vector3 pos)
+    {
+        var f = Quaternion.Inverse(rot);
+        var a = f * (pos - this.pos);
+        var r = radius;
+        float A;
+
+        if (isVerticalCurve)
+        {
+            if (r < 0)
+            {
+                r = -r;
+                a.y = -a.y;
+            }
+            A = Mathf.Atan(a.z / (r - a.y));
+
+            if (A < 0)
+                A = Mathf.PI + A;
+            if (a.z < 0)
+                A += Mathf.PI;
+            return A * r;
+        }
+        else
+        {
+            var b = f * (getPoint(1f) - this.pos);
+
+            if (r < 0)
+            {
+                r = -r;
+                a.x = -a.x;
+                b.x = -b.x;
+            }
+            A = Mathf.Atan(a.z / (r - a.x));
+            var A1 = Mathf.Atan(b.z / (r - b.x));
+            if (A1 < 0)
+                A1 = Mathf.PI + A1;
+            if (b.z < 0)
+                A1 += Mathf.PI;
+
+            if (A < 0)
+                A = Mathf.PI + A;
+            if (a.z < 0)
+                A += Mathf.PI;
+            return A * length / A1;
+        }
     }
 
     public virtual bool isLinear()

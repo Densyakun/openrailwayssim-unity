@@ -44,7 +44,6 @@ public class Shape : Track
         curveRadius = (List<float>)info.GetValue(KEY_CURVE_RADIUS, typeof(List<float>));
         verticalCurveLength = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_LENGTH, typeof(List<float>));
         verticalCurveRadius = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_RADIUS, typeof(List<float>));
-        reloadLength();
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -192,7 +191,7 @@ public class Shape : Track
     /// <summary>
     /// 軌道の座標を返す
     /// </summary>
-    /// <param name="a">平面における位置</param>
+    /// <param name="a">平面における位置(0-1)</param>
     public override Vector3 getPoint(float a)
     {
         var p = pos;
@@ -272,7 +271,7 @@ public class Shape : Track
     /// <summary>
     /// 軌道の回転を返す
     /// </summary>
-    /// <param name="a">平面における位置</param>
+    /// <param name="a">平面における位置(0-1)</param>
     public override Quaternion getRotation(float a)
     {
         var r = rot;
@@ -328,6 +327,15 @@ public class Shape : Track
         }
 
         return Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(vr.eulerAngles.x, 0f, 0f);
+    }
+
+    /// <summary>
+    /// 座標から軌道上の位置を求める
+    /// </summary>
+    /// <param name="pos">座標</param>
+    public override float getLength(Vector3 pos)
+    {
+        return 0f;
     }
 
     /// <summary>

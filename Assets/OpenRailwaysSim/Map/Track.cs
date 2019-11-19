@@ -259,21 +259,30 @@ public class Track : MapObject
     }
 
     /// <summary>
-    /// 軌道の座標を返す
+    /// 軌道の指定した位置の座標を返す
     /// </summary>
-    /// <param name="a">位置</param>
+    /// <param name="a">位置(0-1)</param>
     public virtual Vector3 getPoint(float a)
     {
         return pos + rot * Vector3.forward * _length * a;
     }
 
     /// <summary>
-    /// 軌道の回転を返す
+    /// 軌道の指定した位置の回転を返す
     /// </summary>
-    /// <param name="a">位置</param>
+    /// <param name="a">位置(0-1)</param>
     public virtual Quaternion getRotation(float a)
     {
         return rot;
+    }
+
+    /// <summary>
+    /// 座標から軌道上の位置を求める
+    /// </summary>
+    /// <param name="pos">座標</param>
+    public virtual float getLength(Vector3 pos)
+    {
+        return (Quaternion.Inverse(rot) * (pos - this.pos)).z;
     }
 
     public void removeConnects()
