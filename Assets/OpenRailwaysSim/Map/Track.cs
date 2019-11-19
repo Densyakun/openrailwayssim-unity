@@ -267,6 +267,15 @@ public class Track : MapObject
         return pos + rot * Vector3.forward * _length * a;
     }
 
+    /// <summary>
+    /// 軌道の回転を返す
+    /// </summary>
+    /// <param name="a">位置</param>
+    public virtual Quaternion getRotation(float a)
+    {
+        return rot;
+    }
+
     public void removeConnects()
     {
         foreach (var t in nextTracks)

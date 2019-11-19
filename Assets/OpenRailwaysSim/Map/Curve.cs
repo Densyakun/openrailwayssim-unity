@@ -232,7 +232,7 @@ public class Curve : Track
     /// 軌道の回転を返す
     /// </summary>
     /// <param name="a">位置</param>
-    public virtual Quaternion getRotation(float a)
+    public override Quaternion getRotation(float a)
     {
         return isVerticalCurve ?
         rot * Quaternion.Euler(-_length * a * Mathf.Rad2Deg / _radius, 0f, 0f) :

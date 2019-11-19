@@ -117,6 +117,7 @@ public class Shape : Track
         if (railModelObjs != null)
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
+        var r_ = Quaternion.Inverse(rot);
         railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
         for (int a = 0; a < railModelObjs.Length / 2; a++)
@@ -126,10 +127,10 @@ public class Shape : Track
             setLOD(b, LOD_DISTANCE);
             var d = (float)a / (railModelObjs.Length / 2);
             var p = getPoint(d);
-            b.transform.localPosition = p - pos;
+            b.transform.localPosition = r_ * (p - pos);
             var f = getPoint(((float)a + 1) / (railModelObjs.Length / 2)) - p;
             if (f.sqrMagnitude != 0f)
-                b.transform.localRotation = Quaternion.LookRotation(f);
+                b.transform.localRotation = r_ * Quaternion.LookRotation(f);
         }
         for (int a = 0; a < railModelObjs.Length / 2; a++)
         {
@@ -138,10 +139,10 @@ public class Shape : Track
             setLOD(b, LOD_DISTANCE);
             var d = (float)a / (railModelObjs.Length / 2);
             var p = getPoint(d);
-            b.transform.localPosition = p - pos;
+            b.transform.localPosition = r_ * (p - pos);
             var f = getPoint(((float)a + 1) / (railModelObjs.Length / 2)) - p;
             if (f.sqrMagnitude != 0f)
-                b.transform.localRotation = Quaternion.LookRotation(f);
+                b.transform.localRotation = r_ * Quaternion.LookRotation(f);
         }
 
         if (tieModelObjs != null)
@@ -153,8 +154,8 @@ public class Shape : Track
             (tieModelObjs[a] = GameObject.Instantiate(Main.INSTANCE.tieModel)).transform.parent = entity.transform;
             setLOD(tieModelObjs[a], LOD_DISTANCE);
             var d = (float)a / tieModelObjs.Length;
-            tieModelObjs[a].transform.localPosition = getPoint(d) - pos;
-            tieModelObjs[a].transform.localRotation = getRotation(d);
+            tieModelObjs[a].transform.localPosition = r_ * (getPoint(d) - pos);
+            tieModelObjs[a].transform.localRotation = r_ * getRotation(d);
         }
     }
 
@@ -272,7 +273,7 @@ public class Shape : Track
     /// 軌道の回転を返す
     /// </summary>
     /// <param name="a">平面における位置</param>
-    public virtual Quaternion getRotation(float a)
+    public override Quaternion getRotation(float a)
     {
         var r = rot;
 
