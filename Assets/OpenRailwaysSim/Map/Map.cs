@@ -10,15 +10,15 @@ using UnityEngine;
 public class Map : ISerializable
 {
 
+    /// <summary>
+    /// 一日の時間 (秒)
+    /// </summary>
+    public const float TIME_OF_DAY = 86400f;
+
     public const string KEY_OBJECTS = "OBJS";
     public const string KEY_TIME = "TIME";
-    public const string KEY_FAST_FORWARDING = "FASTFORWARDING";
     public const string KEY_CAMERA_POS = "CAMERA_POS";
-
     public const string KEY_CAMERA_ROT = "CAMERA_ROT";
-
-    //public const float ABYSS_HEIGHT = -100f;
-    public const float FAST_FORWARDING_SPEED = 72f; // 早送り中の速度。実時間20分でゲームが1日進む
 
     public static Vector3 DEFAULT_CAMERA_POS = new Vector3(0f, 10f, -20f);
     public static Vector3 DEFAULT_CAMERA_ROT = new Vector3(30f, 0f, 0f);
@@ -39,8 +39,7 @@ public class Map : ISerializable
     public MapInfo info; // マップの情報
 
     public List<MapObject> objs { get; private set; } // オブジェクト
-    public long time { get; private set; } // マップの時間。0時から始まり1tickが1msである。
-    public bool fastForwarding { get; private set; } // 早送り
+    public float time; // マップの時間。0時からの秒数
     public Vector3 cameraPos; // カメラの位置（マップ読み込み時用）
     public Vector3 cameraRot; // カメラの角度（マップ読み込み時用）
 
@@ -52,8 +51,7 @@ public class Map : ISerializable
         info.created = info.updated = DateTime.Now;
 
         objs = new List<MapObject>();
-        time = 6 * 60 * 60000; // 朝6時からスタート
-        fastForwarding = false;
+        time = 4f * 60f * 60f; // 朝4時からスタート
         cameraPos = DEFAULT_CAMERA_POS;
         cameraRot = DEFAULT_CAMERA_ROT;
     }
@@ -66,8 +64,7 @@ public class Map : ISerializable
         foreach (var obj in objs)
             if (obj != null)
                 obj.map = this;
-        time = info.GetInt64(KEY_TIME);
-        fastForwarding = info.GetBoolean(KEY_FAST_FORWARDING);
+        time = info.GetSingle(KEY_TIME);
         cameraPos = ((SerializableVector3)info.GetValue(KEY_CAMERA_POS, typeof(SerializableVector3))).toVector3();
         cameraRot = ((SerializableVector3)info.GetValue(KEY_CAMERA_ROT, typeof(SerializableVector3))).toVector3();
     }
@@ -78,7 +75,6 @@ public class Map : ISerializable
             throw new ArgumentNullException("info");
         info.AddValue(KEY_OBJECTS, objs);
         info.AddValue(KEY_TIME, time);
-        info.AddValue(KEY_FAST_FORWARDING, fastForwarding);
         info.AddValue(KEY_CAMERA_POS, new SerializableVector3(cameraPos));
         info.AddValue(KEY_CAMERA_ROT, new SerializableVector3(cameraRot));
     }
@@ -115,54 +111,43 @@ public class Map : ISerializable
             e.Destroy();
     }
 
-    // 時間が経過するメソッド。ticksには経過時間を指定。
-    public void TimePasses(long ticks)
+    public void Update()
     {
-        time += ticks;
+        time = Mathf.Repeat(time + Time.deltaTime, TIME_OF_DAY);
     }
 
-    public void setFastForwarding(bool fastForwarding)
+    public int getRawHours()
     {
-        this.fastForwarding = fastForwarding;
+        return Mathf.FloorToInt(getRawMinutes() / 60f);
     }
 
-    public long getRawHours()
+    public int getRawMinutes()
     {
-        return Mathf.FloorToInt(getRawMinutes() / 60);
+        return Mathf.FloorToInt(getRawSeconds() / 60f);
     }
 
-    public long getRawMinutes()
+    public int getRawSeconds()
     {
-        return Mathf.FloorToInt(getRawSeconds() / 60);
+        return Mathf.FloorToInt(time);
     }
 
-    public long getRawSeconds()
+    public int getDays()
     {
-        return Mathf.FloorToInt(time / 1000);
+        return Mathf.FloorToInt(getRawHours() / 24f);
     }
 
-    public long getDays()
-    {
-        return Mathf.FloorToInt(getRawHours() / 24);
-    }
-
-    public long getHours()
+    public int getHours()
     {
         return getRawHours() - getDays() * 24;
     }
 
-    public long getMinutes()
+    public int getMinutes()
     {
         return getRawMinutes() - getRawHours() * 60;
     }
 
-    public long getSeconds()
+    public int getSeconds()
     {
         return getRawSeconds() - getRawMinutes() * 60;
-    }
-
-    public long getMilliSeconds()
-    {
-        return time - getRawSeconds() * 1000;
     }
 }

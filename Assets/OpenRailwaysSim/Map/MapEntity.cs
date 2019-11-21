@@ -15,7 +15,7 @@ public class MapEntity : MonoBehaviour
 
     void Update()
     {
-        if (!Main.pause)
+        if (Time.timeScale != 0f)
             obj.update();
     }
 

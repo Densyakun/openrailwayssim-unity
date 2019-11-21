@@ -69,11 +69,6 @@ public class Main : MonoBehaviour
     public static bool vignette = DEFAULT_VIGNETTE;
 
 
-    public static bool pause { get; private set; } // ポーズ
-    private float lasttick = 0; // 時間を進ませた時の余り
-    private float lasttick_few = 0; // 頻繁に変更しないするための計算。この機能は一秒ごとに処理を行う。
-    public static bool showGuide = true;
-
     public const int MODE_NONE = 0;
     public const int MODE_CONSTRUCT_TRACK = 11;
     public const int MODE_PLACE_AXLE = 21;
@@ -81,6 +76,8 @@ public class Main : MonoBehaviour
     public const int MODE_PLACE_STRUCTURE = 41;
     public static int mode = MODE_NONE; // 操作モード 0=なし 11=軌道敷設 21=車軸設置 31=マップピンを置く 41=ストラクチャーを設置
 
+    private float tick = 0f; // 時間を進ませた時の余り
+    public static bool showGuide = true;
     public static List<Shape> editingTracks = new List<Shape>();
     public static Quaternion? editingRot;
     public static Coupler editingCoupler;
@@ -214,10 +211,10 @@ public class Main : MonoBehaviour
                     }
                 }
 
-                if (mode != 0)
+                if (mode != MODE_NONE)
                 {
                     a = false;
-                    mode = 0;
+                    mode = MODE_NONE;
                 }
 
                 if (selectingObjs.Count != 0)
@@ -235,75 +232,68 @@ public class Main : MonoBehaviour
                 }
 
                 if (a)
-                    setPause(!pause);
+                    setPause(Time.timeScale != 0f);
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Delete))
-            removeSelectingObjs();
-
         if (playingmap != null)
         {
-            if (pause)
+            if (Time.timeScale == 0f)
             {
                 playingmap.cameraPos = INSTANCE.mainCamera.transform.position;
                 playingmap.cameraRot = INSTANCE.mainCamera.transform.eulerAngles;
             }
             else
             {
-                // 時間を進ませる
-                lasttick += Time.deltaTime * 1000f;
-                lasttick_few += Time.deltaTime;
-                if (playingmap.fastForwarding)
+                playingmap.Update();
+                tick += Time.deltaTime;
+                var t = Mathf.FloorToInt(tick);
+                if (t != 0)
                 {
-                    lasttick *= Map.FAST_FORWARDING_SPEED;
-                    lasttick_few *= Map.FAST_FORWARDING_SPEED;
-                }
-
-                int ticks = Mathf.FloorToInt(lasttick);
-                lasttick -= ticks;
-
-                int ticks_few = Mathf.FloorToInt(lasttick_few);
-                lasttick_few -= ticks_few;
-                if (ticks_few != 0)
                     reloadLighting();
-
-                if (ticks != 0)
-                    playingmap.TimePasses(ticks);
+                    tick -= t;
+                }
 
                 var p = INSTANCE.mainCamera.transform.position;
                 grid.transform.position = new Vector3(Mathf.RoundToInt(p.x), 0, Mathf.RoundToInt(p.z));
             }
 
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                showGuide = !showGuide;
-                playingPanel.b();
-            }
-
             if (!pausePanel.isShowing() &&
-                !CameraMover.INSTANCE.dragging &&
                 !EventSystem.current.IsPointerOverGameObject() &&
                 !(shapeSettingPanel.isShowing() &&
                 EventSystem.current.currentSelectedGameObject != null &&
                 EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null))
-                update_ctrl();
-            else
             {
-                point.SetActive(false);
+                if (Input.GetKeyDown(KeyCode.Delete))
+                    removeSelectingObjs();
 
-                MapObject a = focused;
-                focused = null;
-                if (a != null)
+                if (Input.GetKeyDown(KeyCode.G))
                 {
-                    if (selectingObjs.Contains(a))
-                        a.useSelectingMat = true;
-                    a.reloadEntity();
+                    showGuide = !showGuide;
+                    playingPanel.b();
+                }
+
+                if (!pausePanel.isShowing() &&
+                    !CameraMover.INSTANCE.dragging &&
+                    !EventSystem.current.IsPointerOverGameObject() &&
+                    !(shapeSettingPanel.isShowing() &&
+                    EventSystem.current.currentSelectedGameObject != null &&
+                    EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null))
+                    update_ctrl();
+                else
+                {
+                    point.SetActive(false);
+
+                    MapObject a = focused;
+                    focused = null;
+                    if (a != null)
+                    {
+                        if (selectingObjs.Contains(a))
+                            a.useSelectingMat = true;
+                        a.reloadEntity();
+                    }
                 }
             }
-
-            if (bgmSource.isPlaying)
-                bgmSource.Stop();
         }
         else
         {
@@ -548,17 +538,16 @@ public class Main : MonoBehaviour
         else
         {
             playingmap = map;
-            pause = false;
-            Time.timeScale = 1;
-            lasttick = 0;
-            lasttick_few = 0;
-            mode = 0;
+            Time.timeScale = 1f;
+            tick = 0f;
+            mode = MODE_NONE;
             playingmap.generate();
             INSTANCE.reloadLighting();
 
             mainCamera.transform.position = map.cameraPos;
             mainCamera.transform.eulerAngles = map.cameraRot;
             mainCamera.GetComponent<PostProcessingBehaviour>().enabled = true;
+            bgmSource.Stop();
             loadingMapPanel.show(false);
             playingPanel.show(true);
         }
@@ -590,22 +579,17 @@ public class Main : MonoBehaviour
 
     public void setPause(bool pause)
     {
-        if (Main.pause = pause)
-            Time.timeScale = 0;
-        else
-            Time.timeScale = 1;
+        Time.timeScale = pause ? 0f : 1f;
         playingPanel.show(!pause);
         pausePanel.show(pause);
     }
 
     public void reloadLighting()
     {
-        float t = Mathf.Repeat(playingmap.time, 86400000f); // 86400000ms = 1日
-        float r = t * 360f / 86400000f - 90f;
-        sun.transform.localEulerAngles = new Vector3(r, -90f, 0f);
-
-        // 頻繁に変更すると重くなる
-        sun.shadowStrength = sun.intensity = sunGradient.Evaluate(1f - Mathf.Abs((r + 90f) / 180f - 1)).grayscale;
+        float t = playingmap.time / Map.TIME_OF_DAY;
+        sun.transform.eulerAngles = new Vector3(t * 360f - 90f, -90f);
+        sun.shadowStrength = RenderSettings.sun.intensity = sunGradient.Evaluate(t).grayscale;
+        RenderSettings.ambientLight *= (1f - Mathf.Abs(t * 2f - 1f)) / RenderSettings.ambientLight.grayscale;
     }
 
     /// <summary>

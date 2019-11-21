@@ -23,7 +23,7 @@ public class CameraMover : MonoBehaviour
     void LateUpdate()
     {
         bool c = Main.playingmap != null &&
-            !Main.pause &&
+            !Main.INSTANCE.pausePanel.isShowing() &&
             !Main.INSTANCE.shapeSettingPanel.isShowing() &&
             !Main.INSTANCE.couplerSettingPanel.isShowing() &&
             !Main.INSTANCE.mapPinSettingPanel.isShowing() &&
