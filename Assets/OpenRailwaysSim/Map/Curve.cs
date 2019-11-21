@@ -195,7 +195,7 @@ public class Curve : Track
     }
 
     /// <summary>
-    /// 軌道の指定した位置の座標を返す
+    /// 軌道上の位置(0-1)の座標を返す
     /// </summary>
     /// <param name="a">位置(0-1)</param>
     public override Vector3 getPoint(float a)
@@ -209,7 +209,7 @@ public class Curve : Track
     }
 
     /// <summary>
-    /// 軌道の指定した位置の座標をカント付きで返す
+    /// 軌道上の位置(0-1)の座標をカント付きで返す
     /// </summary>
     /// <param name="a">位置(0-1)</param>
     public virtual Vector3 getPointCanted(float a)
@@ -229,7 +229,7 @@ public class Curve : Track
     }
 
     /// <summary>
-    /// 軌道の指定した位置の回転を返す
+    /// 軌道上の位置(0-1)の回転を返す
     /// </summary>
     /// <param name="a">位置(0-1)</param>
     public override Quaternion getRotation(float a)
@@ -240,7 +240,7 @@ public class Curve : Track
     }
 
     /// <summary>
-    /// 軌道の指定した位置の回転をカント付きで返す
+    /// 軌道上の位置(0-1)の回転をカント付きで返す
     /// </summary>
     /// <param name="a">位置(0-1)</param>
     public virtual Quaternion getRotationCanted(float a)
@@ -263,16 +263,16 @@ public class Curve : Track
 
         if (isVerticalCurve)
         {
-            if (r < 0)
+            if (r < 0f)
             {
                 r = -r;
                 a.y = -a.y;
             }
             A = Mathf.Atan(a.z / (r - a.y));
 
-            if (A < 0)
+            if (A < 0f)
                 A = Mathf.PI + A;
-            if (a.z < 0)
+            if (a.z < 0f)
                 A += Mathf.PI;
             return A * r;
         }
@@ -280,7 +280,7 @@ public class Curve : Track
         {
             var b = f * (getPoint(1f) - this.pos);
 
-            if (r < 0)
+            if (r < 0f)
             {
                 r = -r;
                 a.x = -a.x;
@@ -288,16 +288,16 @@ public class Curve : Track
             }
             A = Mathf.Atan(a.z / (r - a.x));
             var A1 = Mathf.Atan(b.z / (r - b.x));
-            if (A1 < 0)
+            if (A1 < 0f)
                 A1 = Mathf.PI + A1;
-            if (b.z < 0)
+            if (b.z < 0f)
                 A1 += Mathf.PI;
 
-            if (A < 0)
+            if (A < 0f)
                 A = Mathf.PI + A;
-            if (a.z < 0)
+            if (a.z < 0f)
                 A += Mathf.PI;
-            return A * length / A1;
+            return A * _length / A1;
         }
     }
 

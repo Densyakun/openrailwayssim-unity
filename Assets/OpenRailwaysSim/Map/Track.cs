@@ -259,7 +259,7 @@ public class Track : MapObject
     }
 
     /// <summary>
-    /// 軌道の指定した位置の座標を返す
+    /// 軌道上の位置(0-1)の座標を返す
     /// </summary>
     /// <param name="a">位置(0-1)</param>
     public virtual Vector3 getPoint(float a)
@@ -268,7 +268,7 @@ public class Track : MapObject
     }
 
     /// <summary>
-    /// 軌道の指定した位置の回転を返す
+    /// 軌道上の位置(0-1)の回転を返す
     /// </summary>
     /// <param name="a">位置(0-1)</param>
     public virtual Quaternion getRotation(float a)

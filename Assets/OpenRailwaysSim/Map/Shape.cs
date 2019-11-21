@@ -189,10 +189,23 @@ public class Shape : Track
     }
 
     /// <summary>
-    /// 軌道の座標を返す
+    /// 軌道上の位置(0-1)から軌道の座標を返す
+    /// </summary>
+    /// <param name="a">位置(0-1)</param>
+    public override Vector3 getPoint(float a)
+    {
+        var l1 = 0f;
+        foreach (var l_ in curveLength)
+            l1 += l_;
+
+        return getPointFlat(LengthToFlatLength(a * _length) / l1);
+    }
+
+    /// <summary>
+    /// 平面における位置(0-1)から軌道の座標を返す
     /// </summary>
     /// <param name="a">平面における位置(0-1)</param>
-    public override Vector3 getPoint(float a)
+    public Vector3 getPointFlat(float a)
     {
         var p = pos;
         var r = rot;
@@ -269,10 +282,23 @@ public class Shape : Track
     }
 
     /// <summary>
-    /// 軌道の回転を返す
+    /// 軌道上の位置(0-1)から軌道の回転を返す
+    /// </summary>
+    /// <param name="a">位置(0-1)</param>
+    public override Quaternion getRotation(float a)
+    {
+        var l1 = 0f;
+        foreach (var l_ in curveLength)
+            l1 += l_;
+
+        return getRotationFlat(LengthToFlatLength(a * _length) / l1);
+    }
+
+    /// <summary>
+    /// 平面における位置(0-1)から軌道の回転を返す
     /// </summary>
     /// <param name="a">平面における位置(0-1)</param>
-    public override Quaternion getRotation(float a)
+    public Quaternion getRotationFlat(float a)
     {
         var r = rot;
 
@@ -330,12 +356,162 @@ public class Shape : Track
     }
 
     /// <summary>
-    /// 座標から軌道上の平面における位置を求める
+    /// 座標から軌道上の位置を求める
     /// </summary>
     /// <param name="pos">座標</param>
     public override float getLength(Vector3 pos)
     {
-        return 0f;
+        return FlatLengthToLength(getLengthFlat(pos));
+    }
+
+    /// <summary>
+    /// 座標から平面における位置を求める
+    /// </summary>
+    /// <param name="pos">座標</param>
+    public float getLengthFlat(Vector3 pos)
+    {
+        var l = 0f;
+        for (var n = 0; n < curveLength.Count; n++)
+        {
+            var p = getPointFlat(l);
+            var r1 = Quaternion.Inverse(getRotationFlat(l));
+            float l1;
+            // TODO 一番近い点を探す
+            if (curveRadius[n] == 0f)
+                l1 = (r1 * (pos - p)).z;
+            else
+            {
+                // TODO 勾配に対応している？
+                var a = r1 * (pos - p);
+                var r2 = curveRadius[n];
+                float A;
+
+                var b = r1 * (getPointFlat(1f) - p);
+
+                if (r2 < 0f)
+                {
+                    r2 = -r2;
+                    a.x = -a.x;
+                    b.x = -b.x;
+                }
+                A = Mathf.Atan(a.z / (r2 - a.x));
+                var A1 = Mathf.Atan(b.z / (r2 - b.x));
+                if (A1 < 0f)
+                    A1 = Mathf.PI + A1;
+                if (b.z < 0f)
+                    A1 += Mathf.PI;
+
+                if (A < 0f)
+                    A = Mathf.PI + A;
+                if (a.z < 0f)
+                    A += Mathf.PI;
+                l1 = A * _length / A1;
+            }
+            if (l1 <= curveLength[n])
+                return l + l1;
+            l += curveLength[n];
+        }
+        return l;
+    }
+
+    /// <summary>
+    /// 軌道上の位置を平面における位置に変換する
+    /// </summary>
+    /// <param name="l">軌道上の位置</param>
+    public float LengthToFlatLength(float l)
+    {
+        var vr = rot;
+
+        var rad = 0f;
+        var l2 = 0f;
+        float l6;
+        var l7 = 0f;
+        for (var n = 0; n < verticalCurveLength.Count; n++)
+        {
+            if ((rad = verticalCurveRadius[n]) == 0f)
+            {
+                l6 = verticalCurveLength[n] / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+                if (l <= l7 + l6)
+                    return l2 + verticalCurveLength[n] * (l - l7) / l6;
+                l7 += l6;
+            }
+            else
+            {
+                var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
+                var l5 = Mathf.Tan(t) * rad + verticalCurveLength[n];
+
+                var f = l5 / rad;
+                if (-1f <= f && f <= 1f)
+                {
+                    var r1 = Mathf.Abs(rad);
+                    var t1 = Mathf.Asin(l5 / r1);
+                    vr *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
+                    var t2 = Mathf.Abs(Mathf.Repeat(Mathf.Abs(t1 - t) + Mathf.PI / 2f, Mathf.PI) - Mathf.PI / 2f);
+                    l6 = t2 * r1 * 2f;
+                    if (l <= l7 + l6)
+                        return l2 + Mathf.Sin(t2 * (l - l7) / l6) * r1 * 2f; // TODO 起点または終点が水平でない縦曲線の計算が間違っている
+                    l7 += l6;
+                }
+            }
+            l2 += verticalCurveLength[n];
+        }
+
+        var l1 = 0f;
+        foreach (var l_ in curveLength)
+            l1 += l_;
+
+        l6 = (l1 - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+        return l2 + (l1 - l2) * (l - l7) / l6;
+    }
+
+    /// <summary>
+    /// 平面における位置を軌道上の位置に変換する
+    /// </summary>
+    /// <param name="l">平面における位置</param>
+    public float FlatLengthToLength(float l)
+    {
+        var vr = rot;
+
+        var rad = 0f;
+        var l2 = 0f;
+        float l6;
+        var l7 = 0f;
+        for (var n = 0; n < verticalCurveLength.Count; n++)
+        {
+            if ((rad = verticalCurveRadius[n]) == 0f)
+            {
+                l6 = verticalCurveLength[n] / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+                if (l <= l2 + verticalCurveLength[n])
+                    return l7 + l6 * (l - l2) / verticalCurveLength[n];
+                l7 += l6;
+            }
+            else
+            {
+                var t = -vr.eulerAngles.x * Mathf.Deg2Rad;
+                var l5 = Mathf.Tan(t) * rad + verticalCurveLength[n];
+
+                var f = l5 / rad;
+                if (-1f <= f && f <= 1f)
+                {
+                    var r1 = Mathf.Abs(rad);
+                    var t1 = Mathf.Asin(l5 / r1);
+                    vr *= Quaternion.Euler(-(t1 - t) * Mathf.Rad2Deg, 0f, 0f);
+                    var t2 = Mathf.Abs(Mathf.Repeat(Mathf.Abs(t1 - t) + Mathf.PI / 2f, Mathf.PI) - Mathf.PI / 2f);
+                    l6 = t2 * r1 * 2f;
+                    if (l <= l2 + verticalCurveLength[n])
+                        return l7 + Mathf.Abs(Mathf.Repeat(Mathf.Abs(Mathf.Asin(Mathf.Tan(t) + l - l2) - t) + Mathf.PI / 2f, Mathf.PI) - Mathf.PI / 2f) * r1 * 2f;
+                    l7 += l6;
+                }
+            }
+            l2 += verticalCurveLength[n];
+        }
+
+        var l1 = 0f;
+        foreach (var l_ in curveLength)
+            l1 += l_;
+
+        l6 = (l1 - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+        return l7 + (_length - l7) * (l - l2) / (l1 - l2);
     }
 
     /// <summary>
