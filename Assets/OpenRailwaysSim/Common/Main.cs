@@ -121,6 +121,8 @@ public class Main : MonoBehaviour
     public AddMapPanel addMapPanel;
     public GamePanel loadingMapPanel;
     public PlayingPanel playingPanel;
+    public GameObject timePanel;
+    public Text timeText;
     public PausePanel pausePanel;
     public TitleBackPanel titleBackPanel;
     public UnsupportedMapPanel unsupportedMapPanel;
@@ -253,6 +255,7 @@ public class Main : MonoBehaviour
                     reloadLighting();
                     tick -= t;
                 }
+                timeText.text = playingmap.getHours() + ":" + string.Format("{0:00}", playingmap.getMinutes()) + ":" + string.Format("{0:00}", playingmap.getSeconds());
 
                 var p = INSTANCE.mainCamera.transform.position;
                 grid.transform.position = new Vector3(Mathf.RoundToInt(p.x), 0, Mathf.RoundToInt(p.z));
@@ -293,15 +296,6 @@ public class Main : MonoBehaviour
                         a.reloadEntity();
                     }
                 }
-            }
-        }
-        else
-        {
-            point.SetActive(false);
-            if (!bgmSource.isPlaying)
-            {
-                bgmSource.clip = titleClips[UnityEngine.Random.Range(0, titleClips.Length)];
-                bgmSource.Play();
             }
         }
     }
@@ -549,18 +543,26 @@ public class Main : MonoBehaviour
             mainCamera.GetComponent<PostProcessingBehaviour>().enabled = true;
             bgmSource.Stop();
             loadingMapPanel.show(false);
+            timePanel.SetActive(true);
             playingPanel.show(true);
         }
     }
 
-    public static void closeMap()
+    public void closeMap()
     {
+        point.SetActive(false);
+        pausePanel.show(false);
+        timePanel.SetActive(false);
+
         if (playingmap != null)
         {
             playingmap.DestroyAll();
             playingmap = null;
-            INSTANCE.mainCamera.GetComponent<PostProcessingBehaviour>().enabled = false;
+            mainCamera.GetComponent<PostProcessingBehaviour>().enabled = false;
         }
+
+        titlePanel.show(true);
+        reloadBGM();
     }
 
     /// <summary>
@@ -588,8 +590,17 @@ public class Main : MonoBehaviour
     {
         float t = playingmap.time / Map.TIME_OF_DAY;
         sun.transform.eulerAngles = new Vector3(t * 360f - 90f, -90f);
-        sun.shadowStrength = RenderSettings.sun.intensity = sunGradient.Evaluate(t).grayscale;
+        sun.shadowStrength = sun.intensity = sunGradient.Evaluate(t).grayscale;
         RenderSettings.ambientLight *= (1f - Mathf.Abs(t * 2f - 1f)) / RenderSettings.ambientLight.grayscale;
+    }
+
+    public void reloadBGM()
+    {
+        if (!bgmSource.isPlaying)
+        {
+            bgmSource.clip = titleClips[UnityEngine.Random.Range(0, titleClips.Length)];
+            bgmSource.Play();
+        }
     }
 
     /// <summary>

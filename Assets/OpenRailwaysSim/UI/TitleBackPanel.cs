@@ -15,8 +15,6 @@ public class TitleBackPanel : GamePanel
     public void OKButton()
     {
         show(false);
-        Main.INSTANCE.pausePanel.show(false);
-        Main.closeMap();
-        Main.INSTANCE.titlePanel.show(true);
+        Main.INSTANCE.closeMap();
     }
 }

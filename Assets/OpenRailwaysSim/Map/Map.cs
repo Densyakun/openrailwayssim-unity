@@ -116,11 +116,6 @@ public class Map : ISerializable
         time = Mathf.Repeat(time + Time.deltaTime, TIME_OF_DAY);
     }
 
-    public int getRawHours()
-    {
-        return Mathf.FloorToInt(getRawMinutes() / 60f);
-    }
-
     public int getRawMinutes()
     {
         return Mathf.FloorToInt(getRawSeconds() / 60f);
@@ -131,19 +126,14 @@ public class Map : ISerializable
         return Mathf.FloorToInt(time);
     }
 
-    public int getDays()
-    {
-        return Mathf.FloorToInt(getRawHours() / 24f);
-    }
-
     public int getHours()
     {
-        return getRawHours() - getDays() * 24;
+        return Mathf.FloorToInt(getRawMinutes() / 60f);
     }
 
     public int getMinutes()
     {
-        return getRawMinutes() - getRawHours() * 60;
+        return getRawMinutes() - getHours() * 60;
     }
 
     public int getSeconds()
