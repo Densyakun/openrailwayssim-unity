@@ -51,7 +51,7 @@ public class Map : ISerializable
         info.created = info.updated = DateTime.Now;
 
         objs = new List<MapObject>();
-        time = 4f * 60f * 60f; // 朝4時からスタート
+        time = 9f * 60f * 60f; // 朝9時からスタート
         cameraPos = DEFAULT_CAMERA_POS;
         cameraRot = DEFAULT_CAMERA_ROT;
     }
