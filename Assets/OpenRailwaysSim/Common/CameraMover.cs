@@ -10,10 +10,8 @@ public class CameraMover : MonoBehaviour
 
     public static CameraMover INSTANCE;
 
-    Quaternion rot;
     Vector3 lastMousePos = Vector3.zero;
-    Vector3 rotStartEuler = Vector3.zero;
-    public bool dragging { get; private set; }
+    public bool dragging = false;
 
     void Awake()
     {
@@ -49,28 +47,25 @@ public class CameraMover : MonoBehaviour
             if (Input.GetMouseButton(0))
             {
                 if (Input.GetMouseButtonDown(0))
-                {
                     Cursor.lockState = CursorLockMode.Confined;
-                    lastMousePos = Input.mousePosition;
-                    rotStartEuler = rot.eulerAngles;
-                }
-
-                Vector3 m = (Input.mousePosition - lastMousePos) * Main.dragRotSpeed; // カメラの移動量
-                if (m != Vector3.zero)
+                else
                 {
-                    dragging = true;
-
-                    Quaternion r = Quaternion.Euler(new Vector3(Mathf.Clamp(Mathf.Repeat(rotStartEuler.x + 180, 360) - m.y, 90, 270) - 180, rotStartEuler.y + m.x));
-                    if (r.eulerAngles.z == 0)
-                        rot = r;
+                    Vector3 m = (Input.mousePosition - lastMousePos) * Main.dragRotSpeed; // カメラの移動量
+                    if (m != Vector3.zero)
+                    {
+                        dragging = true;
+                        transform.eulerAngles = new Vector3(Mathf.Clamp(Mathf.Repeat(transform.eulerAngles.x + 180f - m.y, 360f) - 180f, -90f, 90f), transform.eulerAngles.y + m.x);
+                    }
                 }
+                lastMousePos = Input.mousePosition;
             }
             else
+            {
                 dragging = false;
-
-            transform.eulerAngles = new Vector3(Mathf.Repeat(transform.eulerAngles.x + (Mathf.Repeat(rot.eulerAngles.x - transform.eulerAngles.x + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
-                Mathf.Repeat(transform.eulerAngles.y + (Mathf.Repeat(rot.eulerAngles.y - transform.eulerAngles.y + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f,
-                Mathf.Repeat(transform.eulerAngles.z + (Mathf.Repeat(rot.eulerAngles.z - transform.eulerAngles.z + 180f, 360f) - 180f) / 2 + 180f, 360f) - 180f);
+                Cursor.lockState = CursorLockMode.None;
+            }
         }
+        else
+            Cursor.lockState = CursorLockMode.None;
     }
 }
