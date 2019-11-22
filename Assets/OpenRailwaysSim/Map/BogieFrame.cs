@@ -25,6 +25,7 @@ public class BogieFrame : MapObject
     public Body body;
 
     public GameObject modelObj;
+    public float speed = 0f;
 
     public BogieFrame(Map map, List<Axle> axles) : base(map)
     {
@@ -74,13 +75,15 @@ public class BogieFrame : MapObject
         var p = Vector3.zero;
         var p_ = Vector3.zero;
         var q = Vector3.zero;
+        speed = 0f;
         foreach (var d in axles)
         {
             d.fixedMove();
             p += d.pos + d.rot * Vector3.down * d.wheelDia / 2;
+            speed += d.speed;
         }
-
         p /= axles.Count;
+        speed /= axles.Count;
 
         if (axles.Count == 1)
             rot = axles[0].rot;
@@ -104,25 +107,19 @@ public class BogieFrame : MapObject
     /// </summary>
     public void snapFromAxle()
     {
-        float s = 0;
         for (var d = 0; d < axles.Count; d++)
         {
             axles[d].pos = pos + axles[d].rot * (Vector3.up * (axles[d].wheelDia / 2 - height)) +
                            (axles.Count == 1 || d * 2 - (axles.Count - 1) == 0
                                ? Vector3.zero
                                : rot * Vector3.forward * wheelbase * ((float)-(axles.Count - 1) / 2 + d));
-            s += axles[d].speed;
         }
-
-        s /= axles.Count;
-
-        // 車軸をレールに合わせる。台車枠とずれホイールベースを失うが、次のフレームで合わせるので省略している。
         foreach (var axle in axles)
         {
-            axle.reloadOnDist();
+            axle.speed = speed;
+            axle.reloadOnDist(); // 車軸をレールに合わせる。台車枠とずれホイールベースを失うが、次のフレームで合わせるので省略している。
             var r = rot * Quaternion.AngleAxis(-180f, Vector3.up);
             axle.rot = Mathf.Abs(Quaternion.Dot(axle.rot, rot)) < Mathf.Abs(Quaternion.Dot(axle.rot, r)) ? rot : r;
-            axle.speed = s;
         }
     }
 

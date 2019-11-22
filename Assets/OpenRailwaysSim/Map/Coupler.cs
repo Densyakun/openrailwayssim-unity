@@ -100,6 +100,8 @@ public class Coupler : MapObject
     public void snapFrom()
     {
         body.pos = pos + body.rot * new Vector3(0, body.bogieHeight - height, (length - body.carLength / 2) * (isFront ? 1 : -1));
+        if (connectingCoupler != null)
+            body.speed = (body.speed + connectingCoupler.body.speed);
         body.snapFromBogieFrame();
     }
 

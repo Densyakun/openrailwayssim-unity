@@ -31,6 +31,7 @@ public class Body : MapObject
     public PermanentCoupler permanentCoupler2;
 
     public GameObject modelObj;
+    public float speed = 0f;
 
     public Body(Map map, List<BogieFrame> bogieFrames) : base(map)
     {
@@ -89,13 +90,15 @@ public class Body : MapObject
         {
             var p = Vector3.zero;
             var p_ = Vector3.zero;
+            speed = 0f;
             foreach (var d in bogieFrames)
             {
                 d.snapToAxle();
                 p += d.pos + d.rot * Vector3.down * d.height;
+                speed += d.speed;
             }
-
             p /= bogieFrames.Count;
+            speed /= bogieFrames.Count;
 
             if (bogieFrames.Count == 1)
                 rot = bogieFrames[0].rot;
@@ -127,6 +130,7 @@ public class Body : MapObject
                                      ? Vector3.zero
                                      : rot * Vector3.forward * bogieCenterDist *
                                        ((float)-(bogieFrames.Count - 1) / 2 + d));
+            bogieFrames[d].speed = speed;
             bogieFrames[d].snapFromAxle(); // 台車枠を車軸に合わせる。車体とずれ台車中心間距離を失うが、次のフレームで合わせるので省略している。
         }
     }

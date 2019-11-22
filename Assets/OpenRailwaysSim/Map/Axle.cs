@@ -25,7 +25,7 @@ public class Axle : MapObject
 
     public Track onTrack { get; protected set; }
 
-    protected float _onDist = 0;
+    protected float _onDist = 0f;
 
     public float onDist
     {
@@ -37,7 +37,7 @@ public class Axle : MapObject
                 if (onTrack.connectingNextTrack == -1)
                 {
                     _onDist = onTrack.length;
-                    speed = 0;
+                    speed = 0f;
                     if (bogieFrame != null)
                     {
                         var a = bogieFrame.body;
@@ -45,14 +45,14 @@ public class Axle : MapObject
                         {
                             foreach (var bf in a.bogieFrames)
                                 foreach (var axle in bf.axles)
-                                    axle.speed = 0;
+                                    axle.speed = 0f;
                             var b = bogieFrame.body.permanentCoupler1;
                             while (b != null)
                             {
                                 a = b.body1 == a ? b.body2 : b.body1;
                                 foreach (var bf in a.bogieFrames)
                                     foreach (var axle in bf.axles)
-                                        axle.speed = 0;
+                                        axle.speed = 0f;
                                 b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
                             }
                             a = bogieFrame.body;
@@ -62,7 +62,7 @@ public class Axle : MapObject
                                 a = b.body1 == a ? b.body2 : b.body1;
                                 foreach (var bf in a.bogieFrames)
                                     foreach (var axle in bf.axles)
-                                        axle.speed = 0;
+                                        axle.speed = 0f;
                                 b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
                             }
                         }
@@ -72,7 +72,7 @@ public class Axle : MapObject
                 {
                     Track oldTrack = onTrack;
                     onTrack = oldTrack.nextTracks[oldTrack.connectingNextTrack];
-                    if ((oldTrack.getPoint(1) - onTrack.pos).sqrMagnitude < Main.ALLOWABLE_RANGE && ((oldTrack is Curve ? ((Curve)oldTrack).getRotation(1).eulerAngles : oldTrack.rot.eulerAngles) - onTrack.rot.eulerAngles).sqrMagnitude < Main.ALLOWABLE_RANGE)
+                    if ((oldTrack.getPoint(1f) - onTrack.pos).sqrMagnitude < Main.ALLOWABLE_RANGE && ((oldTrack is Curve ? ((Curve)oldTrack).getRotation(1f).eulerAngles : oldTrack.rot.eulerAngles) - onTrack.rot.eulerAngles).sqrMagnitude < Main.ALLOWABLE_RANGE)
                         onDist = value - oldTrack.length;
                     else
                     {
@@ -81,12 +81,12 @@ public class Axle : MapObject
                     }
                 }
             }
-            else if (value < 0)
+            else if (value < 0f)
             {
                 if (onTrack.connectingPrevTrack == -1)
                 {
-                    _onDist = 0;
-                    speed = 0;
+                    _onDist = 0f;
+                    speed = 0f;
                     if (bogieFrame != null)
                     {
                         var a = bogieFrame.body;
@@ -94,14 +94,14 @@ public class Axle : MapObject
                         {
                             foreach (var bf in a.bogieFrames)
                                 foreach (var axle in bf.axles)
-                                    axle.speed = 0;
+                                    axle.speed = 0f;
                             var b = bogieFrame.body.permanentCoupler1;
                             while (b != null)
                             {
                                 a = b.body1 == a ? b.body2 : b.body1;
                                 foreach (var bf in a.bogieFrames)
                                     foreach (var axle in bf.axles)
-                                        axle.speed = 0;
+                                        axle.speed = 0f;
                                 b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
                             }
                             a = bogieFrame.body;
@@ -111,7 +111,7 @@ public class Axle : MapObject
                                 a = b.body1 == a ? b.body2 : b.body1;
                                 foreach (var bf in a.bogieFrames)
                                     foreach (var axle in bf.axles)
-                                        axle.speed = 0;
+                                        axle.speed = 0f;
                                 b = a.permanentCoupler1 == b ? a.permanentCoupler2 : a.permanentCoupler1;
                             }
                         }
@@ -121,7 +121,7 @@ public class Axle : MapObject
                 {
                     Track oldTrack = onTrack;
                     onTrack = oldTrack.prevTracks[oldTrack.connectingPrevTrack];
-                    if ((oldTrack.pos - onTrack.getPoint(1)).sqrMagnitude < Main.ALLOWABLE_RANGE && (oldTrack.rot.eulerAngles - (onTrack is Curve ? ((Curve)onTrack).getRotation(1).eulerAngles : onTrack.rot.eulerAngles)).sqrMagnitude < Main.ALLOWABLE_RANGE)
+                    if ((oldTrack.pos - onTrack.getPoint(1f)).sqrMagnitude < Main.ALLOWABLE_RANGE && (oldTrack.rot.eulerAngles - (onTrack is Curve ? ((Curve)onTrack).getRotation(1f).eulerAngles : onTrack.rot.eulerAngles)).sqrMagnitude < Main.ALLOWABLE_RANGE)
                         onDist = onTrack.length + value;
                     else
                     {
@@ -149,24 +149,24 @@ public class Axle : MapObject
 
     public GameObject modelObj;
 
-    public float lastFixed = -1;
+    public float lastFixed = -1f;
 
     public Axle(Map map, Track onTrack, float onDist) : base(map)
     {
         this.onTrack = onTrack;
         this.onDist = onDist;
-        speed = 0;
+        speed = 0f;
         wheelDia = 0.86f;
-        tm_output = 220;
+        tm_output = 220f;
         gearRatio = 6.06f;
         startingResistance = 30f;
         runningResistanceA = 0.019890625f;
         runningResistanceB = 0.000015625f;
-        rotX = 0;
+        rotX = 0f;
         Vector3 a = onTrack is Curve
             ? ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
-        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2;
+        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2f;
         a.x = rotX;
         rot = Quaternion.Euler(a);
     }
@@ -229,7 +229,7 @@ public class Axle : MapObject
         if (lastFixed == Time.fixedTime)
             return;
 
-        float w = 0;
+        float w = 0f;
         if (bogieFrame != null)
         {
             var body = bogieFrame.body;
@@ -242,22 +242,22 @@ public class Axle : MapObject
                 w /= d;
                 float a = -Physics.gravity.y * runningResistanceA;
                 a += runningResistanceB * speed;
-                a *= Time.deltaTime * 36 / 100;
-                if (speed < 0)
-                    speed = Mathf.Min(speed + a, 0);
+                a *= Time.deltaTime * 36f / 100f;
+                if (speed < 0f)
+                    speed = Mathf.Min(speed + a, 0f);
                 else
-                    speed = Mathf.Max(speed - a, 0);
+                    speed = Mathf.Max(speed - a, 0f);
             }
         }
-        float b = speed * 10 * Time.deltaTime / 36;
+        float b = speed * 10f * Time.deltaTime / 36f;
         onDist += b;
-        rotX += b * 360 / Mathf.PI * wheelDia;
+        rotX += b * 360f / Mathf.PI * wheelDia;
         lastFixed = Time.fixedTime;
 
         Vector3 c = onTrack is Curve
             ? ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles
             : onTrack.rot.eulerAngles;
-        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2;
+        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2f;
         rot = Quaternion.Euler(c);
     }
 
@@ -281,7 +281,7 @@ public class Axle : MapObject
             reloadCollider();
         }
 
-        modelObj.transform.localEulerAngles = new Vector3(rotX, 0);
+        modelObj.transform.localEulerAngles = new Vector3(rotX, 0f);
 
         reloadMaterial(modelObj);
 
@@ -328,12 +328,12 @@ public class Axle : MapObject
 
     public void inputPower(float power, float weight, bool brake = false)
     {
-        var a = tm_output * wheelDia * Time.deltaTime * power / 2 / weight / gearRatio;
-        if (speed > 0 == a > 0)
+        var a = tm_output * wheelDia * Time.deltaTime * power / 2f / weight / gearRatio;
+        if (speed > 0f == a > 0f)
         {
-            var b = a > 0 ? a : -a;
-            b -= (1f - Mathf.Clamp(Mathf.Abs(speed), 0f, 3f) / 3f) * startingResistance * Time.deltaTime * 36 / 100000 / weight;
-            if (a > 0)
+            var b = a > 0f ? a : -a;
+            b -= (1f - Mathf.Clamp(Mathf.Abs(speed), 0f, 3f) / 3f) * startingResistance * Time.deltaTime * 36f / 100000f / weight;
+            if (a > 0f)
                 speed += b;
             else
                 speed -= b;
@@ -342,10 +342,10 @@ public class Axle : MapObject
         {
             if (brake)
             {
-                if (speed > 0)
-                    speed = Mathf.Max(speed + a, 0);
+                if (speed > 0f)
+                    speed = Mathf.Max(speed + a, 0f);
                 else
-                    speed = Mathf.Min(speed + a, 0);
+                    speed = Mathf.Min(speed + a, 0f);
             }
             else
                 speed += a;

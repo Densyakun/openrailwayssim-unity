@@ -96,6 +96,7 @@ public class PermanentCoupler : MapObject
     {
         body1.pos = pos + rot * Vector3.back * length / 2 * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1) + body1.rot * new Vector3(0, body1.bogieHeight - height, (length / 2 - body1.carLength / 2) * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1));
         body2.pos = pos + rot * Vector3.forward * length / 2 * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1) + body2.rot * new Vector3(0, body2.bogieHeight - height, (length / 2 - body2.carLength / 2) * ((Quaternion.Inverse(body2.rot) * (body1.pos - body2.pos)).z > 0 ? 1 : -1));
+        body1.speed = body2.speed = (body1.speed + body2.speed) / 2f;
         body1.snapFromBogieFrame();
         body2.snapFromBogieFrame();
     }
