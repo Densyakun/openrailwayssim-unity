@@ -19,6 +19,7 @@ public class RunPanel : GamePanel
     void OnEnable()
     {
         Main.INSTANCE.playingPanel.show(false);
+        Main.INSTANCE.reloadGrid();
         foreach (var obj in Main.selectingObjs)
         {
             if (obj is DirectController)
@@ -34,6 +35,7 @@ public class RunPanel : GamePanel
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             show(false);
+            Main.INSTANCE.reloadGrid();
             Main.INSTANCE.playingPanel.show(true);
         }
         else

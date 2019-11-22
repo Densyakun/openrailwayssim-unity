@@ -262,6 +262,7 @@ public class Main : MonoBehaviour
             }
 
             if (!pausePanel.isShowing() &&
+                !runPanel.isShowing() &&
                 !EventSystem.current.IsPointerOverGameObject() &&
                 !(shapeSettingPanel.isShowing() &&
                 EventSystem.current.currentSelectedGameObject != null &&
@@ -600,6 +601,17 @@ public class Main : MonoBehaviour
         {
             bgmSource.clip = titleClips[UnityEngine.Random.Range(0, titleClips.Length)];
             bgmSource.Play();
+        }
+    }
+
+    public void reloadGrid()
+    {
+        grid.SetActive(!runPanel.isShowing() && showGuide);
+        List<Track> objs = Main.playingmap.objs.Where(obj => obj is Track).OfType<Track>().ToList();
+        foreach (var obj in objs)
+        {
+            obj.reloadTrackRenderer();
+            obj.reloadRailRenderers();
         }
     }
 

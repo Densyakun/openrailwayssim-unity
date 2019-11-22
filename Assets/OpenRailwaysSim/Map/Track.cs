@@ -148,7 +148,7 @@ public class Track : MapObject
 
     public void reloadTrackRenderer()
     {
-        if (!Main.INSTANCE.runPanel.isShowing() && Main.showGuide)
+        if (Main.INSTANCE.grid.activeSelf)
         {
             if (trackRenderer == null)
                 trackRenderer = entity.gameObject.AddComponent<LineRenderer>();
@@ -182,7 +182,7 @@ public class Track : MapObject
         if (railRenderers != null)
             foreach (var r in railRenderers)
                 GameObject.Destroy(r.gameObject);
-        if (!Main.INSTANCE.runPanel.isShowing() && Main.showGuide)
+        if (Main.INSTANCE.grid.activeSelf)
         {
             railRenderers = new LineRenderer[2];
             for (int a = 0; a < 2; a++)

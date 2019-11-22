@@ -79,7 +79,7 @@ public class Shape : Track
         if (railRenderers != null)
             foreach (var r in railRenderers)
                 GameObject.Destroy(r.gameObject);
-        if (!Main.INSTANCE.runPanel.isShowing() && Main.showGuide)
+        if (Main.INSTANCE.grid.activeSelf)
         {
             railRenderers = new LineRenderer[2];
             for (int a = 0; a < 2; a++)

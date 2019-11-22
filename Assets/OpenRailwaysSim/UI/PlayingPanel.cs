@@ -20,13 +20,8 @@ public class PlayingPanel : GamePanel
 
     public void GuideButton()
     {
-        Main.INSTANCE.grid.SetActive(Main.showGuide = guideToggle.isOn);
-        List<Track> objs = Main.playingmap.objs.Where(obj => obj is Track).OfType<Track>().ToList();
-        foreach (var obj in objs)
-        {
-            obj.reloadTrackRenderer();
-            obj.reloadRailRenderers();
-        }
+        Main.showGuide = guideToggle.isOn;
+        Main.INSTANCE.reloadGrid();
     }
 
     public void ConstTrackButton()
