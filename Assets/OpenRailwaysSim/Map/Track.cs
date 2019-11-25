@@ -185,9 +185,9 @@ public class Track : MapObject
         if (Main.INSTANCE.grid.activeSelf)
         {
             railRenderers = new LineRenderer[2];
-            for (int a = 0; a < 2; a++)
+            for (var a = 0; a < 2; a++)
             {
-                GameObject o = new GameObject();
+                var o = new GameObject();
                 railRenderers[a] = o.AddComponent<LineRenderer>();
                 o.transform.parent = entity.transform;
                 railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -201,7 +201,7 @@ public class Track : MapObject
                 else
                     railRenderers[a].sharedMaterial = Main.INSTANCE.rail_mat;
 
-                Vector3 b = rot * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
+                var b = rot * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
                 railRenderers[a].SetPositions(new Vector3[] { pos + b, getPoint(1) + b });
             }
         }
@@ -217,7 +217,7 @@ public class Track : MapObject
         var r_ = Quaternion.Inverse(rot);
         railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
-        for (int a = 0; a < railModelObjs.Length / 2; a++)
+        for (var a = 0; a < railModelObjs.Length / 2; a++)
         {
             railModelObjs[a] = b = GameObject.Instantiate(Main.INSTANCE.railLModel);
             b.transform.parent = entity.transform;
@@ -225,7 +225,7 @@ public class Track : MapObject
             b.transform.localPosition = r_ * (getPoint((float)a / (railModelObjs.Length / 2)) - pos);
             b.transform.localEulerAngles = new Vector3();
         }
-        for (int a = 0; a < railModelObjs.Length / 2; a++)
+        for (var a = 0; a < railModelObjs.Length / 2; a++)
         {
             railModelObjs[a + railModelObjs.Length / 2] = b = GameObject.Instantiate(Main.INSTANCE.railRModel);
             b.transform.parent = entity.transform;
@@ -238,7 +238,7 @@ public class Track : MapObject
             foreach (var r in tieModelObjs)
                 GameObject.Destroy(r.gameObject);
         tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
-        for (int a = 0; a < tieModelObjs.Length; a++)
+        for (var a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.INSTANCE.tieModel)).transform.parent = entity.transform;
             setLOD(tieModelObjs[a], LOD_DISTANCE);
@@ -249,11 +249,11 @@ public class Track : MapObject
 
     public virtual void reloadCollider()
     {
-        BoxCollider collider = entity.GetComponent<BoxCollider>();
+        var collider = entity.GetComponent<BoxCollider>();
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;
-        collider.center = Vector3.forward * _length / 2;
+        collider.center = Vector3.forward * _length / 2f;
         collider.size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, _length);
         collider.enabled = enableCollider;
     }

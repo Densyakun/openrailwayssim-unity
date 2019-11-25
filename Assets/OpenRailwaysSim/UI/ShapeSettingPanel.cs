@@ -11,16 +11,25 @@ public class ShapeSettingPanel : GamePanel
 {
 
     public SegmentSettingPanel segmentSettingPanelPrefab;
+    public VerticalSegmentSettingPanel verticalSegmentSettingPanelPrefab;
     public RectTransform segmentParent;
+    public float segmentHeight = 150f;
+    public float verticalSegmentHeight = 90f;
+
     private List<SegmentSettingPanel> segmentPanels = new List<SegmentSettingPanel>();
-    private List<SegmentSettingPanel> verticalSegmentPanels = new List<SegmentSettingPanel>();
+    private List<VerticalSegmentSettingPanel> verticalSegmentPanels = new List<VerticalSegmentSettingPanel>();
+
     private List<float> curveLength;
     private List<float> curveRadius;
+    private List<float> cant;
+    private List<bool> cantRotation;
     private List<float> verticalCurveLength;
     private List<float> verticalCurveRadius;
 
     private List<float> lastCurveLength;
     private List<float> lastCurveRadius;
+    private List<float> lastCant;
+    private List<bool> lastCantRotation;
     private List<float> lastVerticalCurveLength;
     private List<float> lastVerticalCurveRadius;
 
@@ -40,14 +49,16 @@ public class ShapeSettingPanel : GamePanel
                     for (var n = 0; n < segmentPanels.Count; n++)
                     {
                         if (input == segmentPanels[n].lengthInput)
-                            EventSystem.current.SetSelectedGameObject((n == 0 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[verticalSegmentPanels.Count - 1] : segmentPanels[segmentPanels.Count - 1] : segmentPanels[n - 1]).radiusInput.gameObject);
+                            EventSystem.current.SetSelectedGameObject((n == 0 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[verticalSegmentPanels.Count - 1].radiusInput : segmentPanels[segmentPanels.Count - 1].cantInput : segmentPanels[n - 1].cantInput).gameObject);
                         else if (input == segmentPanels[n].radiusInput)
                             EventSystem.current.SetSelectedGameObject(segmentPanels[n].lengthInput.gameObject);
+                        else if (input == segmentPanels[n].cantInput)
+                            EventSystem.current.SetSelectedGameObject(segmentPanels[n].radiusInput.gameObject);
                     }
                     for (var n = 0; n < verticalSegmentPanels.Count; n++)
                     {
                         if (input == verticalSegmentPanels[n].lengthInput)
-                            EventSystem.current.SetSelectedGameObject((n == 0 ? segmentPanels.Count > 0 ? segmentPanels[segmentPanels.Count - 1] : verticalSegmentPanels[verticalSegmentPanels.Count - 1] : verticalSegmentPanels[n - 1]).radiusInput.gameObject);
+                            EventSystem.current.SetSelectedGameObject((n == 0 ? segmentPanels.Count > 0 ? segmentPanels[segmentPanels.Count - 1].cantInput : verticalSegmentPanels[verticalSegmentPanels.Count - 1].radiusInput : verticalSegmentPanels[n - 1].radiusInput).gameObject);
                         else if (input == verticalSegmentPanels[n].radiusInput)
                             EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n].lengthInput.gameObject);
                     }
@@ -55,7 +66,7 @@ public class ShapeSettingPanel : GamePanel
                 else if (verticalSegmentPanels.Count > 0)
                     EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[verticalSegmentPanels.Count - 1].radiusInput.gameObject);
                 else if (segmentPanels.Count > 0)
-                    EventSystem.current.SetSelectedGameObject(segmentPanels[segmentPanels.Count - 1].radiusInput.gameObject);
+                    EventSystem.current.SetSelectedGameObject(segmentPanels[segmentPanels.Count - 1].cantInput.gameObject);
             }
             else
             {
@@ -66,14 +77,16 @@ public class ShapeSettingPanel : GamePanel
                         if (input == segmentPanels[n].lengthInput)
                             EventSystem.current.SetSelectedGameObject(segmentPanels[n].radiusInput.gameObject);
                         else if (input == segmentPanels[n].radiusInput)
-                            EventSystem.current.SetSelectedGameObject((n == segmentPanels.Count - 1 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[0] : segmentPanels[0] : segmentPanels[n + 1]).lengthInput.gameObject);
+                            EventSystem.current.SetSelectedGameObject(segmentPanels[n].cantInput.gameObject);
+                        else if (input == segmentPanels[n].cantInput)
+                            EventSystem.current.SetSelectedGameObject((n == segmentPanels.Count - 1 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[0].lengthInput : segmentPanels[0].lengthInput : segmentPanels[n + 1].lengthInput).gameObject);
                     }
                     for (var n = 0; n < verticalSegmentPanels.Count; n++)
                     {
                         if (input == verticalSegmentPanels[n].lengthInput)
                             EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n].radiusInput.gameObject);
                         else if (input == verticalSegmentPanels[n].radiusInput)
-                            EventSystem.current.SetSelectedGameObject((n == verticalSegmentPanels.Count - 1 ? segmentPanels.Count > 0 ? segmentPanels[0] : verticalSegmentPanels[0] : verticalSegmentPanels[n + 1]).lengthInput.gameObject);
+                            EventSystem.current.SetSelectedGameObject((n == verticalSegmentPanels.Count - 1 ? segmentPanels.Count > 0 ? segmentPanels[0].lengthInput : verticalSegmentPanels[0].lengthInput : verticalSegmentPanels[n + 1].lengthInput).gameObject);
                     }
                 }
                 else if (segmentPanels.Count > 0)
@@ -88,6 +101,8 @@ public class ShapeSettingPanel : GamePanel
     {
         curveLength = lastCurveLength = Main.editingTracks[0].curveLength;
         curveRadius = lastCurveRadius = Main.editingTracks[0].curveRadius;
+        cant = lastCant = Main.editingTracks[0].cant;
+        cantRotation = lastCantRotation = Main.editingTracks[0].cantRotation;
         verticalCurveLength = lastVerticalCurveLength = Main.editingTracks[0].verticalCurveLength;
         verticalCurveRadius = lastVerticalCurveRadius = Main.editingTracks[0].verticalCurveRadius;
         reloadSegmentPanels();
@@ -110,25 +125,37 @@ public class ShapeSettingPanel : GamePanel
         {
             var lengthL = new List<float>();
             var radiusL = new List<float>();
+            var cantL = new List<float>();
+            var cantRotationL = new List<bool>();
             foreach (var p in segmentPanels)
             {
-                lengthL.Add(float.Parse(p.lengthInput.text));
+                lengthL.Add(Mathf.Max(0f, float.Parse(p.lengthInput.text)));
                 radiusL.Add(float.Parse(p.radiusInput.text));
+                cantL.Add(Mathf.Min(float.Parse(p.cantInput.text), Mathf.PI / 2f));
+                cantRotationL.Add(p.cantRotationToggle.isOn);
             }
             curveLength = lengthL;
             curveRadius = radiusL;
+            cant = cantL;
+            cantRotation = cantRotationL;
             lengthL = new List<float>();
             radiusL = new List<float>();
+            cantL = new List<float>();
+            cantRotationL = new List<bool>();
             for (var n = 0; n < curveLength.Count; n++)
             {
                 if (curveLength[n] != 0f)
                 {
                     lengthL.Add(curveLength[n]);
                     radiusL.Add(curveRadius[n]);
+                    cantL.Add(cant[n]);
+                    cantRotationL.Add(cantRotation[n]);
                 }
             }
             Main.editingTracks[0].curveLength = lengthL;
             Main.editingTracks[0].curveRadius = radiusL;
+            Main.editingTracks[0].cant = cantL;
+            Main.editingTracks[0].cantRotation = cantRotationL;
 
             lengthL = new List<float>();
             radiusL = new List<float>();
@@ -179,6 +206,8 @@ public class ShapeSettingPanel : GamePanel
     {
         Main.editingTracks[0].curveLength = lastCurveLength;
         Main.editingTracks[0].curveRadius = lastCurveRadius;
+        Main.editingTracks[0].cant = lastCant;
+        Main.editingTracks[0].cantRotation = lastCantRotation;
         Main.editingTracks[0].verticalCurveLength = lastVerticalCurveLength;
         Main.editingTracks[0].verticalCurveRadius = lastVerticalCurveRadius;
 
@@ -199,32 +228,35 @@ public class ShapeSettingPanel : GamePanel
             p.n = n;
             segmentPanels.Add(p);
             p.transform.SetParent(segmentParent);
-            p.transform.localPosition = new Vector3(0f, -90f * n);
+            p.transform.localPosition = new Vector3(0f, -n * segmentHeight);
             p.titleText.text = SegmentSettingPanel.segmentText_DEF + " " + (n + 1) + "/" + curveLength.Count;
             p.lengthText.text = SegmentSettingPanel.lengthText_DEF + ": ";
             p.radiusText.text = SegmentSettingPanel.radiusText_DEF + ": ";
+            p.cantText.text = SegmentSettingPanel.cantText_DEF + ": ";
+            p.cantRotationText.text = SegmentSettingPanel.cantRotationText_DEF + ": ";
             p.lengthInput.text = curveLength[n].ToString();
             p.radiusInput.text = curveRadius[n].ToString();
+            p.cantInput.text = cant[n].ToString();
+            p.cantRotationToggle.isOn = cantRotation[n];
         }
         foreach (var p in verticalSegmentPanels)
             Destroy(p.gameObject);
         verticalSegmentPanels.Clear();
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
-            var p = Instantiate(segmentSettingPanelPrefab);
+            var p = Instantiate(verticalSegmentSettingPanelPrefab);
             p.n = n;
-            p.isVertical = true;
             verticalSegmentPanels.Add(p);
             p.transform.SetParent(segmentParent);
-            p.transform.localPosition = new Vector3(0f, -90f * (n + curveLength.Count));
-            p.titleText.text = SegmentSettingPanel.verticalSegmentText_DEF + " " + (n + 1) + "/" + verticalCurveLength.Count;
-            p.lengthText.text = SegmentSettingPanel.lengthText_DEF + ": ";
-            p.radiusText.text = SegmentSettingPanel.radiusText_DEF + ": ";
+            p.transform.localPosition = new Vector3(0f, -curveLength.Count * segmentHeight - n * verticalSegmentHeight);
+            p.titleText.text = VerticalSegmentSettingPanel.verticalSegmentText_DEF + " " + (n + 1) + "/" + verticalCurveLength.Count;
+            p.lengthText.text = VerticalSegmentSettingPanel.lengthText_DEF + ": ";
+            p.radiusText.text = VerticalSegmentSettingPanel.radiusText_DEF + ": ";
             p.lengthInput.text = verticalCurveLength[n].ToString();
             p.radiusInput.text = verticalCurveRadius[n].ToString();
         }
         var size = segmentParent.sizeDelta;
-        size.y = 90f * (curveLength.Count + verticalCurveLength.Count);
+        size.y = curveLength.Count * segmentHeight + verticalCurveLength.Count * verticalSegmentHeight;
         segmentParent.sizeDelta = size;
     }
 
@@ -234,11 +266,15 @@ public class ShapeSettingPanel : GamePanel
         {
             curveLength.Add(0f);
             curveRadius.Add(0f);
+            cant.Add(0f);
+            cantRotation.Add(false);
         }
         else
         {
             curveLength.Insert(n, 0f);
             curveRadius.Insert(n, 0f);
+            cant.Insert(n, 0f);
+            cantRotation.Insert(n, false);
         }
         reloadSegmentPanels();
         reflect();
@@ -248,6 +284,8 @@ public class ShapeSettingPanel : GamePanel
     {
         curveLength.RemoveAt(n);
         curveRadius.RemoveAt(n);
+        cant.RemoveAt(n);
+        cantRotation.RemoveAt(n);
         reloadSegmentPanels();
         reflect();
     }

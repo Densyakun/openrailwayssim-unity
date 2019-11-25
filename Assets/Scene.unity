@@ -6491,6 +6491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f182bbe3e7ff4544aab2fd6866004980, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dragging: 0
 --- !u!1 &692415772
 GameObject:
   m_ObjectHideFlags: 0
@@ -14462,7 +14463,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -30}
-  m_SizeDelta: {x: 20, y: 90}
+  m_SizeDelta: {x: 20, y: 150}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1387506203
 MonoBehaviour:
@@ -20129,7 +20130,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 260, y: 120}
+  m_SizeDelta: {x: 260, y: 180}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2084530851
 MonoBehaviour:
@@ -20144,6 +20145,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   segmentSettingPanelPrefab: {fileID: 114814097418473560, guid: 300ae51b711118e4ea63ebdaf54a151b,
+    type: 3}
+  verticalSegmentSettingPanelPrefab: {fileID: 680409747942122912, guid: 7b7f5385308c02d46b5d18ae6ebbda86,
     type: 3}
   segmentParent: {fileID: 1891689828}
 --- !u!114 &2084530852

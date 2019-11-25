@@ -76,10 +76,10 @@ public class Curve : Track
 
     public override void reloadTrackRendererPositions()
     {
-        int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
-        Vector3[] p = new Vector3[l + 1];
+        var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+        var p = new Vector3[l + 1];
         p[0] = pos;
-        for (int a = 1; a <= l; a++)
+        for (var a = 1; a <= l; a++)
             p[a] = getPoint((float)a / (float)l);
         trackRenderer.positionCount = p.Length;
         trackRenderer.SetPositions(p);
@@ -93,9 +93,9 @@ public class Curve : Track
         if (Main.INSTANCE.grid.activeSelf)
         {
             railRenderers = new LineRenderer[2];
-            for (int a = 0; a < 2; a++)
+            for (var a = 0; a < 2; a++)
             {
-                GameObject o = new GameObject();
+                var o = new GameObject();
                 railRenderers[a] = o.AddComponent<LineRenderer>();
                 o.transform.parent = entity.transform;
                 railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -109,10 +109,10 @@ public class Curve : Track
                 else
                     railRenderers[a].sharedMaterial = Main.INSTANCE.rail_mat;
 
-                int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
-                Vector3[] p = new Vector3[l + 1];
-                for (int b = 0; b <= l; b++)
-                    p[b] = getPointCanted((float)b / (float)l) + getRotationCanted((float)b / (float)l) * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
+                var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+                var p = new Vector3[l + 1];
+                for (var b = 0; b <= l; b++)
+                    p[b] = getPointCanted((float)b / l) + getRotationCanted((float)b / l) * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
                 railRenderers[a].positionCount = p.Length;
                 railRenderers[a].SetPositions(p);
             }
@@ -129,32 +129,32 @@ public class Curve : Track
         var r_ = Quaternion.Inverse(rot);
         railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
-        for (int a = 0; a < railModelObjs.Length / 2; a++)
+        for (var a = 0; a < railModelObjs.Length / 2; a++)
         {
             railModelObjs[a] = b = GameObject.Instantiate(Main.INSTANCE.railLModel);
             b.transform.parent = entity.transform;
             setLOD(b, LOD_DISTANCE);
-            var d = (float)a / (railModelObjs.Length / 2);
+            var d = a / (railModelObjs.Length / 2f);
             var p = getPointCanted(d);
             b.transform.localPosition = r_ * (p - pos);
-            b.transform.localRotation = r_ * Quaternion.LookRotation(getPointCanted((a + 1f) / (railModelObjs.Length / 2)) - p) * Quaternion.Euler(0f, 0f, -Mathf.Atan(cant / gauge) * Mathf.Rad2Deg);
+            b.transform.localRotation = r_ * Quaternion.LookRotation(getPointCanted((a + 1f) / (railModelObjs.Length / 2f)) - p) * Quaternion.Euler(0f, 0f, -Mathf.Atan(cant / gauge) * Mathf.Rad2Deg);
         }
-        for (int a = 0; a < railModelObjs.Length / 2; a++)
+        for (var a = 0; a < railModelObjs.Length / 2; a++)
         {
             railModelObjs[a + railModelObjs.Length / 2] = b = GameObject.Instantiate(Main.INSTANCE.railRModel);
             b.transform.parent = entity.transform;
             setLOD(b, LOD_DISTANCE);
-            var d = (float)a / (railModelObjs.Length / 2);
+            var d = a / (railModelObjs.Length / 2f);
             var p = getPointCanted(d);
             b.transform.localPosition = r_ * (p - pos);
-            b.transform.localRotation = r_ * Quaternion.LookRotation(getPointCanted((a + 1f) / (railModelObjs.Length / 2)) - p) * Quaternion.Euler(0f, 0f, -Mathf.Atan(cant / gauge) * Mathf.Rad2Deg);
+            b.transform.localRotation = r_ * Quaternion.LookRotation(getPointCanted((a + 1f) / (railModelObjs.Length / 2f)) - p) * Quaternion.Euler(0f, 0f, -Mathf.Atan(cant / gauge) * Mathf.Rad2Deg);
         }
 
         if (tieModelObjs != null)
             foreach (var r in tieModelObjs)
                 GameObject.Destroy(r.gameObject);
         tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
-        for (int a = 0; a < tieModelObjs.Length; a++)
+        for (var a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.INSTANCE.tieModel)).transform.parent = entity.transform;
             setLOD(tieModelObjs[a], LOD_DISTANCE);
@@ -166,29 +166,29 @@ public class Curve : Track
 
     public override void reloadCollider()
     {
-        int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+        var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
         if (colliders.Length != l)
         {
-            for (int a = 0; a < colliders.Length; a++)
+            for (var a = 0; a < colliders.Length; a++)
                 if (colliders[a])
                     GameObject.Destroy(colliders[a].gameObject);
             colliders = new BoxCollider[l];
         }
-        for (int a = 0; a < l; a++)
+        for (var a = 0; a < l; a++)
         {
             if (colliders[a] == null)
             {
-                GameObject o = new GameObject();
+                var o = new GameObject();
                 colliders[a] = o.AddComponent<BoxCollider>();
                 o.transform.parent = entity.transform;
             }
             colliders[a].isTrigger = true;
 
-            Quaternion b = Quaternion.Inverse(rot);
-            Vector3 c = b * (getPointCanted((float)a / (float)l) - pos);
-            Vector3 d = b * (getPointCanted(((float)a + 1) / (float)l) - pos);
-            colliders[a].transform.localPosition = (c + d) / 2;
-            colliders[a].transform.localRotation = b * getRotationCanted((a + 0.5f) / (float)l);
+            var b = Quaternion.Inverse(rot);
+            var c = b * (getPointCanted((float)a / l) - pos);
+            var d = b * (getPointCanted((a + 1f) / l) - pos);
+            colliders[a].transform.localPosition = (c + d) / 2f;
+            colliders[a].transform.localRotation = b * getRotationCanted((a + 0.5f) / l);
             colliders[a].size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, Vector3.Distance(c, d));
             colliders[a].enabled = enableCollider;
         }
@@ -221,9 +221,7 @@ public class Curve : Track
             return pos + rot * new Vector3(0f, (1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(d1) * Mathf.Abs(_radius));
         else
         {
-            var p = Vector3.zero;
-            if (!cantRotation)
-                p = Vector3.up * cant / 2f;
+            var p = cantRotation ? Vector3.zero : Vector3.up * cant / 2f;
             return pos + Quaternion.Euler(0, rot.eulerAngles.y, 0) * (new Vector3((1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(-rot.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(_radius)) + p);
         }
     }

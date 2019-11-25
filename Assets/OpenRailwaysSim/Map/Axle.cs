@@ -254,10 +254,16 @@ public class Axle : MapObject
         rotX += b * 360f / Mathf.PI * wheelDia;
         lastFixed = Time.fixedTime;
 
-        Vector3 c = onTrack is Curve
-            ? ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles
-            : onTrack.rot.eulerAngles;
-        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2f;
+        Vector3 c = onTrack is Shape ?
+            ((Shape)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles :
+            onTrack is Curve ?
+            ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles :
+            onTrack.rot.eulerAngles;
+        pos = (onTrack is Shape ?
+            ((Shape)onTrack).getPointCanted(onDist / onTrack.length) :
+            onTrack is Curve ?
+            ((Curve)onTrack).getPointCanted(onDist / onTrack.length) :
+            onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2f;
         rot = Quaternion.Euler(c);
     }
 

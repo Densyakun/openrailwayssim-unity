@@ -176,7 +176,7 @@ public class Main : MonoBehaviour
                 !titleBackPanel.isShowing() &&
                 !runPanel.isShowing())
             {
-                bool a = true;
+                var a = true;
                 if (shapeSettingPanel.isShowing())
                 {
                     a = false;
@@ -288,7 +288,7 @@ public class Main : MonoBehaviour
                 {
                     point.SetActive(false);
 
-                    MapObject a = focused;
+                    var a = focused;
                     focused = null;
                     if (a != null)
                     {
@@ -309,14 +309,14 @@ public class Main : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out hit))
         {
-            MapEntity entity = hit.collider.GetComponent<MapEntity>();
+            var entity = hit.collider.GetComponent<MapEntity>();
             if (entity == null && hit.collider.transform.parent)
                 entity = hit.collider.transform.parent.GetComponent<MapEntity>();
             if (entity != null && (editingTracks.Any() ? editingTracks.Any(track => track.entity && entity.gameObject != track.entity.gameObject) : true))
             {
                 if (focused != entity.obj)
                 {
-                    MapObject a = focused;
+                    var a = focused;
                     (focused = entity.obj).useSelectingMat = false;
                     if (a != null)
                     {
@@ -330,7 +330,7 @@ public class Main : MonoBehaviour
             }
             else
             {
-                MapObject a = focused;
+                var a = focused;
                 focused = null;
                 if (a != null)
                 {
@@ -350,7 +350,7 @@ public class Main : MonoBehaviour
             else
             {
                 var p = hit.point;
-                p.y = 0;
+                p.y = 0f;
 
                 if (focused != null)
                 {
@@ -385,7 +385,7 @@ public class Main : MonoBehaviour
                                 editingRot = l.getRotation(1);
 
                                 editingTracks.Clear();
-                                editingTracks.Add(new Shape(playingmap, l.getPoint(1)));
+                                editingTracks.Add(new Shape(playingmap, l.getPoint(1f)));
                             }
                         }
                         else if (focused != null)
@@ -429,7 +429,7 @@ public class Main : MonoBehaviour
                 {
                     if (Input.GetMouseButtonUp(0) && focused != null && focused is Track)
                     {
-                        Axle axle = new Axle(playingmap, ((Track)focused), focusedDist);
+                        var axle = new Axle(playingmap, ((Track)focused), focusedDist);
                         axle.generate();
                         playingmap.addObject(axle);
                     }
@@ -460,7 +460,7 @@ public class Main : MonoBehaviour
         {
             point.SetActive(false);
 
-            MapObject a = focused;
+            var a = focused;
             focused = null;
             if (a != null)
             {
@@ -520,8 +520,8 @@ public class Main : MonoBehaviour
         loadingMapPanel.show(true);
 
         yield return null; // 読み込み画面を表示する
-        Map map = MapManager.loadMap(mapname);
-        if (map == null)
+        playingmap = MapManager.loadMap(mapname);
+        if (playingmap == null)
         {
             // マップが対応していない
             loadingMapPanel.show(false);
@@ -532,15 +532,14 @@ public class Main : MonoBehaviour
         }
         else
         {
-            playingmap = map;
             Time.timeScale = 1f;
             tick = 0f;
             mode = MODE_NONE;
             playingmap.generate();
             INSTANCE.reloadLighting();
 
-            mainCamera.transform.position = map.cameraPos;
-            mainCamera.transform.eulerAngles = map.cameraRot;
+            mainCamera.transform.position = playingmap.cameraPos;
+            mainCamera.transform.eulerAngles = playingmap.cameraRot;
             mainCamera.GetComponent<PostProcessingBehaviour>().enabled = true;
             bgmSource.Stop();
             loadingMapPanel.show(false);
@@ -571,7 +570,7 @@ public class Main : MonoBehaviour
     /// </summary>
     public static bool yrCondition()
     {
-        return 1 / Time.deltaTime <= min_fps;
+        return 1f / Time.deltaTime <= min_fps;
     }
 
     public static void setPanelPosToMousePos(GamePanel panel)
@@ -589,7 +588,7 @@ public class Main : MonoBehaviour
 
     public void reloadLighting()
     {
-        float t = playingmap.time / Map.TIME_OF_DAY;
+        var t = playingmap.time / Map.TIME_OF_DAY;
         sun.transform.eulerAngles = new Vector3(t * 360f - 90f, -90f);
         sun.shadowStrength = sun.intensity = sunGradient.Evaluate(t).grayscale;
         RenderSettings.ambientLight *= (1f - Mathf.Abs(t * 2f - 1f)) / RenderSettings.ambientLight.grayscale;
@@ -607,7 +606,7 @@ public class Main : MonoBehaviour
     public void reloadGrid()
     {
         grid.SetActive(!runPanel.isShowing() && showGuide);
-        List<Track> objs = Main.playingmap.objs.Where(obj => obj is Track).OfType<Track>().ToList();
+        var objs = Main.playingmap.objs.Where(obj => obj is Track).OfType<Track>().ToList();
         foreach (var obj in objs)
         {
             obj.reloadTrackRenderer();
@@ -621,11 +620,11 @@ public class Main : MonoBehaviour
     public Vector2? GetIntersectionPointCoordinates(float a1x, float a1y, float a2x, float a2y, float b1x, float b1y,
         float b2x, float b2y)
     {
-        float tmp = (b2x - b1x) * (a2y - a1y) - (b2y - b1y) * (a2x - a1x);
-        if (tmp == 0)
+        var tmp = (b2x - b1x) * (a2y - a1y) - (b2y - b1y) * (a2x - a1x);
+        if (tmp == 0f)
             return null;
 
-        float mu = ((a1x - b1x) * (a2y - a1y) - (a1y - b1y) * (a2x - a1x)) / tmp;
+        var mu = ((a1x - b1x) * (a2y - a1y) - (a1y - b1y) * (a2x - a1x)) / tmp;
         return new Vector2(b1x + (b2x - b1x) * mu, b1y + (b2y - b1y) * mu);
     }
 
@@ -652,14 +651,14 @@ public class Main : MonoBehaviour
             if (mainTrack != null)
             {
                 if ((mainTrack.pos - track.pos).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.rot.eulerAngles - track.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
-                (mainTrack.pos - track.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.rot.eulerAngles - track.getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
+                (mainTrack.pos - track.getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.rot.eulerAngles - track.getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     mainTrack.prevTracks.Add(track);
                     if (mainTrack.prevTracks.Count == 1)
                         mainTrack.connectingPrevTrack = 0;
                 }
-                else if ((mainTrack.getPoint(1) - track.pos).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.getRotation(1).eulerAngles - track.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
-                (mainTrack.getPoint(1) - track.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.getRotation(1).eulerAngles - track.getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
+                else if ((mainTrack.getPoint(1f) - track.pos).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.getRotation(1f).eulerAngles - track.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (mainTrack.getPoint(1f) - track.getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.getRotation(1f).eulerAngles - track.getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     mainTrack.nextTracks.Add(track);
                     if (mainTrack.nextTracks.Count == 1)
@@ -667,14 +666,14 @@ public class Main : MonoBehaviour
                 }
 
                 if ((track.pos - mainTrack.pos).sqrMagnitude < ALLOWABLE_RANGE && (track.rot.eulerAngles - mainTrack.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
-                (track.pos - mainTrack.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (track.rot.eulerAngles - mainTrack.getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
+                (track.pos - mainTrack.getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE && (track.rot.eulerAngles - mainTrack.getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     track.prevTracks.Add(mainTrack);
                     if (track.prevTracks.Count == 1)
                         track.connectingPrevTrack = 0;
                 }
-                else if ((track.getPoint(1) - mainTrack.pos).sqrMagnitude < ALLOWABLE_RANGE && (track.getRotation(1).eulerAngles - mainTrack.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
-                (track.getPoint(1) - mainTrack.getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE && (track.getRotation(1).eulerAngles - mainTrack.getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
+                else if ((track.getPoint(1f) - mainTrack.pos).sqrMagnitude < ALLOWABLE_RANGE && (track.getRotation(1f).eulerAngles - mainTrack.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
+                (track.getPoint(1) - mainTrack.getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE && (track.getRotation(1f).eulerAngles - mainTrack.getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
                 {
                     track.nextTracks.Add(mainTrack);
                     if (track.nextTracks.Count == 1)
@@ -685,13 +684,13 @@ public class Main : MonoBehaviour
             if (focused is Track)
             {
                 var a = (track.pos - ((Track)focused).pos).sqrMagnitude < ALLOWABLE_RANGE;
-                var a1 = (track.pos - ((Track)focused).getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE;
-                var a2 = (track.getPoint(1) - ((Track)focused).pos).sqrMagnitude < ALLOWABLE_RANGE;
-                var a3 = (track.getPoint(1) - ((Track)focused).getPoint(1)).sqrMagnitude < ALLOWABLE_RANGE;
+                var a1 = (track.pos - ((Track)focused).getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE;
+                var a2 = (track.getPoint(1f) - ((Track)focused).pos).sqrMagnitude < ALLOWABLE_RANGE;
+                var a3 = (track.getPoint(1f) - ((Track)focused).getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE;
                 var b = (track.rot.eulerAngles - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
-                var b1 = (track.rot.eulerAngles - (focused is Curve ? ((Curve)focused).getRotation(1).eulerAngles : focused.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE;
-                var b2 = (track.getRotation(1).eulerAngles - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
-                var b3 = (track.getRotation(1).eulerAngles - ((Shape)focused).getRotation(1).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
+                var b1 = (track.rot.eulerAngles - (focused is Curve ? ((Curve)focused).getRotation(1f).eulerAngles : focused.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE;
+                var b2 = (track.getRotation(1f).eulerAngles - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
+                var b3 = (track.getRotation(1f).eulerAngles - ((Shape)focused).getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
                 if (a && b || a1 && b1)
                 {
                     track.prevTracks.Add((Track)focused);

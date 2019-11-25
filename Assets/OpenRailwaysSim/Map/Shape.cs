@@ -12,12 +12,16 @@ public class Shape : Track
 
     public const string KEY_CURVE_LENGTH = "CURVE_L";
     public const string KEY_CURVE_RADIUS = "CURVE_R";
+    public const string KEY_CANT = "C";
+    public const string KEY_CANT_ROTATION = "C_R";
     public const string KEY_VERTICAL_CURVE_LENGTH = "V_CURVE_L";
     public const string KEY_VERTICAL_CURVE_RADIUS = "V_CURVE_R";
     public const float FINENESS_DISTANCE = 5f;
 
     public List<float> curveLength;
     public List<float> curveRadius;
+    public List<float> cant;
+    public List<bool> cantRotation;
     public List<float> verticalCurveLength;
     public List<float> verticalCurveRadius;
     public BoxCollider[] colliders = new BoxCollider[0];
@@ -26,6 +30,8 @@ public class Shape : Track
     {
         curveLength = new List<float>();
         curveRadius = new List<float>();
+        cant = new List<float>();
+        cantRotation = new List<bool>();
         verticalCurveLength = new List<float>();
         verticalCurveRadius = new List<float>();
     }
@@ -34,6 +40,8 @@ public class Shape : Track
     {
         curveLength = new List<float>();
         curveRadius = new List<float>();
+        cant = new List<float>();
+        cantRotation = new List<bool>();
         verticalCurveLength = new List<float>();
         verticalCurveRadius = new List<float>();
     }
@@ -42,6 +50,8 @@ public class Shape : Track
     {
         curveLength = (List<float>)info.GetValue(KEY_CURVE_LENGTH, typeof(List<float>));
         curveRadius = (List<float>)info.GetValue(KEY_CURVE_RADIUS, typeof(List<float>));
+        cant = (List<float>)info.GetValue(KEY_CANT, typeof(List<float>));
+        cantRotation = (List<bool>)info.GetValue(KEY_CANT_ROTATION, typeof(List<bool>));
         verticalCurveLength = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_LENGTH, typeof(List<float>));
         verticalCurveRadius = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_RADIUS, typeof(List<float>));
     }
@@ -51,6 +61,8 @@ public class Shape : Track
         base.GetObjectData(info, context);
         info.AddValue(KEY_CURVE_LENGTH, curveLength);
         info.AddValue(KEY_CURVE_RADIUS, curveRadius);
+        info.AddValue(KEY_CANT, cant);
+        info.AddValue(KEY_CANT_ROTATION, cantRotation);
         info.AddValue(KEY_VERTICAL_CURVE_LENGTH, verticalCurveLength);
         info.AddValue(KEY_VERTICAL_CURVE_RADIUS, verticalCurveRadius);
     }
@@ -65,11 +77,11 @@ public class Shape : Track
 
     public override void reloadTrackRendererPositions()
     {
-        int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
-        Vector3[] p = new Vector3[l + 1];
+        var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+        var p = new Vector3[l + 1];
         p[0] = pos;
-        for (int a = 1; a <= l; a++)
-            p[a] = getPoint((float)a / (float)l);
+        for (var a = 1; a <= l; a++)
+            p[a] = getPoint((float)a / l);
         trackRenderer.positionCount = p.Length;
         trackRenderer.SetPositions(p);
     }
@@ -82,9 +94,9 @@ public class Shape : Track
         if (Main.INSTANCE.grid.activeSelf)
         {
             railRenderers = new LineRenderer[2];
-            for (int a = 0; a < 2; a++)
+            for (var a = 0; a < 2; a++)
             {
-                GameObject o = new GameObject();
+                var o = new GameObject();
                 railRenderers[a] = o.AddComponent<LineRenderer>();
                 o.transform.parent = entity.transform;
                 railRenderers[a].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -98,11 +110,10 @@ public class Shape : Track
                 else
                     railRenderers[a].sharedMaterial = Main.INSTANCE.rail_mat;
 
-                int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
-                Vector3[] p = new Vector3[l + 1];
-                p[0] = pos + rot * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
-                for (int b = 1; b <= l; b++)
-                    p[b] = getPoint((float)b / (float)l) + getRotation((float)b / (float)l) * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
+                var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+                var p = new Vector3[l + 1];
+                for (var b = 0; b <= l; b++)
+                    p[b] = getPointCanted((float)b / l) + getRotationCanted((float)b / l) * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
                 railRenderers[a].positionCount = p.Length;
                 railRenderers[a].SetPositions(p);
             }
@@ -119,56 +130,56 @@ public class Shape : Track
         var r_ = Quaternion.Inverse(rot);
         railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
-        for (int a = 0; a < railModelObjs.Length / 2; a++)
+        for (var a = 0; a < railModelObjs.Length / 2; a++)
         {
             railModelObjs[a] = b = GameObject.Instantiate(Main.INSTANCE.railLModel);
             b.transform.parent = entity.transform;
             setLOD(b, LOD_DISTANCE);
-            var d = (float)a / (railModelObjs.Length / 2);
-            var p = getPoint(d);
+            var d = a / (railModelObjs.Length / 2f);
+            var p = getPointCanted(d);
             b.transform.localPosition = r_ * (p - pos);
-            var f = getPoint(((float)a + 1) / (railModelObjs.Length / 2)) - p;
+            var f = getPointCanted((a + 1f) / (railModelObjs.Length / 2f)) - p;
             if (f.sqrMagnitude != 0f)
-                b.transform.localRotation = r_ * Quaternion.LookRotation(f);
+                b.transform.localRotation = r_ * Quaternion.LookRotation(f) * Quaternion.Euler(0f, 0f, -Mathf.Asin(getCant(a / (railModelObjs.Length / 2f)) / gauge) * Mathf.Rad2Deg);
         }
-        for (int a = 0; a < railModelObjs.Length / 2; a++)
+        for (var a = 0; a < railModelObjs.Length / 2; a++)
         {
             railModelObjs[a + railModelObjs.Length / 2] = b = GameObject.Instantiate(Main.INSTANCE.railRModel);
             b.transform.parent = entity.transform;
             setLOD(b, LOD_DISTANCE);
-            var d = (float)a / (railModelObjs.Length / 2);
-            var p = getPoint(d);
+            var d = a / (railModelObjs.Length / 2f);
+            var p = getPointCanted(d);
             b.transform.localPosition = r_ * (p - pos);
-            var f = getPoint(((float)a + 1) / (railModelObjs.Length / 2)) - p;
+            var f = getPointCanted((a + 1f) / (railModelObjs.Length / 2f)) - p;
             if (f.sqrMagnitude != 0f)
-                b.transform.localRotation = r_ * Quaternion.LookRotation(f);
+                b.transform.localRotation = r_ * Quaternion.LookRotation(f) * Quaternion.Euler(0f, 0f, -Mathf.Asin(getCant(a / (railModelObjs.Length / 2f)) / gauge) * Mathf.Rad2Deg);
         }
 
         if (tieModelObjs != null)
             foreach (var r in tieModelObjs)
                 GameObject.Destroy(r.gameObject);
         tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
-        for (int a = 0; a < tieModelObjs.Length; a++)
+        for (var a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.INSTANCE.tieModel)).transform.parent = entity.transform;
             setLOD(tieModelObjs[a], LOD_DISTANCE);
             var d = (float)a / tieModelObjs.Length;
-            tieModelObjs[a].transform.localPosition = r_ * (getPoint(d) - pos);
-            tieModelObjs[a].transform.localRotation = r_ * getRotation(d);
+            tieModelObjs[a].transform.localPosition = r_ * (getPointCanted(d) - pos);
+            tieModelObjs[a].transform.localRotation = r_ * getRotationCanted(d);
         }
     }
 
     public override void reloadCollider()
     {
-        int l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+        var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
         if (colliders.Length != l)
         {
-            for (int a = 0; a < colliders.Length; a++)
+            for (var a = 0; a < colliders.Length; a++)
                 if (colliders[a])
                     GameObject.Destroy(colliders[a].gameObject);
             colliders = new BoxCollider[l];
         }
-        for (int a = 0; a < l; a++)
+        for (var a = 0; a < l; a++)
         {
             if (colliders[a] == null)
             {
@@ -179,17 +190,17 @@ public class Shape : Track
             colliders[a].isTrigger = true;
 
             Quaternion b = Quaternion.Inverse(rot);
-            Vector3 c = b * (getPoint((float)a / (float)l) - pos);
-            Vector3 d = b * (getPoint(((float)a + 1) / (float)l) - pos);
-            colliders[a].transform.localPosition = (c + d) / 2;
-            colliders[a].transform.localRotation = b * getRotation(((float)a + 1f / 2) / (float)l);
+            Vector3 c = b * (getPointCanted((float)a / l) - pos);
+            Vector3 d = b * (getPointCanted((a + 1f) / l) - pos);
+            colliders[a].transform.localPosition = (c + d) / 2f;
+            colliders[a].transform.localRotation = b * getRotationCanted((a + 0.5f) / l);
             colliders[a].size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, Vector3.Distance(c, d));
             colliders[a].enabled = enableCollider;
         }
     }
 
     /// <summary>
-    /// 軌道上の位置(0-1)から軌道の座標を返す
+    /// 軌道上の位置(0-1)から座標を返す
     /// </summary>
     /// <param name="a">位置(0-1)</param>
     public override Vector3 getPoint(float a)
@@ -202,7 +213,26 @@ public class Shape : Track
     }
 
     /// <summary>
-    /// 平面における位置(0-1)から軌道の座標を返す
+    /// 軌道上の位置(0-1)の座標をカント付きで返す
+    /// </summary>
+    /// <param name="a">位置(0-1)</param>
+    public virtual Vector3 getPointCanted(float a)
+    {
+        var l = LengthToFlatLength(a * _length);
+        var c = 0f;
+        var l1 = 0f;
+        for (var n = 0; n < curveLength.Count; n++)
+        {
+            if (l1 <= l && !cantRotation[n])
+                c = cant[n] / 2f;
+            l1 += curveLength[n];
+        }
+
+        return getPointFlat(l / l1) + Vector3.up * c;
+    }
+
+    /// <summary>
+    /// 平面における位置(0-1)から座標を返す
     /// </summary>
     /// <param name="a">平面における位置(0-1)</param>
     public Vector3 getPointFlat(float a)
@@ -282,7 +312,7 @@ public class Shape : Track
     }
 
     /// <summary>
-    /// 軌道上の位置(0-1)から軌道の回転を返す
+    /// 軌道上の位置(0-1)から回転を返す
     /// </summary>
     /// <param name="a">位置(0-1)</param>
     public override Quaternion getRotation(float a)
@@ -295,7 +325,27 @@ public class Shape : Track
     }
 
     /// <summary>
-    /// 平面における位置(0-1)から軌道の回転を返す
+    /// 軌道上の位置(0-1)の回転をカント付きで返す
+    /// </summary>
+    /// <param name="a">位置(0-1)</param>
+    public virtual Quaternion getRotationCanted(float a)
+    {
+        var l = LengthToFlatLength(a * _length);
+        var c = 0f;
+        var l1 = 0f;
+        for (var n = 0; n < curveLength.Count; n++)
+        {
+            if (l1 <= l)
+                c = cant[n];
+            l1 += curveLength[n];
+        }
+
+        var r = getRotationFlat(l / l1);
+        return Quaternion.Euler(r.eulerAngles.x, r.eulerAngles.y, -Mathf.Asin(c / gauge) * Mathf.Rad2Deg);
+    }
+
+    /// <summary>
+    /// 平面における位置(0-1)から回転を返す
     /// </summary>
     /// <param name="a">平面における位置(0-1)</param>
     public Quaternion getRotationFlat(float a)
@@ -412,6 +462,40 @@ public class Shape : Track
             l += curveLength[n];
         }
         return l;
+    }
+
+    /// <summary>
+    /// 軌道上の位置(0-1)からカントを返す
+    /// </summary>
+    /// <param name="a">位置(0-1)</param>
+    public float getCant(float a)
+    {
+        var l1 = 0f;
+        foreach (var l_ in curveLength)
+            l1 += l_;
+
+        return getCantFlat(LengthToFlatLength(a * _length) / l1);
+    }
+
+    /// <summary>
+    /// 平面における位置(0-1)からカントを返す
+    /// </summary>
+    /// <param name="a">平面における位置(0-1)</param>
+    public float getCantFlat(float a)
+    {
+        var l1 = 0f;
+        foreach (var l_ in curveLength)
+            l1 += l_;
+
+        var l2 = 0f;
+        for (var n = 0; n < curveLength.Count; n++)
+        {
+            if (l1 * a <= l2 + curveLength[n])
+                return cant[n];
+            l2 += curveLength[n];
+        }
+
+        return 0f;
     }
 
     /// <summary>
