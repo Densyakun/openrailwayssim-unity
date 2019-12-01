@@ -19,14 +19,11 @@ public class Axle : MapObject
     public const string KEY_RUNNING_RESISTANCE_A = "RUNNING_RESISTANCE_A";
     public const string KEY_RUNNING_RESISTANCE_B = "RUNNING_RESISTANCE_B";
     public const string KEY_ROT_X = "ROT_X";
-    public const string KEY_BOGIE_FRAME = "BOGIE_FRAME";
 
     public const float COLLIDER_WIDTH = 2.3f;
 
     public Track onTrack { get; protected set; }
-
     protected float _onDist = 0f;
-
     public float onDist
     {
         get { return _onDist; }
@@ -134,22 +131,18 @@ public class Axle : MapObject
                 _onDist = value;
         }
     }
-
     public float speed;
-
     public float wheelDia;
     public float tm_output;
     public float gearRatio;
     public float startingResistance;
     public float runningResistanceA;
     public float runningResistanceB;
-
     public float rotX;
-    public BogieFrame bogieFrame;
 
     public GameObject modelObj;
-
-    public float lastFixed = -1f;
+    public BogieFrame bogieFrame;
+    public float lastMoved = -1f;
 
     public Axle(Map map, Track onTrack, float onDist) : base(map)
     {
@@ -183,7 +176,6 @@ public class Axle : MapObject
         runningResistanceA = info.GetSingle(KEY_RUNNING_RESISTANCE_A);
         runningResistanceB = info.GetSingle(KEY_RUNNING_RESISTANCE_B);
         rotX = info.GetSingle(KEY_ROT_X);
-        bogieFrame = (BogieFrame)info.GetValue(KEY_BOGIE_FRAME, typeof(BogieFrame));
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -199,7 +191,6 @@ public class Axle : MapObject
         info.AddValue(KEY_RUNNING_RESISTANCE_A, runningResistanceA);
         info.AddValue(KEY_RUNNING_RESISTANCE_B, runningResistanceB);
         info.AddValue(KEY_ROT_X, rotX);
-        info.AddValue(KEY_BOGIE_FRAME, bogieFrame);
     }
 
     public override void generate()
@@ -212,22 +203,19 @@ public class Axle : MapObject
 
     public override void update()
     {
-        // Editor上で移動するテスト
-        //SyncFromEntity();
-        //reloadOnDist();
-        //fixedMove();
-
-        fixedMove();
+        if (bogieFrame == null)
+            move();
         reloadEntity();
     }
 
     /// <summary>
     /// 車軸を移動する
     /// </summary>
-    public void fixedMove()
+    public void move()
     {
-        if (lastFixed == Time.fixedTime)
+        if (lastMoved == Time.time)
             return;
+        lastMoved = Time.time;
 
         float w = 0f;
         if (bogieFrame != null)
@@ -252,8 +240,6 @@ public class Axle : MapObject
         float b = speed * 10f * Time.deltaTime / 36f;
         onDist += b;
         rotX += b * 360f / Mathf.PI * wheelDia;
-        lastFixed = Time.fixedTime;
-
         Vector3 c = onTrack is Shape ?
             ((Shape)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles :
             onTrack is Curve ?
@@ -272,7 +258,7 @@ public class Axle : MapObject
     /// </summary>
     public void reloadOnDist()
     {
-        onDist = onTrack.getLength(pos);
+        //onDist = onTrack.getLength(pos);
     }
 
     public override void reloadEntity()
@@ -286,17 +272,15 @@ public class Axle : MapObject
             modelObj.transform.localPosition = Vector3.zero;
             reloadCollider();
         }
-
-        modelObj.transform.localEulerAngles = new Vector3(rotX, 0f);
-
         reloadMaterial(modelObj);
+        modelObj.transform.localEulerAngles = new Vector3(rotX, 0f);
 
         base.reloadEntity();
     }
 
     public void reloadCollider()
     {
-        BoxCollider collider = entity.GetComponent<BoxCollider>();
+        var collider = entity.GetComponent<BoxCollider>();
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;
@@ -305,7 +289,7 @@ public class Axle : MapObject
 
     public float getTrainLoad()
     {
-        float w = 0;
+        float w = 0f;
         if (bogieFrame != null)
         {
             var a = bogieFrame.body;

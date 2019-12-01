@@ -15,8 +15,6 @@ public class Body : MapObject
     public const string KEY_BOGIE_CENTER_DIST = "BCD";
     public const string KEY_CAR_LENGTH = "CAR_LENGTH";
     public const string KEY_BOGIEFRAMES = "BOGIEFRAMES";
-    public const string KEY_PERMANENT_COUPLER_1 = "PC1";
-    public const string KEY_PERMANENT_COUPLER_2 = "PC2";
 
     public const float COLLIDER_WIDTH = 2.95f;
     public const float COLLIDER_HEIGHT = 0.16f;
@@ -27,11 +25,27 @@ public class Body : MapObject
     public float bogieCenterDist;
     public float carLength;
     public List<BogieFrame> bogieFrames { get; private set; }
-    public PermanentCoupler permanentCoupler1;
-    public PermanentCoupler permanentCoupler2;
+
+
+    // Direct Controller
+    public const string KEY_MOTORS = "MOTORS";
+    public const string KEY_REVERSER = "REVERSER";
+    public const string KEY_NOTCH = "NOTCH";
+    public const string KEY_POWER_NOTCHS = "POWER_NOTCHS";
+    public const string KEY_BRAKE_NOTCHS = "BRAKE_NOTCHS";
+
+    public List<Axle> motors;
+    public int reverser;
+    public int notch;
+    public int powerNotchs;
+    public int brakeNotchs;
+
 
     public GameObject modelObj;
+    public PermanentCoupler permanentCoupler1;
+    public PermanentCoupler permanentCoupler2;
     public float speed = 0f;
+    public float lastMoved = -1f;
 
     public Body(Map map, List<BogieFrame> bogieFrames) : base(map)
     {
@@ -39,8 +53,14 @@ public class Body : MapObject
         bogieHeight = 0.97f;
         bogieCenterDist = 13.8f;
         carLength = 19.5f;
-        foreach (var bogieFrame in this.bogieFrames = bogieFrames)
-            bogieFrame.body = this;
+        foreach (var bf in this.bogieFrames = bogieFrames)
+            bf.body = this;
+
+        this.motors = new List<Axle>();
+        reverser = 0;
+        notch = 0;
+        powerNotchs = 5;
+        brakeNotchs = 8;
     }
 
     protected Body(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -50,8 +70,14 @@ public class Body : MapObject
         bogieCenterDist = info.GetSingle(KEY_BOGIE_CENTER_DIST);
         carLength = info.GetSingle(KEY_CAR_LENGTH);
         bogieFrames = (List<BogieFrame>)info.GetValue(KEY_BOGIEFRAMES, typeof(List<BogieFrame>));
-        permanentCoupler1 = (PermanentCoupler)info.GetValue(KEY_PERMANENT_COUPLER_1, typeof(PermanentCoupler));
-        permanentCoupler2 = (PermanentCoupler)info.GetValue(KEY_PERMANENT_COUPLER_2, typeof(PermanentCoupler));
+        foreach (var bf in bogieFrames)
+            bf.body = this;
+
+        motors = (List<Axle>)info.GetValue(KEY_MOTORS, typeof(List<Axle>));
+        reverser = info.GetInt32(KEY_REVERSER);
+        notch = info.GetInt32(KEY_NOTCH);
+        powerNotchs = info.GetInt32(KEY_POWER_NOTCHS);
+        brakeNotchs = info.GetInt32(KEY_BRAKE_NOTCHS);
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -62,8 +88,14 @@ public class Body : MapObject
         info.AddValue(KEY_BOGIE_CENTER_DIST, bogieCenterDist);
         info.AddValue(KEY_CAR_LENGTH, carLength);
         info.AddValue(KEY_BOGIEFRAMES, bogieFrames);
-        info.AddValue(KEY_PERMANENT_COUPLER_1, permanentCoupler1);
-        info.AddValue(KEY_PERMANENT_COUPLER_2, permanentCoupler2);
+        foreach (var bf in bogieFrames)
+            bf.body = this;
+
+        info.AddValue(KEY_MOTORS, motors);
+        info.AddValue(KEY_REVERSER, reverser);
+        info.AddValue(KEY_NOTCH, notch);
+        info.AddValue(KEY_POWER_NOTCHS, powerNotchs);
+        info.AddValue(KEY_BRAKE_NOTCHS, brakeNotchs);
     }
 
     public override void generate()
@@ -78,6 +110,7 @@ public class Body : MapObject
     {
         snapToBogieFrame();
         snapFromBogieFrame();
+
         reloadEntity();
     }
 
@@ -86,6 +119,33 @@ public class Body : MapObject
     /// </summary>
     public void snapToBogieFrame()
     {
+        if (lastMoved == Time.time)
+            return;
+        lastMoved = Time.time;
+
+        // 運転台の操作を反映
+        if (Main.INSTANCE.runPanel.body == this)
+            Main.INSTANCE.runPanel.controlOnUpdate();
+        if (motors.Count != 0 && notch != 0)
+        {
+            float w = 0f;
+            foreach (var axle in motors)
+            {
+                if (w == 0)
+                    w = axle.getTrainLoad() / motors.Count;
+                var a = (float)notch;
+                if (a < 0)
+                {
+                    if (axle.speed < 0)
+                        axle.inputPower(-a / brakeNotchs, w, true);
+                    else
+                        axle.inputPower(a / brakeNotchs, w, true);
+                }
+                else if (a > 0 && reverser != 0)
+                    axle.inputPower((reverser == 1 ? a : -a) / powerNotchs, w);
+            }
+        }
+
         if (bogieFrames.Count > 0)
         {
             var p = Vector3.zero;
@@ -155,7 +215,7 @@ public class Body : MapObject
 
     public void reloadCollider()
     {
-        BoxCollider collider = entity.GetComponent<BoxCollider>();
+        var collider = entity.GetComponent<BoxCollider>();
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +14,7 @@ public class PlayingPanel : GamePanel
     public Button placeBodyButton;
     public Button placeCouplerButton;
     public Button placePermanentCouplerButton;
-    public Button placeDirectControllerButton;
+    public Button setMotorsButton;
     public Button runButton;
 
     public void GuideButton()
@@ -51,24 +50,23 @@ public class PlayingPanel : GamePanel
 
     public void PlaceBFButton()
     {
-        BogieFrame bf = new BogieFrame(Main.playingmap, Main.selectingObjs.Where(obj => obj is Axle).OfType<Axle>().ToList());
+        var bf = new BogieFrame(Main.playingmap, Main.selectingObjs.Where(obj => obj is Axle).OfType<Axle>().ToList());
         bf.generate();
         Main.playingmap.addObject(bf);
     }
 
     public void PlaceBodyButton()
     {
-        Body body = new Body(Main.playingmap, Main.selectingObjs.Where(obj => obj is BogieFrame).OfType<BogieFrame>().ToList());
+        var body = new Body(Main.playingmap, Main.selectingObjs.Where(obj => obj is BogieFrame).OfType<BogieFrame>().ToList());
         body.generate();
         Main.playingmap.addObject(body);
     }
 
     public void PlaceCouplerButton()
     {
-        var bodies = Main.selectingObjs.Where(obj => obj is Body).OfType<Body>().ToList();
-        foreach (var body in bodies)
+        foreach (var body in Main.selectingObjs.Where(obj => obj is Body).OfType<Body>().ToList())
         {
-            Coupler c = new Coupler(Main.playingmap);
+            var c = new Coupler(Main.playingmap);
             c.body = body;
             Main.editingCoupler = c;
             c.generate();
@@ -90,34 +88,26 @@ public class PlayingPanel : GamePanel
         var bodies = Main.selectingObjs.Where(obj => obj is Body).OfType<Body>().ToList();
         if (bodies.Count >= 2)
         {
-            PermanentCoupler c = new PermanentCoupler(Main.playingmap, bodies[0], bodies[1]);
+            var c = new PermanentCoupler(Main.playingmap, bodies[0], bodies[1]);
             c.generate();
             Main.playingmap.addObject(c);
         }
     }
 
-    public void PlaceDirectControllerButton()
+    public void SetMotorsButton()
     {
-        Body body = null;
         foreach (var obj in Main.selectingObjs)
-        {
             if (obj is Body)
-            {
-                body = (Body)obj;
-                break;
-            }
-        }
-        DirectController dc = new DirectController(Main.playingmap, body, Main.selectingObjs.Where(obj => obj is Axle).OfType<Axle>().ToList());
-        dc.generate();
-        Main.playingmap.addObject(dc);
+                ((Body)obj).motors = Main.selectingObjs.Where(o => o is Axle).OfType<Axle>().ToList();
     }
 
     public void RunButton()
     {
         foreach (var obj in Main.selectingObjs)
         {
-            if (obj is DirectController)
+            if (obj is Body)
             {
+                Main.INSTANCE.runPanel.body = (Body)obj;
                 Main.INSTANCE.runPanel.show(true);
                 break;
             }
@@ -139,8 +129,8 @@ public class PlayingPanel : GamePanel
                 break;
         }
         placePermanentCouplerButton.interactable = a >= 2;
-        placeDirectControllerButton.interactable = Main.selectingObjs.Any(obj => obj is Body);
-        runButton.interactable = Main.selectingObjs.Any(obj => obj is DirectController);
+        setMotorsButton.interactable = Main.selectingObjs.Any(obj => obj is Body);
+        runButton.interactable = Main.selectingObjs.Any(obj => obj is Body);
     }
 
     public void b()

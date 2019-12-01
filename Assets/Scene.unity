@@ -5736,6 +5736,2343 @@ MonoBehaviour:
   speedText: {fileID: 954739146}
   notchText: {fileID: 692415774}
   reverserText: {fileID: 1448090542}
+  body:
+    pos: {x: 0, y: 0, z: 0}
+    rot: {x: 0, y: 0, z: 0, w: 0}
+    useSelectingMat: 0
+    carWeight: 0
+    bogieHeight: 0
+    bogieCenterDist: 0
+    carLength: 0
+    permanentCoupler1:
+      pos: {x: 0, y: 0, z: 0}
+      rot: {x: 0, y: 0, z: 0, w: 0}
+      useSelectingMat: 0
+      body1:
+        pos: {x: 0, y: 0, z: 0}
+        rot: {x: 0, y: 0, z: 0, w: 0}
+        useSelectingMat: 0
+        carWeight: 0
+        bogieHeight: 0
+        bogieCenterDist: 0
+        carLength: 0
+        permanentCoupler1:
+          pos: {x: 0, y: 0, z: 0}
+          rot: {x: 0, y: 0, z: 0, w: 0}
+          useSelectingMat: 0
+          body1:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          body2:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          height: 0
+          length: 0
+          modelObj: {fileID: 0}
+        permanentCoupler2:
+          pos: {x: 0, y: 0, z: 0}
+          rot: {x: 0, y: 0, z: 0, w: 0}
+          useSelectingMat: 0
+          body1:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          body2:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          height: 0
+          length: 0
+          modelObj: {fileID: 0}
+        modelObj: {fileID: 0}
+        speed: 0
+        axles: []
+        reverser: 0
+        notch: 0
+        powerNotchs: 0
+        brakeNotchs: 0
+      body2:
+        pos: {x: 0, y: 0, z: 0}
+        rot: {x: 0, y: 0, z: 0, w: 0}
+        useSelectingMat: 0
+        carWeight: 0
+        bogieHeight: 0
+        bogieCenterDist: 0
+        carLength: 0
+        permanentCoupler1:
+          pos: {x: 0, y: 0, z: 0}
+          rot: {x: 0, y: 0, z: 0, w: 0}
+          useSelectingMat: 0
+          body1:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          body2:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          height: 0
+          length: 0
+          modelObj: {fileID: 0}
+        permanentCoupler2:
+          pos: {x: 0, y: 0, z: 0}
+          rot: {x: 0, y: 0, z: 0, w: 0}
+          useSelectingMat: 0
+          body1:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          body2:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          height: 0
+          length: 0
+          modelObj: {fileID: 0}
+        modelObj: {fileID: 0}
+        speed: 0
+        axles: []
+        reverser: 0
+        notch: 0
+        powerNotchs: 0
+        brakeNotchs: 0
+      height: 0
+      length: 0
+      modelObj: {fileID: 0}
+    permanentCoupler2:
+      pos: {x: 0, y: 0, z: 0}
+      rot: {x: 0, y: 0, z: 0, w: 0}
+      useSelectingMat: 0
+      body1:
+        pos: {x: 0, y: 0, z: 0}
+        rot: {x: 0, y: 0, z: 0, w: 0}
+        useSelectingMat: 0
+        carWeight: 0
+        bogieHeight: 0
+        bogieCenterDist: 0
+        carLength: 0
+        permanentCoupler1:
+          pos: {x: 0, y: 0, z: 0}
+          rot: {x: 0, y: 0, z: 0, w: 0}
+          useSelectingMat: 0
+          body1:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          body2:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          height: 0
+          length: 0
+          modelObj: {fileID: 0}
+        permanentCoupler2:
+          pos: {x: 0, y: 0, z: 0}
+          rot: {x: 0, y: 0, z: 0, w: 0}
+          useSelectingMat: 0
+          body1:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          body2:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          height: 0
+          length: 0
+          modelObj: {fileID: 0}
+        modelObj: {fileID: 0}
+        speed: 0
+        axles: []
+        reverser: 0
+        notch: 0
+        powerNotchs: 0
+        brakeNotchs: 0
+      body2:
+        pos: {x: 0, y: 0, z: 0}
+        rot: {x: 0, y: 0, z: 0, w: 0}
+        useSelectingMat: 0
+        carWeight: 0
+        bogieHeight: 0
+        bogieCenterDist: 0
+        carLength: 0
+        permanentCoupler1:
+          pos: {x: 0, y: 0, z: 0}
+          rot: {x: 0, y: 0, z: 0, w: 0}
+          useSelectingMat: 0
+          body1:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          body2:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          height: 0
+          length: 0
+          modelObj: {fileID: 0}
+        permanentCoupler2:
+          pos: {x: 0, y: 0, z: 0}
+          rot: {x: 0, y: 0, z: 0, w: 0}
+          useSelectingMat: 0
+          body1:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          body2:
+            pos: {x: 0, y: 0, z: 0}
+            rot: {x: 0, y: 0, z: 0, w: 0}
+            useSelectingMat: 0
+            carWeight: 0
+            bogieHeight: 0
+            bogieCenterDist: 0
+            carLength: 0
+            permanentCoupler1:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            permanentCoupler2:
+              pos: {x: 0, y: 0, z: 0}
+              rot: {x: 0, y: 0, z: 0, w: 0}
+              useSelectingMat: 0
+              body1:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              body2:
+                pos: {x: 0, y: 0, z: 0}
+                rot: {x: 0, y: 0, z: 0, w: 0}
+                useSelectingMat: 0
+                carWeight: 0
+                bogieHeight: 0
+                bogieCenterDist: 0
+                carLength: 0
+                permanentCoupler1:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                permanentCoupler2:
+                  pos: {x: 0, y: 0, z: 0}
+                  rot: {x: 0, y: 0, z: 0, w: 0}
+                  useSelectingMat: 0
+                  height: 0
+                  length: 0
+                modelObj: {fileID: 0}
+                speed: 0
+                axles: []
+                reverser: 0
+                notch: 0
+                powerNotchs: 0
+                brakeNotchs: 0
+              height: 0
+              length: 0
+              modelObj: {fileID: 0}
+            modelObj: {fileID: 0}
+            speed: 0
+            axles: []
+            reverser: 0
+            notch: 0
+            powerNotchs: 0
+            brakeNotchs: 0
+          height: 0
+          length: 0
+          modelObj: {fileID: 0}
+        modelObj: {fileID: 0}
+        speed: 0
+        axles: []
+        reverser: 0
+        notch: 0
+        powerNotchs: 0
+        brakeNotchs: 0
+      height: 0
+      length: 0
+      modelObj: {fileID: 0}
+    modelObj: {fileID: 0}
+    speed: 0
+    axles: []
+    reverser: 0
+    notch: 0
+    powerNotchs: 0
+    brakeNotchs: 0
 --- !u!114 &565442677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12191,7 +14528,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Place Direct Controller
+  m_Text: Set Motors
 --- !u!222 &1192199853
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17684,7 +20021,7 @@ MonoBehaviour:
   placeBodyButton: {fileID: 2000762463}
   placeCouplerButton: {fileID: 1197079589}
   placePermanentCouplerButton: {fileID: 163208888}
-  placeDirectControllerButton: {fileID: 2140403580}
+  setMotorsButton: {fileID: 2140403580}
   runButton: {fileID: 714223328}
 --- !u!1 &1806417101
 GameObject:
@@ -20149,6 +22486,8 @@ MonoBehaviour:
   verticalSegmentSettingPanelPrefab: {fileID: 680409747942122912, guid: 7b7f5385308c02d46b5d18ae6ebbda86,
     type: 3}
   segmentParent: {fileID: 1891689828}
+  segmentHeight: 150
+  verticalSegmentHeight: 90
 --- !u!114 &2084530852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20796,7 +23135,7 @@ GameObject:
   - component: {fileID: 2140403581}
   - component: {fileID: 2140403580}
   m_Layer: 5
-  m_Name: PlaceDirectControllerButton
+  m_Name: SetMotorsButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20866,7 +23205,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1800391908}
-        m_MethodName: PlaceDirectControllerButton
+        m_MethodName: SetMotorsButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

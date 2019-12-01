@@ -24,6 +24,7 @@ public class PermanentCoupler : MapObject
     public float length;
 
     public GameObject modelObj;
+    public float lastMoved = -1f;
 
     public PermanentCoupler(Map map, Body body1, Body body2) : base(map)
     {
@@ -78,6 +79,10 @@ public class PermanentCoupler : MapObject
     /// </summary>
     public void snapTo()
     {
+        if (lastMoved == Time.time)
+            return;
+        lastMoved = Time.time;
+
         body1.snapToBogieFrame();
         body2.snapToBogieFrame();
         var pos1 = body1.pos + body1.rot * new Vector3(0, height - body1.bogieHeight, (body1.carLength / 2 - length / 2) * ((Quaternion.Inverse(body1.rot) * (body2.pos - body1.pos)).z > 0 ? 1 : -1));
@@ -121,7 +126,7 @@ public class PermanentCoupler : MapObject
 
     public void reloadCollider()
     {
-        BoxCollider collider = entity.GetComponent<BoxCollider>();
+        var collider = entity.GetComponent<BoxCollider>();
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;

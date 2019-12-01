@@ -37,7 +37,6 @@ public class Map : ISerializable
         }
     }
     public MapInfo info; // マップの情報
-
     public List<MapObject> objs { get; private set; } // オブジェクト
     public float time; // マップの時間。0時からの秒数
     public Vector3 cameraPos; // カメラの位置（マップ読み込み時用）

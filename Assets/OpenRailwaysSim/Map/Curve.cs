@@ -13,32 +13,13 @@ public class Curve : Track
     public const string KEY_IS_VERTICAL_CURVE = "IS_V_C";
     public const string KEY_CANT = "C";
     public const string KEY_CANT_ROTATION = "C_R";
-    public const float MIN_RADIUS = 1f;
     public const float FINENESS_DISTANCE = 5f;
 
-    public override float length
-    {
-        get { return _length; }
-        set { _length = Mathf.Max(MIN_TRACK_LENGTH, Mathf.Min(value, 2f * Mathf.PI * Mathf.Abs(_radius))); }
-    }
-    private float _radius = MIN_RADIUS;
-    public float radius
-    {
-        get
-        {
-            return _radius;
-        }
-        set
-        {
-            if (value > 0f)
-                _radius = Mathf.Max(MIN_RADIUS, value);
-            else
-                _radius = Mathf.Min(-MIN_RADIUS, value);
-        }
-    }
+    public float radius;
     public bool isVerticalCurve = false;
     public float cant = 0f;
     public bool cantRotation = false;
+
     public BoxCollider[] colliders = new BoxCollider[0];
 
     public Curve(Map map, Vector3 pos) : base(map, pos)
@@ -51,7 +32,7 @@ public class Curve : Track
 
     protected Curve(SerializationInfo info, StreamingContext context) : base(info, context)
     {
-        _radius = info.GetSingle(KEY_RADIUS);
+        radius = info.GetSingle(KEY_RADIUS);
         isVerticalCurve = info.GetBoolean(KEY_IS_VERTICAL_CURVE);
         cant = info.GetSingle(KEY_CANT);
         cantRotation = info.GetBoolean(KEY_CANT_ROTATION);
@@ -60,7 +41,7 @@ public class Curve : Track
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
-        info.AddValue(KEY_RADIUS, _radius);
+        info.AddValue(KEY_RADIUS, radius);
         info.AddValue(KEY_IS_VERTICAL_CURVE, isVerticalCurve);
         info.AddValue(KEY_CANT, cant);
         info.AddValue(KEY_CANT_ROTATION, cantRotation);
@@ -76,11 +57,11 @@ public class Curve : Track
 
     public override void reloadTrackRendererPositions()
     {
-        var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+        var l = Mathf.CeilToInt(length / FINENESS_DISTANCE);
         var p = new Vector3[l + 1];
         p[0] = pos;
         for (var a = 1; a <= l; a++)
-            p[a] = getPoint((float)a / (float)l);
+            p[a] = getPoint((float)a / l);
         trackRenderer.positionCount = p.Length;
         trackRenderer.SetPositions(p);
     }
@@ -109,7 +90,7 @@ public class Curve : Track
                 else
                     railRenderers[a].sharedMaterial = Main.INSTANCE.rail_mat;
 
-                var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+                var l = Mathf.CeilToInt(length / FINENESS_DISTANCE);
                 var p = new Vector3[l + 1];
                 for (var b = 0; b <= l; b++)
                     p[b] = getPointCanted((float)b / l) + getRotationCanted((float)b / l) * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
@@ -127,7 +108,7 @@ public class Curve : Track
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
         var r_ = Quaternion.Inverse(rot);
-        railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
+        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
         for (var a = 0; a < railModelObjs.Length / 2; a++)
         {
@@ -153,7 +134,7 @@ public class Curve : Track
         if (tieModelObjs != null)
             foreach (var r in tieModelObjs)
                 GameObject.Destroy(r.gameObject);
-        tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
+        tieModelObjs = new GameObject[Mathf.CeilToInt(length / TIE_MODEL_INTERVAL)];
         for (var a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.INSTANCE.tieModel)).transform.parent = entity.transform;
@@ -166,7 +147,7 @@ public class Curve : Track
 
     public override void reloadCollider()
     {
-        var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+        var l = Mathf.CeilToInt(length / FINENESS_DISTANCE);
         if (colliders.Length != l)
         {
             for (var a = 0; a < colliders.Length; a++)
@@ -200,12 +181,12 @@ public class Curve : Track
     /// <param name="a">位置(0-1)</param>
     public override Vector3 getPoint(float a)
     {
-        var d = _length * a;
-        var d1 = d * Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad) / Mathf.Abs(_radius);
+        var d = length * a;
+        var d1 = d * Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad) / Mathf.Abs(radius);
         d *= Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad);
         return isVerticalCurve ?
-        pos + rot * new Vector3(0f, (1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(d1) * Mathf.Abs(_radius)) :
-        pos + Quaternion.Euler(0, rot.eulerAngles.y, 0) * new Vector3((1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(-rot.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(_radius));
+        pos + rot * new Vector3(0f, (1f - Mathf.Cos(d1)) * radius, Mathf.Sin(d1) * Mathf.Abs(radius)) :
+        pos + Quaternion.Euler(0f, rot.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d1)) * radius, Mathf.Sin(-rot.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(radius));
     }
 
     /// <summary>
@@ -214,15 +195,15 @@ public class Curve : Track
     /// <param name="a">位置(0-1)</param>
     public virtual Vector3 getPointCanted(float a)
     {
-        var d = _length * a;
-        var d1 = d * Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad) / Mathf.Abs(_radius);
+        var d = length * a;
+        var d1 = d * Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad) / Mathf.Abs(radius);
         d *= Mathf.Cos(rot.eulerAngles.x * Mathf.Deg2Rad);
         if (isVerticalCurve)
-            return pos + rot * new Vector3(0f, (1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(d1) * Mathf.Abs(_radius));
+            return pos + rot * new Vector3(0f, (1f - Mathf.Cos(d1)) * radius, Mathf.Sin(d1) * Mathf.Abs(radius));
         else
         {
             var p = cantRotation ? Vector3.zero : Vector3.up * cant / 2f;
-            return pos + Quaternion.Euler(0, rot.eulerAngles.y, 0) * (new Vector3((1f - Mathf.Cos(d1)) * _radius, Mathf.Sin(-rot.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(_radius)) + p);
+            return pos + Quaternion.Euler(0f, rot.eulerAngles.y, 0f) * (new Vector3((1f - Mathf.Cos(d1)) * radius, Mathf.Sin(-rot.eulerAngles.x * Mathf.Deg2Rad) * d, Mathf.Sin(d1) * Mathf.Abs(radius)) + p);
         }
     }
 
@@ -233,8 +214,8 @@ public class Curve : Track
     public override Quaternion getRotation(float a)
     {
         return isVerticalCurve ?
-        rot * Quaternion.Euler(-_length * a * Mathf.Rad2Deg / _radius, 0f, 0f) :
-        Quaternion.Euler(0f, rot.eulerAngles.y, 0f) * Quaternion.Euler(rot.eulerAngles.x, _length * a * Mathf.Rad2Deg / _radius, 0f);
+        rot * Quaternion.Euler(-length * a * Mathf.Rad2Deg / radius, 0f, 0f) :
+        Quaternion.Euler(0f, rot.eulerAngles.y, 0f) * Quaternion.Euler(rot.eulerAngles.x, length * a * Mathf.Rad2Deg / radius, 0f);
     }
 
     /// <summary>
@@ -244,8 +225,8 @@ public class Curve : Track
     public virtual Quaternion getRotationCanted(float a)
     {
         return isVerticalCurve ?
-        rot * Quaternion.Euler(-_length * a * Mathf.Rad2Deg / _radius, 0f, 0f) :
-        Quaternion.Euler(0f, rot.eulerAngles.y, 0f) * Quaternion.Euler(rot.eulerAngles.x, _length * a * Mathf.Rad2Deg / _radius, -Mathf.Atan(cant / gauge) * Mathf.Rad2Deg);
+        rot * Quaternion.Euler(-length * a * Mathf.Rad2Deg / radius, 0f, 0f) :
+        Quaternion.Euler(0f, rot.eulerAngles.y, 0f) * Quaternion.Euler(rot.eulerAngles.x, length * a * Mathf.Rad2Deg / radius, -Mathf.Atan(cant / gauge) * Mathf.Rad2Deg);
     }
 
     /// <summary>
@@ -295,12 +276,12 @@ public class Curve : Track
                 A = Mathf.PI + A;
             if (a.z < 0f)
                 A += Mathf.PI;
-            return A * _length / A1;
+            return A * length / A1;
         }
     }
 
     public virtual bool isLinear()
     {
-        return _length / _radius <= Mathf.PI * 2f && rot == getRotation(1);
+        return length / radius <= Mathf.PI * 2f && rot == getRotation(1f);
     }
 }

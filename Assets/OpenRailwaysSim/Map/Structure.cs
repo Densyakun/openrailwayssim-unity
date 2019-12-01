@@ -14,11 +14,10 @@ public class Structure : MapObject
 
     public string path;
 
-    Mesh mesh;
-
+    public Mesh mesh;
     public TextEntity textEntity;
 
-    public Structure(Map map, Vector3 pos) : base(map, pos, Quaternion.identity)
+    public Structure(Map map, Vector3 pos) : base(map, pos)
     {
         path = "";
 

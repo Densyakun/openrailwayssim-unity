@@ -17,7 +17,7 @@ public class MapPin : MapObject
 
     public TextEntity textEntity;
 
-    public MapPin(Map map, Vector3 pos) : base(map, pos, Quaternion.identity)
+    public MapPin(Map map, Vector3 pos) : base(map, pos)
     {
     }
 

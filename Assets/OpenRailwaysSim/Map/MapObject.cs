@@ -12,39 +12,14 @@ public class MapObject : ISerializable
     public const string KEY_POS = "POS";
     public const string KEY_ROTATION = "ROT";
 
+    public Vector3 pos;
+    public Quaternion rot;
+
+    [NonSerialized]
     public MapEntity entity;
-    private Map _map;
-    public Map map
-    {
-        get { return _map; }
-        set
-        {
-            if (_map == null)
-                _map = value;
-        }
-    }
-    private Vector3 _pos;
-    public Vector3 pos
-    {
-        get { return _pos; }
-        set
-        {
-            _pos = value;
-            if (entity != null)
-                entity.transform.position = pos;
-        }
-    }
-    private Quaternion _rot;
-    public Quaternion rot
-    {
-        get { return _rot; }
-        set
-        {
-            _rot = value;
-            if (entity != null)
-                entity.transform.rotation = rot;
-        }
-    }
+    [NonSerialized]
+    public Map map;
+
     public bool useSelectingMat = false;
 
     public MapObject(Map map) : this(map, new Vector3(), Quaternion.identity)
@@ -58,16 +33,16 @@ public class MapObject : ISerializable
     public MapObject(Map map, Vector3 pos, Quaternion rot)
     {
         this.map = map;
-        this._pos = pos;
-        this._rot = rot;
+        this.pos = pos;
+        this.rot = rot;
     }
 
     protected MapObject(SerializationInfo info, StreamingContext context)
     {
         if (info == null)
             throw new ArgumentNullException("info");
-        _pos = ((SerializableVector3)info.GetValue(KEY_POS, typeof(SerializableVector3))).toVector3();
-        _rot = ((SerializableQuaternion)info.GetValue(KEY_ROTATION, typeof(SerializableQuaternion))).toQuaternion();
+        pos = ((SerializableVector3)info.GetValue(KEY_POS, typeof(SerializableVector3))).toVector3();
+        rot = ((SerializableQuaternion)info.GetValue(KEY_ROTATION, typeof(SerializableQuaternion))).toQuaternion();
     }
 
     public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -75,8 +50,8 @@ public class MapObject : ISerializable
         if (info == null)
             throw new ArgumentNullException("info");
         SyncFromEntity();
-        info.AddValue(KEY_POS, new SerializableVector3(_pos));
-        info.AddValue(KEY_ROTATION, new SerializableQuaternion(_rot));
+        info.AddValue(KEY_POS, new SerializableVector3(pos));
+        info.AddValue(KEY_ROTATION, new SerializableQuaternion(rot));
     }
 
     public virtual void generate()
@@ -104,8 +79,8 @@ public class MapObject : ISerializable
     {
         if (!entity)
             return;
-        entity.transform.position = _pos;
-        entity.transform.rotation = _rot;
+        entity.transform.position = pos;
+        entity.transform.rotation = rot;
     }
 
     public void reloadMaterial(GameObject obj)
@@ -175,8 +150,17 @@ public class MapObject : ISerializable
     {
         if (entity)
         {
-            _pos = entity.transform.position;
-            _rot = entity.transform.rotation;
+            pos = entity.transform.position;
+            rot = entity.transform.rotation;
+        }
+    }
+
+    public virtual void SyncToEntity()
+    {
+        if (entity)
+        {
+            entity.transform.position = pos;
+            entity.transform.rotation = rot;
         }
     }
 }

@@ -24,6 +24,7 @@ public class Shape : Track
     public List<bool> cantRotation;
     public List<float> verticalCurveLength;
     public List<float> verticalCurveRadius;
+
     public BoxCollider[] colliders = new BoxCollider[0];
 
     public Shape(Map map, Vector3 pos) : base(map, pos)
@@ -77,7 +78,7 @@ public class Shape : Track
 
     public override void reloadTrackRendererPositions()
     {
-        var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+        var l = Mathf.CeilToInt(length / FINENESS_DISTANCE);
         var p = new Vector3[l + 1];
         p[0] = pos;
         for (var a = 1; a <= l; a++)
@@ -110,7 +111,7 @@ public class Shape : Track
                 else
                     railRenderers[a].sharedMaterial = Main.INSTANCE.rail_mat;
 
-                var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+                var l = Mathf.CeilToInt(length / FINENESS_DISTANCE);
                 var p = new Vector3[l + 1];
                 for (var b = 0; b <= l; b++)
                     p[b] = getPointCanted((float)b / l) + getRotationCanted((float)b / l) * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
@@ -128,7 +129,7 @@ public class Shape : Track
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
         var r_ = Quaternion.Inverse(rot);
-        railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
+        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
         for (var a = 0; a < railModelObjs.Length / 2; a++)
         {
@@ -158,7 +159,7 @@ public class Shape : Track
         if (tieModelObjs != null)
             foreach (var r in tieModelObjs)
                 GameObject.Destroy(r.gameObject);
-        tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
+        tieModelObjs = new GameObject[Mathf.CeilToInt(length / TIE_MODEL_INTERVAL)];
         for (var a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.INSTANCE.tieModel)).transform.parent = entity.transform;
@@ -171,7 +172,7 @@ public class Shape : Track
 
     public override void reloadCollider()
     {
-        var l = Mathf.CeilToInt(_length / FINENESS_DISTANCE);
+        var l = Mathf.CeilToInt(length / FINENESS_DISTANCE);
         if (colliders.Length != l)
         {
             for (var a = 0; a < colliders.Length; a++)
@@ -209,7 +210,7 @@ public class Shape : Track
         foreach (var l_ in curveLength)
             l1 += l_;
 
-        return getPointFlat(LengthToFlatLength(a * _length) / l1);
+        return getPointFlat(LengthToFlatLength(a * length) / l1);
     }
 
     /// <summary>
@@ -218,7 +219,7 @@ public class Shape : Track
     /// <param name="a">位置(0-1)</param>
     public virtual Vector3 getPointCanted(float a)
     {
-        var l = LengthToFlatLength(a * _length);
+        var l = LengthToFlatLength(a * length);
         var c = 0f;
         var l1 = 0f;
         for (var n = 0; n < curveLength.Count; n++)
@@ -321,7 +322,7 @@ public class Shape : Track
         foreach (var l_ in curveLength)
             l1 += l_;
 
-        return getRotationFlat(LengthToFlatLength(a * _length) / l1);
+        return getRotationFlat(LengthToFlatLength(a * length) / l1);
     }
 
     /// <summary>
@@ -330,7 +331,7 @@ public class Shape : Track
     /// <param name="a">位置(0-1)</param>
     public virtual Quaternion getRotationCanted(float a)
     {
-        var l = LengthToFlatLength(a * _length);
+        var l = LengthToFlatLength(a * length);
         var c = 0f;
         var l1 = 0f;
         for (var n = 0; n < curveLength.Count; n++)
@@ -420,15 +421,23 @@ public class Shape : Track
     /// <param name="pos">座標</param>
     public float getLengthFlat(Vector3 pos)
     {
+        var c = new List<Vector3>();
+        var d = new List<float>();
         var l = 0f;
         for (var n = 0; n < curveLength.Count; n++)
         {
             var p = getPointFlat(l);
             var r1 = Quaternion.Inverse(getRotationFlat(l));
             float l1;
-            // TODO 一番近い点を探す
             if (curveRadius[n] == 0f)
+            {
                 l1 = (r1 * (pos - p)).z;
+                if (l1 <= curveLength[n])
+                {
+                    c.Add(p + r1 * pos);
+                    d.Add(l + l1);
+                }
+            }
             else
             {
                 // TODO 勾配に対応している？
@@ -455,11 +464,17 @@ public class Shape : Track
                     A = Mathf.PI + A;
                 if (a.z < 0f)
                     A += Mathf.PI;
-                l1 = A * _length / A1;
+                l1 = A * length / A1;
+                if (l1 <= curveLength[n])
+                {
+                    c.Add(curveRadius[n] == 0f ? p : p);
+                    d.Add(l + l1);
+                }
             }
-            if (l1 <= curveLength[n])
-                return l + l1;
             l += curveLength[n];
+        }
+        foreach (var a in d)
+        {
         }
         return l;
     }
@@ -474,7 +489,7 @@ public class Shape : Track
         foreach (var l_ in curveLength)
             l1 += l_;
 
-        return getCantFlat(LengthToFlatLength(a * _length) / l1);
+        return getCantFlat(LengthToFlatLength(a * length) / l1);
     }
 
     /// <summary>
@@ -595,7 +610,7 @@ public class Shape : Track
             l1 += l_;
 
         l6 = (l1 - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
-        return l7 + (_length - l7) * (l - l2) / (l1 - l2);
+        return l7 + (length - l7) * (l - l2) / (l1 - l2);
     }
 
     /// <summary>

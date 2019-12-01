@@ -129,10 +129,14 @@ public class ShapeSettingPanel : GamePanel
             var cantRotationL = new List<bool>();
             foreach (var p in segmentPanels)
             {
-                lengthL.Add(Mathf.Max(0f, float.Parse(p.lengthInput.text)));
-                radiusL.Add(float.Parse(p.radiusInput.text));
-                cantL.Add(Mathf.Min(float.Parse(p.cantInput.text), Mathf.PI / 2f));
-                cantRotationL.Add(p.cantRotationToggle.isOn);
+                var l = Mathf.Max(0f, float.Parse(p.lengthInput.text));
+                if (l != 0f)
+                {
+                    lengthL.Add(l);
+                    radiusL.Add(float.Parse(p.radiusInput.text));
+                    cantL.Add(Mathf.Min(float.Parse(p.cantInput.text), Mathf.PI / 2f));
+                    cantRotationL.Add(p.cantRotationToggle.isOn);
+                }
             }
             curveLength = lengthL;
             curveRadius = radiusL;

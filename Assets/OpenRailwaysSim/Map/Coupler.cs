@@ -28,6 +28,7 @@ public class Coupler : MapObject
     public Quaternion localRot;
 
     public GameObject modelObj;
+    public float lastMoved = -1f;
 
     public Coupler(Map map) : base(map)
     {
@@ -78,6 +79,10 @@ public class Coupler : MapObject
     /// </summary>
     public void snapTo()
     {
+        if (lastMoved == Time.time)
+            return;
+        lastMoved = Time.time;
+
         body.snapToBogieFrame();
         pos = body.pos + body.rot * new Vector3(0, height - body.bogieHeight, (body.carLength / 2 - length) * (isFront ? 1 : -1));
 
@@ -125,7 +130,7 @@ public class Coupler : MapObject
 
     public void reloadCollider()
     {
-        BoxCollider collider = entity.GetComponent<BoxCollider>();
+        var collider = entity.GetComponent<BoxCollider>();
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;

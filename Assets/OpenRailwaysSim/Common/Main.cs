@@ -17,6 +17,7 @@ public class Main : MonoBehaviour
 
     public const string VERSION = "0.001alpha";
     public const float ALLOWABLE_RANGE = 0.0001f;
+    public const float SNAP_DIST = 1f;
 
     public static Main INSTANCE;
     public static Map playingmap { get; private set; }
@@ -357,9 +358,9 @@ public class Main : MonoBehaviour
                     if (focused is Track)
                     {
                         focusedDist = ((Track)focused).getLength(hit.point);
-                        if (focusedDist < Track.MIN_TRACK_LENGTH)
+                        if (focusedDist < SNAP_DIST)
                             focusedDist = 0f;
-                        else if (focusedDist > ((Track)focused).length - Track.MIN_TRACK_LENGTH)
+                        else if (focusedDist > ((Track)focused).length - SNAP_DIST)
                             focusedDist = ((Track)focused).length;
                         p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
                     }
@@ -370,7 +371,6 @@ public class Main : MonoBehaviour
 
                 if (mode == MODE_CONSTRUCT_TRACK)
                 {
-                    var aaa = false;
                     if (Input.GetMouseButtonUp(0))
                     {
                         if (editingTracks.Any())
@@ -406,24 +406,20 @@ public class Main : MonoBehaviour
                         }
 
                         if (editingTracks.Any())
-                            aaa = true;
-                    }
+                        {
+                            editingTracks[0].gauge = gauge;
 
-                    if (Input.GetMouseButtonUp(1))
+                            if (editingRot != null)
+                                editingTracks[0].rot = (Quaternion)editingRot;
+                            editingTracks[0].enableCollider = false;
+                            editingTracks[0].generate();
+
+                            shapeSettingPanel.show(true);
+                            setPanelPosToMousePos(shapeSettingPanel);
+                        }
+                    }
+                    else if (Input.GetMouseButtonUp(1))
                         cancelEditingTracks();
-
-                    if (aaa)
-                    {
-                        editingTracks[0].gauge = gauge;
-
-                        if (editingRot != null)
-                            editingTracks[0].rot = (Quaternion)editingRot;
-                        editingTracks[0].enableCollider = false;
-                        editingTracks[0].generate();
-
-                        shapeSettingPanel.show(true);
-                        setPanelPosToMousePos(shapeSettingPanel);
-                    }
                 }
                 else if (mode == MODE_PLACE_AXLE)
                 {

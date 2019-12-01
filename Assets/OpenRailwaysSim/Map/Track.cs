@@ -17,8 +17,6 @@ public class Track : MapObject
     public const string KEY_CONNECTING_NEXT_TRACKS = "C_N_T";
     public const string KEY_CONNECTING_PREV_TRACKS = "C_P_T";
 
-    public const float MIN_TRACK_LENGTH = 1f;
-    public const float MAX_TRACK_LENGTH = 1024f;
     public const float RENDER_WIDTH = 0.25f;
     public const float RAIL_RENDER_WIDTH = 0.05f;
     public const float COLLIDER_WIDTH = 2f;
@@ -29,15 +27,8 @@ public class Track : MapObject
 
     public static float defaultGauge = 1.435f;
 
-    protected float _length = MIN_TRACK_LENGTH;
-
-    public virtual float length
-    {
-        get { return _length; }
-        set { _length = Mathf.Max(MIN_TRACK_LENGTH, Mathf.Min(MAX_TRACK_LENGTH, value)); }
-    }
+    public float length;
     public float gauge;
-
     private List<Track> _nextTracks;
     public List<Track> nextTracks
     {
@@ -48,7 +39,6 @@ public class Track : MapObject
                 _connectingNextTrack = -1;
         }
     }
-
     private List<Track> _prevTracks;
     public List<Track> prevTracks
     {
@@ -59,7 +49,6 @@ public class Track : MapObject
                 _connectingPrevTrack = -1;
         }
     }
-
     private int _connectingNextTrack;
     public int connectingNextTrack
     {
@@ -72,7 +61,6 @@ public class Track : MapObject
                 : value;
         }
     }
-
     private int _connectingPrevTrack;
     public int connectingPrevTrack
     {
@@ -106,7 +94,7 @@ public class Track : MapObject
 
     protected Track(SerializationInfo info, StreamingContext context) : base(info, context)
     {
-        _length = info.GetSingle(KEY_LENGTH);
+        length = info.GetSingle(KEY_LENGTH);
         gauge = info.GetSingle(KEY_GAUGE);
         _nextTracks = (List<Track>)info.GetValue(KEY_NEXT_TRACKS, typeof(List<Track>));
         _prevTracks = (List<Track>)info.GetValue(KEY_PREV_TRACKS, typeof(List<Track>));
@@ -117,7 +105,7 @@ public class Track : MapObject
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
-        info.AddValue(KEY_LENGTH, _length);
+        info.AddValue(KEY_LENGTH, length);
         info.AddValue(KEY_GAUGE, gauge);
         info.AddValue(KEY_NEXT_TRACKS, _nextTracks);
         info.AddValue(KEY_PREV_TRACKS, _prevTracks);
@@ -215,7 +203,7 @@ public class Track : MapObject
             foreach (var r in railModelObjs)
                 GameObject.Destroy(r.gameObject);
         var r_ = Quaternion.Inverse(rot);
-        railModelObjs = new GameObject[Mathf.CeilToInt(_length / RAIL_MODEL_INTERVAL) * 2];
+        railModelObjs = new GameObject[Mathf.CeilToInt(length / RAIL_MODEL_INTERVAL) * 2];
         GameObject b;
         for (var a = 0; a < railModelObjs.Length / 2; a++)
         {
@@ -237,7 +225,7 @@ public class Track : MapObject
         if (tieModelObjs != null)
             foreach (var r in tieModelObjs)
                 GameObject.Destroy(r.gameObject);
-        tieModelObjs = new GameObject[Mathf.CeilToInt(_length / TIE_MODEL_INTERVAL)];
+        tieModelObjs = new GameObject[Mathf.CeilToInt(length / TIE_MODEL_INTERVAL)];
         for (var a = 0; a < tieModelObjs.Length; a++)
         {
             (tieModelObjs[a] = GameObject.Instantiate(Main.INSTANCE.tieModel)).transform.parent = entity.transform;
@@ -253,8 +241,8 @@ public class Track : MapObject
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;
-        collider.center = Vector3.forward * _length / 2f;
-        collider.size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, _length);
+        collider.center = Vector3.forward * length / 2f;
+        collider.size = new Vector3(COLLIDER_WIDTH, COLLIDER_HEIGHT, length);
         collider.enabled = enableCollider;
     }
 
@@ -264,7 +252,7 @@ public class Track : MapObject
     /// <param name="a">位置(0-1)</param>
     public virtual Vector3 getPoint(float a)
     {
-        return pos + rot * Vector3.forward * _length * a;
+        return pos + rot * Vector3.forward * length * a;
     }
 
     /// <summary>

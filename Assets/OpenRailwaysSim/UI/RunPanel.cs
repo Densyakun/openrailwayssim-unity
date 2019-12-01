@@ -10,27 +10,22 @@ public class RunPanel : GamePanel
     public static string speedText_DEF = "速度";
     public static string notchText_DEF = "ノッチ";
     public static string reverserText_DEF = "レバーサー";
+
+    // settings by Inspector
     public Text speedText;
     public Text notchText;
     public Text reverserText;
 
-    DirectController controller;
+    public Body body; // 操作する運転台のある車体
+    //public bool isFront; // 運転台の進行方向。trueであれば車体の向きと同じ方向、falseであれば車体の向きと逆方向
 
     void OnEnable()
     {
         Main.INSTANCE.playingPanel.show(false);
         Main.INSTANCE.reloadGrid();
-        foreach (var obj in Main.selectingObjs)
-        {
-            if (obj is DirectController)
-            {
-                controller = (DirectController)obj;
-                break;
-            }
-        }
     }
 
-    void Update()
+    public void controlOnUpdate()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -42,42 +37,42 @@ public class RunPanel : GamePanel
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                if (controller.reverser < 1)
-                    controller.reverser += 1;
+                if (body.reverser < 1)
+                    body.reverser += 1;
             }
             else if (Input.GetKeyDown(KeyCode.A))
             {
-                if (controller.reverser > -1)
-                    controller.reverser -= 1;
+                if (body.reverser > -1)
+                    body.reverser -= 1;
             }
 
             int scroll = Mathf.FloorToInt(Input.GetAxis("Mouse ScrollWheel") * 10f);
             for (var b = 0; b < (Input.GetKeyDown(KeyCode.W) ? 1 : scroll); b++)
             {
-                if (controller.brakeNotchs > -controller.notch)
-                    controller.notch -= 1;
+                if (body.brakeNotchs > -body.notch)
+                    body.notch -= 1;
             }
             if (Input.GetKeyDown(KeyCode.S))
             {
-                if (controller.notch != 0)
-                    controller.notch += controller.notch < 0 ? 1 : -1;
+                if (body.notch != 0)
+                    body.notch += body.notch < 0 ? 1 : -1;
             }
             for (var b = 0; b < (Input.GetKeyDown(KeyCode.X) ? 1 : -scroll); b++)
             {
-                if (controller.powerNotchs > controller.notch)
-                    controller.notch += 1;
+                if (body.powerNotchs > body.notch)
+                    body.notch += 1;
             }
 
             float a = 0;
-            if (controller.axles.Count > 0)
+            if (body.motors.Count > 0)
             {
-                foreach (var axle in controller.axles)
+                foreach (var axle in body.motors)
                     a += axle.speed;
-                a /= controller.axles.Count;
+                a /= body.motors.Count;
             }
-            speedText.text = speedText_DEF + ": " + (controller.axles.Count == 0 ? "NaN" : Mathf.Abs(a).ToString("F1") + " km/h");
-            notchText.text = notchText_DEF + ": " + controller.notch;
-            reverserText.text = reverserText_DEF + ": " + (controller.reverser == 1 ? "前" : controller.reverser == 0 ? "切" : "後");
+            speedText.text = speedText_DEF + ": " + (body.motors.Count == 0 ? "NaN" : Mathf.Abs(a).ToString("F1") + " km/h");
+            notchText.text = notchText_DEF + ": " + body.notch;
+            reverserText.text = reverserText_DEF + ": " + (body.reverser == 1 ? "前" : body.reverser == 0 ? "切" : "後");
         }
     }
 }

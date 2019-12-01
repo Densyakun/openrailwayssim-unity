@@ -13,7 +13,6 @@ public class BogieFrame : MapObject
     public const string KEY_HEIGHT = "HEIGHT";
     public const string KEY_WHEELBASE = "WB";
     public const string KEY_AXLES = "AXLES";
-    public const string KEY_BODY = "BODY";
 
     public const float COLLIDER_WIDTH = 2.3f;
     public const float COLLIDER_HEIGHT = 0.4f;
@@ -22,9 +21,9 @@ public class BogieFrame : MapObject
     public float height;
     public float wheelbase;
     public List<Axle> axles { get; private set; }
-    public Body body;
 
     public GameObject modelObj;
+    public Body body;
     public float speed = 0f;
 
     public BogieFrame(Map map, List<Axle> axles) : base(map)
@@ -40,7 +39,8 @@ public class BogieFrame : MapObject
         height = info.GetSingle(KEY_HEIGHT);
         wheelbase = info.GetSingle(KEY_WHEELBASE);
         axles = (List<Axle>)info.GetValue(KEY_AXLES, typeof(List<Axle>));
-        body = (Body)info.GetValue(KEY_BODY, typeof(Body));
+        foreach (var a in axles)
+            a.bogieFrame = this;
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -49,7 +49,6 @@ public class BogieFrame : MapObject
         info.AddValue(KEY_HEIGHT, height);
         info.AddValue(KEY_WHEELBASE, wheelbase);
         info.AddValue(KEY_AXLES, axles);
-        info.AddValue(KEY_BODY, body);
     }
 
     public override void generate()
@@ -62,8 +61,11 @@ public class BogieFrame : MapObject
 
     public override void update()
     {
-        snapToAxle();
-        snapFromAxle();
+        if (body == null)
+        {
+            snapToAxle();
+            snapFromAxle();
+        }
         reloadEntity();
     }
 
@@ -78,7 +80,7 @@ public class BogieFrame : MapObject
         speed = 0f;
         foreach (var d in axles)
         {
-            d.fixedMove();
+            d.move();
             p += d.pos + d.rot * Vector3.down * d.wheelDia / 2;
             speed += d.speed;
         }
@@ -143,7 +145,7 @@ public class BogieFrame : MapObject
 
     public void reloadCollider()
     {
-        BoxCollider collider = entity.GetComponent<BoxCollider>();
+        var collider = entity.GetComponent<BoxCollider>();
         if (collider == null)
             collider = entity.gameObject.AddComponent<BoxCollider>();
         collider.isTrigger = true;
