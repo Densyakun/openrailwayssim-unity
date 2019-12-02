@@ -427,34 +427,28 @@ public class Shape : Track
         for (var n = 0; n < curveLength.Count; n++)
         {
             var p = getPointFlat(l);
-            var r1 = Quaternion.Inverse(getRotationFlat(l));
+            // TODO 勾配に対応
+            var r = getRotationFlat(l);
+            var r1 = Quaternion.Inverse(r);
             float l1;
             if (curveRadius[n] == 0f)
             {
                 l1 = (r1 * (pos - p)).z;
-                if (l1 <= curveLength[n])
-                {
-                    c.Add(p + r1 * pos);
-                    d.Add(l + l1);
-                }
+                c.Add(r * (pos - p));
+                d.Add(l + l1);
             }
             else
             {
-                // TODO 勾配に対応している？
                 var a = r1 * (pos - p);
-                var r2 = curveRadius[n];
-                float A;
-
                 var b = r1 * (getPointFlat(1f) - p);
-
-                if (r2 < 0f)
+                if (curveRadius[n] < 0f)
                 {
-                    r2 = -r2;
+                    curveRadius[n] = -curveRadius[n];
                     a.x = -a.x;
                     b.x = -b.x;
                 }
-                A = Mathf.Atan(a.z / (r2 - a.x));
-                var A1 = Mathf.Atan(b.z / (r2 - b.x));
+                var A = Mathf.Atan(a.z / (curveRadius[n] - a.x));
+                var A1 = Mathf.Atan(b.z / (curveRadius[n] - b.x));
                 if (A1 < 0f)
                     A1 = Mathf.PI + A1;
                 if (b.z < 0f)
@@ -464,12 +458,12 @@ public class Shape : Track
                     A = Mathf.PI + A;
                 if (a.z < 0f)
                     A += Mathf.PI;
+
                 l1 = A * length / A1;
-                if (l1 <= curveLength[n])
-                {
-                    c.Add(curveRadius[n] == 0f ? p : p);
-                    d.Add(l + l1);
-                }
+                var l3 = l1 / curveLength[n];
+                var d1 = l3 / Mathf.Abs(curveRadius[n]);
+                c.Add(r * new Vector3((1f - Mathf.Cos(d1)) * curveRadius[n], Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * l3, Mathf.Sin(d1) * Mathf.Abs(curveRadius[n])));
+                d.Add(l + l1);
             }
             l += curveLength[n];
         }
