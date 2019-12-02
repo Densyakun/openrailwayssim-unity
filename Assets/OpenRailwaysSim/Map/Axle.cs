@@ -240,7 +240,7 @@ public class Axle : MapObject
         }
         float b = speed * 10f * Time.deltaTime / 36f;
         onDist += b;
-        rotX += b * 360f / Mathf.PI * wheelDia;
+        rotX -= b * 360f / Mathf.PI * wheelDia;
         Vector3 c = onTrack is Shape ?
             ((Shape)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles :
             onTrack is Curve ?
