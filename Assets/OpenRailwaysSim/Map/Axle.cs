@@ -141,6 +141,7 @@ public class Axle : MapObject
     public float rotX;
 
     public GameObject modelObj;
+    [NonSerialized]
     public BogieFrame bogieFrame;
     public float lastMoved = -1f;
 
@@ -258,7 +259,7 @@ public class Axle : MapObject
     /// </summary>
     public void reloadOnDist()
     {
-        //onDist = onTrack.getLength(pos);
+        onDist = onTrack.getLength(pos);
     }
 
     public override void reloadEntity()

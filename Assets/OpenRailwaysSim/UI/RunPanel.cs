@@ -17,12 +17,16 @@ public class RunPanel : GamePanel
     public Text reverserText;
 
     public Body body; // 操作する運転台のある車体
-    //public bool isFront; // 運転台の進行方向。trueであれば車体の向きと同じ方向、falseであれば車体の向きと逆方向
 
     void OnEnable()
     {
         Main.INSTANCE.playingPanel.show(false);
         Main.INSTANCE.reloadGrid();
+    }
+
+    void OnDisable()
+    {
+        body = null;
     }
 
     public void controlOnUpdate()

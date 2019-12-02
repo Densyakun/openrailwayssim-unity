@@ -473,9 +473,23 @@ public class Shape : Track
             }
             l += curveLength[n];
         }
-        foreach (var a in d)
+
+        if (d.Count != 0)
         {
+            var d1 = (pos - c[0]).magnitude;
+            var n = 0;
+            for (var n1 = 1; n1 < c.Count; n1++)
+            {
+                var d2 = (pos - c[n1]).magnitude;
+                if (d2 < d1)
+                {
+                    d1 = d2;
+                    n = n1;
+                }
+            }
+            return d[n];
         }
+
         return l;
     }
 

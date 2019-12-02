@@ -23,6 +23,7 @@ public class BogieFrame : MapObject
     public List<Axle> axles { get; private set; }
 
     public GameObject modelObj;
+    [NonSerialized]
     public Body body;
     public float speed = 0f;
 

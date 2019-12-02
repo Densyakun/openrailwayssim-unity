@@ -42,7 +42,9 @@ public class Body : MapObject
 
 
     public GameObject modelObj;
+    [NonSerialized]
     public PermanentCoupler permanentCoupler1;
+    [NonSerialized]
     public PermanentCoupler permanentCoupler2;
     public float speed = 0f;
     public float lastMoved = -1f;

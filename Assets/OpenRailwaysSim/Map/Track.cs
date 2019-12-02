@@ -29,6 +29,7 @@ public class Track : MapObject
 
     public float length;
     public float gauge;
+    [NonSerialized]
     private List<Track> _nextTracks;
     public List<Track> nextTracks
     {
@@ -39,6 +40,7 @@ public class Track : MapObject
                 _connectingNextTrack = -1;
         }
     }
+    [NonSerialized]
     private List<Track> _prevTracks;
     public List<Track> prevTracks
     {
