@@ -426,12 +426,13 @@ public class Shape : Track
         var l = 0f;
         for (var n = 0; n < curveLength.Count; n++)
         {
+            var rad = curveRadius[n];
             var p = getPointFlat(l);
             // TODO 勾配に対応
             var r = getRotationFlat(l);
             var r1 = Quaternion.Inverse(r);
             float l1;
-            if (curveRadius[n] == 0f)
+            if (rad == 0f)
             {
                 l1 = (r1 * (pos - p)).z;
                 c.Add(r * (pos - p));
@@ -441,14 +442,14 @@ public class Shape : Track
             {
                 var a = r1 * (pos - p);
                 var b = r1 * (getPointFlat(1f) - p);
-                if (curveRadius[n] < 0f)
+                if (rad < 0f)
                 {
-                    curveRadius[n] = -curveRadius[n];
+                    rad = -rad;
                     a.x = -a.x;
                     b.x = -b.x;
                 }
-                var A = Mathf.Atan(a.z / (curveRadius[n] - a.x));
-                var A1 = Mathf.Atan(b.z / (curveRadius[n] - b.x));
+                var A = Mathf.Atan(a.z / (rad - a.x));
+                var A1 = Mathf.Atan(b.z / (rad - b.x));
                 if (A1 < 0f)
                     A1 = Mathf.PI + A1;
                 if (b.z < 0f)
@@ -461,8 +462,8 @@ public class Shape : Track
 
                 l1 = A * length / A1;
                 var l3 = l1 / curveLength[n];
-                var d1 = l3 / Mathf.Abs(curveRadius[n]);
-                c.Add(r * new Vector3((1f - Mathf.Cos(d1)) * curveRadius[n], Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * l3, Mathf.Sin(d1) * Mathf.Abs(curveRadius[n])));
+                var d1 = l3 / Mathf.Abs(rad);
+                c.Add(r * new Vector3((1f - Mathf.Cos(d1)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * l3, Mathf.Sin(d1) * Mathf.Abs(rad)));
                 d.Add(l + l1);
             }
             l += curveLength[n];
