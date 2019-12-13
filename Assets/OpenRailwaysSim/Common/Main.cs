@@ -226,7 +226,7 @@ public class Main : MonoBehaviour
                     foreach (var o in selectingObjs)
                     {
                         o.useSelectingMat = false;
-                        o.reloadEntity();
+                        o.reloadMaterial();
                     }
 
                     selectingObjs.Clear();
@@ -295,7 +295,7 @@ public class Main : MonoBehaviour
                     {
                         if (selectingObjs.Contains(a))
                             a.useSelectingMat = true;
-                        a.reloadEntity();
+                        a.reloadMaterial();
                     }
                 }
             }
@@ -323,10 +323,10 @@ public class Main : MonoBehaviour
                     {
                         if (selectingObjs.Contains(a))
                             a.useSelectingMat = true;
-                        a.reloadEntity();
+                        a.reloadMaterial();
                     }
 
-                    focused.reloadEntity();
+                    focused.reloadMaterial();
                 }
             }
             else
@@ -337,7 +337,7 @@ public class Main : MonoBehaviour
                 {
                     if (selectingObjs.Contains(a))
                         a.useSelectingMat = true;
-                    a.reloadEntity();
+                    a.reloadMaterial();
                 }
             }
 
@@ -462,7 +462,7 @@ public class Main : MonoBehaviour
             {
                 if (selectingObjs.Contains(a))
                     a.useSelectingMat = true;
-                a.reloadEntity();
+                a.reloadMaterial();
             }
         }
     }
@@ -732,7 +732,7 @@ public class Main : MonoBehaviour
             foreach (var o in selectingObjs)
             {
                 o.useSelectingMat = false;
-                o.reloadEntity();
+                o.reloadMaterial();
             }
 
             selectingObjs.Clear();
@@ -744,13 +744,13 @@ public class Main : MonoBehaviour
             {
                 selectingObjs.Remove(obj);
                 obj.useSelectingMat = false;
-                obj.reloadEntity();
+                obj.reloadMaterial();
             }
             else if (!selectingObjs.Contains(obj))
             {
                 selectingObjs.Add(obj);
                 obj.useSelectingMat = true;
-                obj.reloadEntity();
+                obj.reloadMaterial();
             }
         }
 

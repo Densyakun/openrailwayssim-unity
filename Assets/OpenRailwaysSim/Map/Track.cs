@@ -128,12 +128,17 @@ public class Track : MapObject
         if (entity == null)
             return;
 
-        reloadTrackRenderer();
-        reloadRailRenderers();
+        reloadMaterial();
         reloadModels();
         reloadCollider();
 
         base.reloadEntity();
+    }
+
+    public override void reloadMaterial()
+    {
+        reloadTrackRenderer();
+        reloadRailRenderers();
     }
 
     public void reloadTrackRenderer()

@@ -83,6 +83,10 @@ public class MapObject : ISerializable
         entity.transform.rotation = rot;
     }
 
+    public virtual void reloadMaterial()
+    {
+    }
+
     public void reloadMaterial(GameObject obj)
     {
         if (useSelectingMat && !Main.INSTANCE.runPanel.isShowing())

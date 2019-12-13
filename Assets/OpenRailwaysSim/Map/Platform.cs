@@ -36,40 +36,4 @@ public class Platform : MapObject
         base.GetObjectData(info, context);
         info.AddValue(KEY_ON_TRACK, onTrack);
     }
-
-    /*public override void generate()
-    {
-        if (entity)
-            reloadEntity();
-        else
-            (entity = new GameObject("Platform").AddComponent<MapEntity>()).init(this);
-    }
-
-    public override void reloadEntity()
-    {
-        if (entity == null)
-            return;
-
-        if (modelObj == null)
-        {
-            (modelObj = GameObject.Instantiate(Main.INSTANCE.axleModel)).transform.parent = entity.transform;
-            modelObj.transform.localPosition = Vector3.zero;
-            reloadCollider();
-        }
-
-        modelObj.transform.localEulerAngles = new Vector3(rotX, 0f);
-
-        reloadMaterial(modelObj);
-
-        base.reloadEntity();
-    }
-
-    public void reloadCollider()
-    {
-        BoxCollider collider = entity.GetComponent<BoxCollider>();
-        if (collider == null)
-            collider = entity.gameObject.AddComponent<BoxCollider>();
-        collider.isTrigger = true;
-        collider.size = new Vector3(COLLIDER_WIDTH, wheelDia, wheelDia);
-    }*/
 }

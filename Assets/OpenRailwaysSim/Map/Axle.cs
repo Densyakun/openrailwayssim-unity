@@ -273,10 +273,15 @@ public class Axle : MapObject
             modelObj.transform.localPosition = Vector3.zero;
             reloadCollider();
         }
-        reloadMaterial(modelObj);
+        reloadMaterial();
         modelObj.transform.localEulerAngles = new Vector3(rotX, 0f);
 
         base.reloadEntity();
+    }
+
+    public override void reloadMaterial()
+    {
+        reloadMaterial(modelObj);
     }
 
     public void reloadCollider()

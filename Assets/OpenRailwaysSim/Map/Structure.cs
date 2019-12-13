@@ -69,9 +69,14 @@ public class Structure : MapObject
         if (!collider)
             collider = entity.gameObject.AddComponent<BoxCollider>();
 
-        reloadMaterial(entity.gameObject);
+        reloadMaterial();
 
         base.reloadEntity();
+    }
+
+    public override void reloadMaterial()
+    {
+        reloadMaterial(entity.gameObject);
     }
 
     public override void destroy()

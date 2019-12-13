@@ -138,10 +138,14 @@ public class BogieFrame : MapObject
             modelObj.transform.localEulerAngles = Vector3.zero;
             reloadCollider();
         }
-
-        reloadMaterial(modelObj);
+        reloadMaterial();
 
         base.reloadEntity();
+    }
+
+    public override void reloadMaterial()
+    {
+        reloadMaterial(modelObj);
     }
 
     public void reloadCollider()

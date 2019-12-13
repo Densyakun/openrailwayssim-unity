@@ -528,7 +528,7 @@ public class Shape : Track
     /// <param name="l">軌道上の位置</param>
     public float LengthToFlatLength(float l)
     {
-        var vr = rot;
+        /*var vr = rot;
 
         var rad = 0f;
         var l2 = 0f;
@@ -569,7 +569,8 @@ public class Shape : Track
             l1 += l_;
 
         l6 = (l1 - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
-        return l2 + (l1 - l2) * (l - l7) / l6;
+        return l2 + (l1 - l2) * (l - l7) / l6;*/
+        return l;
     }
 
     /// <summary>
@@ -578,7 +579,7 @@ public class Shape : Track
     /// <param name="l">平面における位置</param>
     public float FlatLengthToLength(float l)
     {
-        var vr = rot;
+        /*var vr = rot;
 
         var rad = 0f;
         var l2 = 0f;
@@ -619,7 +620,8 @@ public class Shape : Track
             l1 += l_;
 
         l6 = (l1 - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
-        return l7 + (length - l7) * (l - l2) / (l1 - l2);
+        return l7 + (length - l7) * (l - l2) / (l1 - l2);*/
+        return l;
     }
 
     /// <summary>
