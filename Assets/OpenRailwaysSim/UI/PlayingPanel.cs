@@ -17,30 +17,29 @@ public class PlayingPanel : GamePanel
     public Button setMotorsButton;
     public Button runButton;
 
-    public void GuideButton()
+    public void changedGuide()
     {
-        Main.showGuide = guideToggle.isOn;
         Main.INSTANCE.reloadGrid();
     }
 
     public void ConstTrackButton()
     {
-        Main.mode = Main.mode == Main.MODE_CONSTRUCT_TRACK ? 0 : Main.MODE_CONSTRUCT_TRACK;
+        Main.mode = Main.mode == Main.ModeEnum.CONSTRUCT_TRACK ? Main.ModeEnum.NONE : Main.ModeEnum.CONSTRUCT_TRACK;
     }
 
     public void PlaceAxleButton()
     {
-        Main.mode = Main.mode == Main.MODE_PLACE_AXLE ? 0 : Main.MODE_PLACE_AXLE;
+        Main.mode = Main.mode == Main.ModeEnum.PLACE_AXLE ? Main.ModeEnum.NONE : Main.ModeEnum.PLACE_AXLE;
     }
 
     public void PlaceMapPinButton()
     {
-        Main.mode = Main.mode == Main.MODE_PLACE_MAPPIN ? 0 : Main.MODE_PLACE_MAPPIN;
+        Main.mode = Main.mode == Main.ModeEnum.PLACE_MAPPIN ? Main.ModeEnum.NONE : Main.ModeEnum.PLACE_MAPPIN;
     }
 
     public void PlaceStructureButton()
     {
-        Main.mode = Main.mode == Main.MODE_PLACE_STRUCTURE ? 0 : Main.MODE_PLACE_STRUCTURE;
+        Main.mode = Main.mode == Main.ModeEnum.PLACE_STRUCTURE ? Main.ModeEnum.NONE : Main.ModeEnum.PLACE_STRUCTURE;
     }
 
     public void RemoveButton()
@@ -48,7 +47,7 @@ public class PlayingPanel : GamePanel
         Main.INSTANCE.removeSelectingObjs();
     }
 
-    public void PlaceBFButton()
+    public void PlaceBogieFrameButton()
     {
         var bf = new BogieFrame(Main.playingmap, Main.selectingObjs.Where(obj => obj is Axle).OfType<Axle>().ToList());
         bf.generate();
@@ -133,8 +132,11 @@ public class PlayingPanel : GamePanel
         runButton.interactable = Main.selectingObjs.Any(obj => obj is Body);
     }
 
-    public void b()
+    /// <summary>
+    /// ガイドの表示を設定
+    /// </summary>
+    public void setGuide(bool isOn)
     {
-        guideToggle.isOn = Main.showGuide;
+        guideToggle.isOn = isOn;
     }
 }

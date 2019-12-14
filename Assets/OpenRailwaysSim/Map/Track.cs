@@ -152,11 +152,11 @@ public class Track : MapObject
             trackRenderer.endWidth = trackRenderer.startWidth = RENDER_WIDTH;
             trackRenderer.endColor = trackRenderer.startColor = Color.white;
             if (useSelectingMat)
-                trackRenderer.sharedMaterial = Main.INSTANCE.selecting_track_mat;
+                trackRenderer.sharedMaterial = Main.INSTANCE.selectingMat;
             else if (Main.focused == this)
-                trackRenderer.sharedMaterial = Main.INSTANCE.focused_track_mat;
+                trackRenderer.sharedMaterial = Main.INSTANCE.focusedMat;
             else
-                trackRenderer.sharedMaterial = Main.INSTANCE.track_mat;
+                trackRenderer.sharedMaterial = Main.INSTANCE.trackMat;
 
             reloadTrackRendererPositions();
         }
@@ -190,11 +190,11 @@ public class Track : MapObject
                 railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
                 railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
                 if (useSelectingMat)
-                    railRenderers[a].sharedMaterial = Main.INSTANCE.selecting_track_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.selectingMat;
                 else if (Main.focused == this)
-                    railRenderers[a].sharedMaterial = Main.INSTANCE.focused_track_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.focusedMat;
                 else
-                    railRenderers[a].sharedMaterial = Main.INSTANCE.rail_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.railMat;
 
                 var b = rot * Vector3.right * (a == 0 ? -gauge / 2f : gauge / 2f);
                 railRenderers[a].SetPositions(new Vector3[] { pos + b, getPoint(1) + b });

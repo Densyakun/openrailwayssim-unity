@@ -94,15 +94,15 @@ public class MapObject : ISerializable
             Renderer[] b = obj.GetComponentsInChildren<Renderer>();
             foreach (var c in b)
             {
-                if (c.sharedMaterials[c.sharedMaterials.Length - 1] != Main.INSTANCE.selecting_track_mat)
+                if (c.sharedMaterials[c.sharedMaterials.Length - 1] != Main.INSTANCE.selectingMat)
                 {
                     Material[] d =
-                        new Material[c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.INSTANCE.focused_track_mat
+                        new Material[c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.INSTANCE.focusedMat
                             ? c.sharedMaterials.Length
                             : c.sharedMaterials.Length + 1];
                     for (int e = 0; e < d.Length - 1; e++)
                         d[e] = c.sharedMaterials[e];
-                    d[d.Length - 1] = Main.INSTANCE.selecting_track_mat;
+                    d[d.Length - 1] = Main.INSTANCE.selectingMat;
                     c.sharedMaterials = d;
                 }
             }
@@ -112,15 +112,15 @@ public class MapObject : ISerializable
             Renderer[] b = obj.GetComponentsInChildren<Renderer>();
             foreach (var c in b)
             {
-                if (c.sharedMaterials[c.sharedMaterials.Length - 1] != Main.INSTANCE.focused_track_mat)
+                if (c.sharedMaterials[c.sharedMaterials.Length - 1] != Main.INSTANCE.focusedMat)
                 {
                     Material[] d =
-                        new Material[c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.INSTANCE.selecting_track_mat
+                        new Material[c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.INSTANCE.selectingMat
                             ? c.sharedMaterials.Length
                             : c.sharedMaterials.Length + 1];
                     for (int e = 0; e < d.Length - 1; e++)
                         d[e] = c.sharedMaterials[e];
-                    d[d.Length - 1] = Main.INSTANCE.focused_track_mat;
+                    d[d.Length - 1] = Main.INSTANCE.focusedMat;
                     c.sharedMaterials = d;
                 }
             }
@@ -131,8 +131,8 @@ public class MapObject : ISerializable
             foreach (var c in b)
             {
                 if (c.sharedMaterials.Length >= 1 &&
-                    (c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.INSTANCE.selecting_track_mat ||
-                     c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.INSTANCE.focused_track_mat))
+                    (c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.INSTANCE.selectingMat ||
+                     c.sharedMaterials[c.sharedMaterials.Length - 1] == Main.INSTANCE.focusedMat))
                 {
                     Material[] d = new Material[c.sharedMaterials.Length - 1];
                     for (int e = 0; e < d.Length; e++)

@@ -84,11 +84,11 @@ public class Curve : Track
                 railRenderers[a].endWidth = railRenderers[a].startWidth = RAIL_RENDER_WIDTH;
                 railRenderers[a].endColor = railRenderers[a].startColor = Color.white;
                 if (useSelectingMat)
-                    railRenderers[a].sharedMaterial = Main.INSTANCE.selecting_track_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.selectingMat;
                 else if (Main.focused == this)
-                    railRenderers[a].sharedMaterial = Main.INSTANCE.focused_track_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.focusedMat;
                 else
-                    railRenderers[a].sharedMaterial = Main.INSTANCE.rail_mat;
+                    railRenderers[a].sharedMaterial = Main.INSTANCE.railMat;
 
                 var l = Mathf.CeilToInt(length / FINENESS_DISTANCE);
                 var p = new Vector3[l + 1];

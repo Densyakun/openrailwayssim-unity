@@ -70,15 +70,38 @@ public class Main : MonoBehaviour
     public static bool vignette = DEFAULT_VIGNETTE;
 
 
-    public const int MODE_NONE = 0;
-    public const int MODE_CONSTRUCT_TRACK = 11;
-    public const int MODE_PLACE_AXLE = 21;
-    public const int MODE_PLACE_MAPPIN = 31;
-    public const int MODE_PLACE_STRUCTURE = 41;
-    public static int mode = MODE_NONE; // 操作モード 0=なし 11=軌道敷設 21=車軸設置 31=マップピンを置く 41=ストラクチャーを設置
+    /// <summary>
+    /// 操作モード
+    /// </summary>
+    public enum ModeEnum
+    {
+        /// <summary>
+        /// なし
+        /// </summary>
+        NONE,
+        /// <summary>
+        /// 軌道の敷設
+        /// </summary>
+        CONSTRUCT_TRACK,
+        /// <summary>
+        /// 車軸の設置
+        /// </summary>
+        PLACE_AXLE,
+        /// <summary>
+        /// マップピンの設置
+        /// </summary>
+        PLACE_MAPPIN,
+        /// <summary>
+        /// ストラクチャーの設置
+        /// </summary>
+        PLACE_STRUCTURE
+    }
+    /// <summary>
+    /// 現在の操作モード
+    /// </summary>
+    public static ModeEnum mode = ModeEnum.NONE;
 
     private float tick = 0f; // 時間を進ませた時の余り
-    public static bool showGuide = true;
     public static List<Shape> editingTracks = new List<Shape>();
     public static Quaternion? editingRot;
     public static Coupler editingCoupler;
@@ -98,10 +121,10 @@ public class Main : MonoBehaviour
     public AudioClip[] titleClips;
     public AudioSource bgmSource;
     public AudioSource seSource;
-    public Material track_mat;
-    public Material focused_track_mat;
-    public Material selecting_track_mat;
-    public Material rail_mat;
+    public Material trackMat;
+    public Material focusedMat;
+    public Material selectingMat;
+    public Material railMat;
     public GameObject point;
     public GameObject grid;
     public GameObject railLModel;
@@ -214,10 +237,10 @@ public class Main : MonoBehaviour
                     }
                 }
 
-                if (mode != MODE_NONE)
+                if (mode != ModeEnum.NONE)
                 {
                     a = false;
-                    mode = MODE_NONE;
+                    mode = ModeEnum.NONE;
                 }
 
                 if (selectingObjs.Count != 0)
@@ -273,10 +296,7 @@ public class Main : MonoBehaviour
                     removeSelectingObjs();
 
                 if (Input.GetKeyDown(KeyCode.G))
-                {
-                    showGuide = !showGuide;
-                    playingPanel.b();
-                }
+                    playingPanel.setGuide(!playingPanel.guideToggle.isOn);
 
                 if (!pausePanel.isShowing() &&
                     !CameraMover.INSTANCE.dragging &&
@@ -319,7 +339,7 @@ public class Main : MonoBehaviour
                 {
                     var a = focused;
                     (focused = entity.obj).useSelectingMat = false;
-                    if (a != null)
+                    if (a != null && a.entity)
                     {
                         if (selectingObjs.Contains(a))
                             a.useSelectingMat = true;
@@ -333,7 +353,7 @@ public class Main : MonoBehaviour
             {
                 var a = focused;
                 focused = null;
-                if (a != null)
+                if (a != null && a.entity)
                 {
                     if (selectingObjs.Contains(a))
                         a.useSelectingMat = true;
@@ -341,7 +361,7 @@ public class Main : MonoBehaviour
                 }
             }
 
-            if (mode == MODE_NONE)
+            if (mode == ModeEnum.NONE)
             {
                 point.SetActive(false);
 
@@ -369,7 +389,7 @@ public class Main : MonoBehaviour
                 point.transform.position = p;
                 point.SetActive(true);
 
-                if (mode == MODE_CONSTRUCT_TRACK)
+                if (mode == ModeEnum.CONSTRUCT_TRACK)
                 {
                     if (Input.GetMouseButtonUp(0))
                     {
@@ -421,7 +441,7 @@ public class Main : MonoBehaviour
                     else if (Input.GetMouseButtonUp(1))
                         cancelEditingTracks();
                 }
-                else if (mode == MODE_PLACE_AXLE)
+                else if (mode == ModeEnum.PLACE_AXLE)
                 {
                     if (Input.GetMouseButtonUp(0) && focused != null && focused is Track)
                     {
@@ -430,7 +450,7 @@ public class Main : MonoBehaviour
                         playingmap.addObject(axle);
                     }
                 }
-                else if (mode == MODE_PLACE_MAPPIN)
+                else if (mode == ModeEnum.PLACE_MAPPIN)
                 {
                     if (Input.GetMouseButtonUp(0))
                     {
@@ -440,7 +460,7 @@ public class Main : MonoBehaviour
                         setPanelPosToMousePos(mapPinSettingPanel);
                     }
                 }
-                else if (mode == MODE_PLACE_STRUCTURE)
+                else if (mode == ModeEnum.PLACE_STRUCTURE)
                 {
                     if (Input.GetMouseButtonUp(0))
                     {
@@ -530,7 +550,7 @@ public class Main : MonoBehaviour
         {
             Time.timeScale = 1f;
             tick = 0f;
-            mode = MODE_NONE;
+            mode = ModeEnum.NONE;
             playingmap.generate();
             INSTANCE.reloadLighting();
 
@@ -601,13 +621,9 @@ public class Main : MonoBehaviour
 
     public void reloadGrid()
     {
-        grid.SetActive(!runPanel.isShowing() && showGuide);
-        var objs = Main.playingmap.objs.Where(obj => obj is Track).OfType<Track>().ToList();
-        foreach (var obj in objs)
-        {
-            obj.reloadTrackRenderer();
-            obj.reloadRailRenderers();
-        }
+        grid.SetActive(!runPanel.isShowing() && playingPanel.guideToggle.isOn);
+        foreach (var obj in Main.playingmap.objs)
+            obj.reloadMaterial();
     }
 
     /// <summary>
