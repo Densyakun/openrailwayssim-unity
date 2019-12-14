@@ -17,6 +17,10 @@ public class Track : MapObject
     public const string KEY_CONNECTING_NEXT_TRACKS = "C_N_T";
     public const string KEY_CONNECTING_PREV_TRACKS = "C_P_T";
 
+    /// <summary>
+    /// 許容する誤差
+    /// </summary>
+    public const float ALLOWABLE_RANGE = 0.0001f;
     public const float RENDER_WIDTH = 0.25f;
     public const float RAIL_RENDER_WIDTH = 0.05f;
     public const float COLLIDER_WIDTH = 2f;
@@ -278,6 +282,44 @@ public class Track : MapObject
     public virtual float getLength(Vector3 pos)
     {
         return (Quaternion.Inverse(rot) * (pos - this.pos)).z;
+    }
+
+    public void connectingTrack(Track track)
+    {
+        var a0 = (track.pos - pos).sqrMagnitude < ALLOWABLE_RANGE;
+        var a1 = (track.rot.eulerAngles - rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
+        var a2 = (track.pos - getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE;
+        var a3 = (track.rot.eulerAngles - getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
+        var a4 = (track.getPoint(1f) - pos).sqrMagnitude < ALLOWABLE_RANGE;
+        var a5 = (track.getRotation(1f).eulerAngles - rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
+        var a6 = (track.getPoint(1f) - getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE;
+        var a7 = (track.getRotation(1f).eulerAngles - getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
+
+        if (a0 && a1 || a2 && a3)
+        {
+            track.prevTracks.Add(this);
+            if (track.prevTracks.Count == 1)
+                track.connectingPrevTrack = 0;
+        }
+        if (a4 && a5 || a6 && a7)
+        {
+            track.nextTracks.Add(this);
+            if (track.nextTracks.Count == 1)
+                track.connectingNextTrack = 0;
+        }
+
+        if (a0 && a1 || a4 && a5)
+        {
+            prevTracks.Add(track);
+            if (prevTracks.Count == 1)
+                connectingPrevTrack = 0;
+        }
+        if (a2 && a3 || a6 && a7)
+        {
+            nextTracks.Add(track);
+            if (nextTracks.Count == 1)
+                connectingNextTrack = 0;
+        }
     }
 
     public void removeConnects()

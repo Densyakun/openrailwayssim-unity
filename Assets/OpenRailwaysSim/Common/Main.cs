@@ -15,8 +15,9 @@ using UnityEngine.PostProcessing;
 public class Main : MonoBehaviour
 {
 
-    public const string VERSION = "0.001alpha";
-    public const float ALLOWABLE_RANGE = 0.0001f;
+    /// <summary>
+    /// スナップする距離
+    /// </summary>
     public const float SNAP_DIST = 1f;
 
     public static Main INSTANCE;
@@ -285,25 +286,17 @@ public class Main : MonoBehaviour
                 grid.transform.position = new Vector3(Mathf.RoundToInt(p.x), 0, Mathf.RoundToInt(p.z));
             }
 
-            if (!pausePanel.isShowing() &&
-                !runPanel.isShowing() &&
-                !EventSystem.current.IsPointerOverGameObject() &&
+            if (!pausePanel.isShowing() && !runPanel.isShowing() &&
                 !(shapeSettingPanel.isShowing() &&
                 EventSystem.current.currentSelectedGameObject != null &&
                 EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null))
             {
                 if (Input.GetKeyDown(KeyCode.Delete))
                     removeSelectingObjs();
-
                 if (Input.GetKeyDown(KeyCode.G))
                     playingPanel.setGuide(!playingPanel.guideToggle.isOn);
 
-                if (!pausePanel.isShowing() &&
-                    !CameraMover.INSTANCE.dragging &&
-                    !EventSystem.current.IsPointerOverGameObject() &&
-                    !(shapeSettingPanel.isShowing() &&
-                    EventSystem.current.currentSelectedGameObject != null &&
-                    EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null))
+                if (!CameraMover.INSTANCE.dragging && !EventSystem.current.IsPointerOverGameObject())
                     update_ctrl();
                 else
                 {
@@ -661,74 +654,7 @@ public class Main : MonoBehaviour
         foreach (var track in editingTracks)
         {
             if (mainTrack != null)
-            {
-                if ((mainTrack.pos - track.pos).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.rot.eulerAngles - track.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
-                (mainTrack.pos - track.getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.rot.eulerAngles - track.getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
-                {
-                    mainTrack.prevTracks.Add(track);
-                    if (mainTrack.prevTracks.Count == 1)
-                        mainTrack.connectingPrevTrack = 0;
-                }
-                else if ((mainTrack.getPoint(1f) - track.pos).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.getRotation(1f).eulerAngles - track.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
-                (mainTrack.getPoint(1f) - track.getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE && (mainTrack.getRotation(1f).eulerAngles - track.getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
-                {
-                    mainTrack.nextTracks.Add(track);
-                    if (mainTrack.nextTracks.Count == 1)
-                        mainTrack.connectingNextTrack = 0;
-                }
-
-                if ((track.pos - mainTrack.pos).sqrMagnitude < ALLOWABLE_RANGE && (track.rot.eulerAngles - mainTrack.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
-                (track.pos - mainTrack.getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE && (track.rot.eulerAngles - mainTrack.getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
-                {
-                    track.prevTracks.Add(mainTrack);
-                    if (track.prevTracks.Count == 1)
-                        track.connectingPrevTrack = 0;
-                }
-                else if ((track.getPoint(1f) - mainTrack.pos).sqrMagnitude < ALLOWABLE_RANGE && (track.getRotation(1f).eulerAngles - mainTrack.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE ||
-                (track.getPoint(1) - mainTrack.getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE && (track.getRotation(1f).eulerAngles - mainTrack.getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE)
-                {
-                    track.nextTracks.Add(mainTrack);
-                    if (track.nextTracks.Count == 1)
-                        track.connectingNextTrack = 0;
-                }
-            }
-
-            if (focused is Track)
-            {
-                var a = (track.pos - ((Track)focused).pos).sqrMagnitude < ALLOWABLE_RANGE;
-                var a1 = (track.pos - ((Track)focused).getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE;
-                var a2 = (track.getPoint(1f) - ((Track)focused).pos).sqrMagnitude < ALLOWABLE_RANGE;
-                var a3 = (track.getPoint(1f) - ((Track)focused).getPoint(1f)).sqrMagnitude < ALLOWABLE_RANGE;
-                var b = (track.rot.eulerAngles - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
-                var b1 = (track.rot.eulerAngles - (focused is Curve ? ((Curve)focused).getRotation(1f).eulerAngles : focused.rot.eulerAngles)).sqrMagnitude < ALLOWABLE_RANGE;
-                var b2 = (track.getRotation(1f).eulerAngles - focused.rot.eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
-                var b3 = (track.getRotation(1f).eulerAngles - ((Shape)focused).getRotation(1f).eulerAngles).sqrMagnitude < ALLOWABLE_RANGE;
-                if (a && b || a1 && b1)
-                {
-                    track.prevTracks.Add((Track)focused);
-                    if (track.prevTracks.Count == 1)
-                        track.connectingPrevTrack = 0;
-                }
-                else if (a2 && b2 || a3 && b3)
-                {
-                    track.nextTracks.Add((Track)focused);
-                    if (track.nextTracks.Count == 1)
-                        track.connectingNextTrack = 0;
-                }
-
-                if (a && b || a2 && b2)
-                {
-                    ((Track)focused).prevTracks.Add(track);
-                    if (((Track)focused).prevTracks.Count == 1)
-                        ((Track)focused).connectingPrevTrack = 0;
-                }
-                else if (a1 && b1 || a3 && b3)
-                {
-                    ((Track)focused).nextTracks.Add(track);
-                    if (((Track)focused).nextTracks.Count == 1)
-                        ((Track)focused).connectingNextTrack = 0;
-                }
-            }
+                track.connectingTrack(mainTrack);
 
             playingmap.addObject(track);
             track.enableCollider = true;
