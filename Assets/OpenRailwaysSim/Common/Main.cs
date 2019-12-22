@@ -304,7 +304,7 @@ public class Main : MonoBehaviour
 
                     var a = focused;
                     focused = null;
-                    if (a != null)
+                    if (a != null && a.entity)
                     {
                         if (selectingObjs.Contains(a))
                             a.useSelectingMat = true;
@@ -471,7 +471,7 @@ public class Main : MonoBehaviour
 
             var a = focused;
             focused = null;
-            if (a != null)
+            if (a != null && a.entity)
             {
                 if (selectingObjs.Contains(a))
                     a.useSelectingMat = true;
