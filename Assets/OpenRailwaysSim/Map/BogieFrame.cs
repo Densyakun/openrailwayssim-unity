@@ -121,8 +121,7 @@ public class BogieFrame : MapObject
         {
             axle.speed = speed;
             axle.reloadOnDist(); // 車軸をレールに合わせる。台車枠とずれホイールベースを失うが、次のフレームで合わせるので省略している。
-            var r = rot * Quaternion.AngleAxis(-180f, Vector3.up);
-            axle.rot = Mathf.Abs(Quaternion.Dot(axle.rot, rot)) < Mathf.Abs(Quaternion.Dot(axle.rot, r)) ? rot : r;
+            axle.rot = rot;
         }
     }
 
