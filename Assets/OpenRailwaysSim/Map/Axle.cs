@@ -67,9 +67,9 @@ public class Axle : MapObject
                 }
                 else
                 {
-                    Track oldTrack = onTrack;
+                    var oldTrack = onTrack;
                     onTrack = oldTrack.nextTracks[oldTrack.connectingNextTrack];
-                    if ((oldTrack.getPoint(1f) - onTrack.pos).sqrMagnitude < Track.ALLOWABLE_RANGE && ((oldTrack is Curve ? ((Curve)oldTrack).getRotation(1f).eulerAngles : oldTrack.rot.eulerAngles) - onTrack.rot.eulerAngles).sqrMagnitude < Track.ALLOWABLE_RANGE)
+                    if ((oldTrack.getPoint(1f) - onTrack.pos).sqrMagnitude < Track.ALLOWABLE_RANGE && (oldTrack.getRotation(1f).eulerAngles - onTrack.rot.eulerAngles).sqrMagnitude < Track.ALLOWABLE_RANGE)
                         onDist = value - oldTrack.length;
                     else
                     {
@@ -116,9 +116,9 @@ public class Axle : MapObject
                 }
                 else
                 {
-                    Track oldTrack = onTrack;
+                    var oldTrack = onTrack;
                     onTrack = oldTrack.prevTracks[oldTrack.connectingPrevTrack];
-                    if ((oldTrack.pos - onTrack.getPoint(1f)).sqrMagnitude < Track.ALLOWABLE_RANGE && (oldTrack.rot.eulerAngles - (onTrack is Curve ? ((Curve)onTrack).getRotation(1f).eulerAngles : onTrack.rot.eulerAngles)).sqrMagnitude < Track.ALLOWABLE_RANGE)
+                    if ((oldTrack.pos - onTrack.getPoint(1f)).sqrMagnitude < Track.ALLOWABLE_RANGE && (oldTrack.rot.eulerAngles - onTrack.getRotation(1f).eulerAngles).sqrMagnitude < Track.ALLOWABLE_RANGE)
                         onDist = onTrack.length + value;
                     else
                     {
