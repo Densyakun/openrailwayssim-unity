@@ -387,20 +387,7 @@ public class Main : MonoBehaviour
                     if (Input.GetMouseButtonUp(0))
                     {
                         if (editingTracks.Any())
-                        {
-                            if (editingTracks[0].curveLength.Count == 0)
-                                cancelEditingTracks();
-                            else
-                            {
-                                trackEdited0();
-
-                                var l = editingTracks.Last();
-                                editingRot = l.getRotation(1);
-
-                                editingTracks.Clear();
-                                editingTracks.Add(new Shape(playingmap, l.getPoint(1f)));
-                            }
-                        }
+                            cancelEditingTracks();
                         else if (focused != null)
                         {
                             if (focused is Shape)
