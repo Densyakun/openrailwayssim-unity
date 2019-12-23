@@ -295,6 +295,11 @@ public class Main : MonoBehaviour
                     removeSelectingObjs();
                 if (Input.GetKeyDown(KeyCode.G))
                     playingPanel.setGuide(!playingPanel.guideToggle.isOn);
+                if (Input.GetKeyDown(KeyCode.R) && mode == ModeEnum.CONSTRUCT_TRACK && editingRot != null && editingTracks.Any())
+                {
+                    editingRot *= Quaternion.AngleAxis(180f, Vector3.up);
+                    editingTracks[0].rot = (Quaternion)editingRot;
+                }
 
                 if (!CameraMover.INSTANCE.dragging && !EventSystem.current.IsPointerOverGameObject())
                     update_ctrl();
