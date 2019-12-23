@@ -387,6 +387,8 @@ public class Main : MonoBehaviour
                             focusedDist = ((Track)focused).length;
                         p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
                     }
+                    else
+                        p = focused.pos;
                 }
 
                 point.transform.position = p;
