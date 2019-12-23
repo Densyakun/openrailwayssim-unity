@@ -49,18 +49,33 @@ public class ShapeSettingPanel : GamePanel
                     for (var n = 0; n < segmentPanels.Count; n++)
                     {
                         if (input == segmentPanels[n].lengthInput)
+                        {
                             EventSystem.current.SetSelectedGameObject((n == 0 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[verticalSegmentPanels.Count - 1].radiusInput : segmentPanels[segmentPanels.Count - 1].cantInput : segmentPanels[n - 1].cantInput).gameObject);
+                            break;
+                        }
                         else if (input == segmentPanels[n].radiusInput)
+                        {
                             EventSystem.current.SetSelectedGameObject(segmentPanels[n].lengthInput.gameObject);
+                            break;
+                        }
                         else if (input == segmentPanels[n].cantInput)
+                        {
                             EventSystem.current.SetSelectedGameObject(segmentPanels[n].radiusInput.gameObject);
+                            break;
+                        }
                     }
                     for (var n = 0; n < verticalSegmentPanels.Count; n++)
                     {
                         if (input == verticalSegmentPanels[n].lengthInput)
+                        {
                             EventSystem.current.SetSelectedGameObject((n == 0 ? segmentPanels.Count > 0 ? segmentPanels[segmentPanels.Count - 1].cantInput : verticalSegmentPanels[verticalSegmentPanels.Count - 1].radiusInput : verticalSegmentPanels[n - 1].radiusInput).gameObject);
+                            break;
+                        }
                         else if (input == verticalSegmentPanels[n].radiusInput)
+                        {
                             EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n].lengthInput.gameObject);
+                            break;
+                        }
                     }
                 }
                 else if (verticalSegmentPanels.Count > 0)
@@ -75,18 +90,33 @@ public class ShapeSettingPanel : GamePanel
                     for (var n = 0; n < segmentPanels.Count; n++)
                     {
                         if (input == segmentPanels[n].lengthInput)
+                        {
                             EventSystem.current.SetSelectedGameObject(segmentPanels[n].radiusInput.gameObject);
+                            break;
+                        }
                         else if (input == segmentPanels[n].radiusInput)
+                        {
                             EventSystem.current.SetSelectedGameObject(segmentPanels[n].cantInput.gameObject);
+                            break;
+                        }
                         else if (input == segmentPanels[n].cantInput)
+                        {
                             EventSystem.current.SetSelectedGameObject((n == segmentPanels.Count - 1 ? verticalSegmentPanels.Count > 0 ? verticalSegmentPanels[0].lengthInput : segmentPanels[0].lengthInput : segmentPanels[n + 1].lengthInput).gameObject);
+                            break;
+                        }
                     }
                     for (var n = 0; n < verticalSegmentPanels.Count; n++)
                     {
                         if (input == verticalSegmentPanels[n].lengthInput)
+                        {
                             EventSystem.current.SetSelectedGameObject(verticalSegmentPanels[n].radiusInput.gameObject);
+                            break;
+                        }
                         else if (input == verticalSegmentPanels[n].radiusInput)
+                        {
                             EventSystem.current.SetSelectedGameObject((n == verticalSegmentPanels.Count - 1 ? segmentPanels.Count > 0 ? segmentPanels[0].lengthInput : verticalSegmentPanels[0].lengthInput : verticalSegmentPanels[n + 1].lengthInput).gameObject);
+                            break;
+                        }
                     }
                 }
                 else if (segmentPanels.Count > 0)

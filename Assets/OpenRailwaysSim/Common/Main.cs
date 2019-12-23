@@ -201,65 +201,71 @@ public class Main : MonoBehaviour
                 !titleBackPanel.isShowing() &&
                 !runPanel.isShowing())
             {
-                var a = true;
-                if (shapeSettingPanel.isShowing())
+                var b = EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null;
+                if (b)
+                    EventSystem.current.SetSelectedGameObject(null);
+                else
                 {
-                    a = false;
-                    cancelEditingTracks();
-                }
-                else if (couplerSettingPanel.isShowing())
-                {
-                    a = false;
-                    couplerSettingPanel.show(false);
-                    if (editingCoupler != null)
+                    var a = true;
+                    if (shapeSettingPanel.isShowing())
                     {
-                        editingCoupler.entity.Destroy();
-                        editingCoupler = null;
+                        a = false;
+                        cancelEditingTracks();
                     }
-                }
-                else if (mapPinSettingPanel.isShowing())
-                {
-                    a = false;
-                    mapPinSettingPanel.show(false);
-                    if (editingMapPin != null)
+                    else if (couplerSettingPanel.isShowing())
                     {
-                        editingMapPin.entity.Destroy();
-                        editingMapPin = null;
+                        a = false;
+                        couplerSettingPanel.show(false);
+                        if (editingCoupler != null)
+                        {
+                            editingCoupler.entity.Destroy();
+                            editingCoupler = null;
+                        }
                     }
-                }
-                else if (structureSettingPanel.isShowing())
-                {
-                    a = false;
-                    structureSettingPanel.show(false);
-                    if (editingStructure != null)
+                    else if (mapPinSettingPanel.isShowing())
                     {
-                        editingStructure.entity.Destroy();
-                        editingStructure = null;
+                        a = false;
+                        mapPinSettingPanel.show(false);
+                        if (editingMapPin != null)
+                        {
+                            editingMapPin.entity.Destroy();
+                            editingMapPin = null;
+                        }
                     }
-                }
-
-                if (mode != ModeEnum.NONE)
-                {
-                    a = false;
-                    mode = ModeEnum.NONE;
-                }
-
-                if (selectingObjs.Count != 0)
-                {
-                    a = false;
-                    foreach (var o in selectingObjs)
+                    else if (structureSettingPanel.isShowing())
                     {
-                        o.useSelectingMat = false;
-                        o.reloadMaterial();
+                        a = false;
+                        structureSettingPanel.show(false);
+                        if (editingStructure != null)
+                        {
+                            editingStructure.entity.Destroy();
+                            editingStructure = null;
+                        }
                     }
 
-                    selectingObjs.Clear();
+                    if (mode != ModeEnum.NONE)
+                    {
+                        a = false;
+                        mode = ModeEnum.NONE;
+                    }
 
-                    playingPanel.a();
+                    if (selectingObjs.Count != 0)
+                    {
+                        a = false;
+                        foreach (var o in selectingObjs)
+                        {
+                            o.useSelectingMat = false;
+                            o.reloadMaterial();
+                        }
+
+                        selectingObjs.Clear();
+
+                        playingPanel.a();
+                    }
+
+                    if (a)
+                        setPause(Time.timeScale != 0f);
                 }
-
-                if (a)
-                    setPause(Time.timeScale != 0f);
             }
         }
 
@@ -287,8 +293,7 @@ public class Main : MonoBehaviour
             }
 
             if (!pausePanel.isShowing() && !runPanel.isShowing() &&
-                !(shapeSettingPanel.isShowing() &&
-                EventSystem.current.currentSelectedGameObject != null &&
+                !(EventSystem.current.currentSelectedGameObject != null &&
                 EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null))
             {
                 if (Input.GetKeyDown(KeyCode.Delete))
