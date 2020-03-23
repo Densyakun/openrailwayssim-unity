@@ -381,7 +381,11 @@ public class Main : MonoBehaviour
                     if (focused is Track)
                     {
                         focusedDist = ((Track)focused).getLength(hit.point);
-                        p = ((Track)focused).getPoint(focusedDist = focusedDist < SNAP_DIST ? 0f : focusedDist > ((Track)focused).length - SNAP_DIST ? 1f : focusedDist / ((Track)focused).length);
+                        p = ((Track)focused).getPoint(focusedDist = focusedDist < SNAP_DIST &&
+                            focusedDist < ((Track)focused).length / 2f ? 0f :
+                            focusedDist > ((Track)focused).length - SNAP_DIST &&
+                            focusedDist > ((Track)focused).length - ((Track)focused).length / 2f ? 1f :
+                            focusedDist / ((Track)focused).length);
                     }
                     else
                         p = focused.pos;
