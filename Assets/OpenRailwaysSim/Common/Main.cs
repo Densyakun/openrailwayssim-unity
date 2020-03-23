@@ -381,11 +381,7 @@ public class Main : MonoBehaviour
                     if (focused is Track)
                     {
                         focusedDist = ((Track)focused).getLength(hit.point);
-                        if (focusedDist < SNAP_DIST)
-                            focusedDist = 0f;
-                        else if (focusedDist > ((Track)focused).length - SNAP_DIST)
-                            focusedDist = ((Track)focused).length;
-                        p = ((Track)focused).getPoint(focusedDist / ((Track)focused).length);
+                        p = ((Track)focused).getPoint(focusedDist = focusedDist < SNAP_DIST ? 0f : focusedDist > ((Track)focused).length - SNAP_DIST ? 1f : focusedDist / ((Track)focused).length);
                     }
                     else
                         p = focused.pos;
@@ -405,7 +401,7 @@ public class Main : MonoBehaviour
                             if (focused is Shape)
                             {
                                 mainTrack = ((Shape)focused);
-                                editingRot = mainTrack.getRotation(focusedDist / mainTrack.length);
+                                editingRot = mainTrack.getRotation(focusedDist);
                                 editingTracks.Clear();
                                 editingTracks.Add(new Shape(playingmap, p));
                             }

@@ -29,11 +29,11 @@ public class Axle : MapObject
         get { return _onDist; }
         set
         {
-            if (onTrack.length < value)
+            if (1f < value)
             {
                 if (onTrack.connectingNextTrack == -1)
                 {
-                    _onDist = onTrack.length;
+                    _onDist = 1f;
                     speed = 0f;
                     if (bogieFrame != null)
                     {
@@ -70,11 +70,11 @@ public class Axle : MapObject
                     var oldTrack = onTrack;
                     onTrack = oldTrack.nextTracks[oldTrack.connectingNextTrack];
                     if ((oldTrack.getPoint(1f) - onTrack.pos).sqrMagnitude < Track.ALLOWABLE_RANGE && (oldTrack.getRotation(1f).eulerAngles - onTrack.rot.eulerAngles).sqrMagnitude < Track.ALLOWABLE_RANGE)
-                        onDist = value - oldTrack.length;
+                        onDist = (value * oldTrack.length - oldTrack.length) / onTrack.length;
                     else
                     {
                         speed = -speed;
-                        onDist = onTrack.length - value + oldTrack.length;
+                        onDist = (onTrack.length - value * oldTrack.length + oldTrack.length) / onTrack.length;
                     }
                 }
             }
@@ -119,11 +119,11 @@ public class Axle : MapObject
                     var oldTrack = onTrack;
                     onTrack = oldTrack.prevTracks[oldTrack.connectingPrevTrack];
                     if ((oldTrack.pos - onTrack.getPoint(1f)).sqrMagnitude < Track.ALLOWABLE_RANGE && (oldTrack.rot.eulerAngles - onTrack.getRotation(1f).eulerAngles).sqrMagnitude < Track.ALLOWABLE_RANGE)
-                        onDist = onTrack.length + value;
+                        onDist = (value * oldTrack.length + onTrack.length) / onTrack.length;
                     else
                     {
                         speed = -speed;
-                        onDist = -value;
+                        onDist = (-value * oldTrack.length) / onTrack.length;
                     }
                 }
             }
@@ -158,9 +158,9 @@ public class Axle : MapObject
         runningResistanceB = 0.000015625f;
         rotX = 0f;
         Vector3 a = onTrack is Curve
-            ? ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles
+            ? ((Curve)onTrack).getRotationCanted(onDist).eulerAngles
             : onTrack.rot.eulerAngles;
-        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist / onTrack.length) : onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2f;
+        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist) : onTrack.getPoint(onDist)) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2f;
         a.x = rotX;
         rot = Quaternion.Euler(a);
     }
@@ -239,18 +239,18 @@ public class Axle : MapObject
             }
         }
         float b = speed * 10f * Time.deltaTime / 36f;
-        onDist += b;
+        onDist += b / onTrack.length;
         rotX += b * 360f / Mathf.PI * wheelDia;
         Vector3 c = onTrack is Shape ?
-            ((Shape)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles :
+            ((Shape)onTrack).getRotationCanted(onDist).eulerAngles :
             onTrack is Curve ?
-            ((Curve)onTrack).getRotationCanted(onDist / onTrack.length).eulerAngles :
+            ((Curve)onTrack).getRotationCanted(onDist).eulerAngles :
             onTrack.rot.eulerAngles;
         pos = (onTrack is Shape ?
-            ((Shape)onTrack).getPointCanted(onDist / onTrack.length) :
+            ((Shape)onTrack).getPointCanted(onDist) :
             onTrack is Curve ?
-            ((Curve)onTrack).getPointCanted(onDist / onTrack.length) :
-            onTrack.getPoint(onDist / onTrack.length)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2f;
+            ((Curve)onTrack).getPointCanted(onDist) :
+            onTrack.getPoint(onDist)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2f;
         rot = Quaternion.Euler(c);
     }
 
@@ -259,7 +259,7 @@ public class Axle : MapObject
     /// </summary>
     public void reloadOnDist()
     {
-        onDist = onTrack.getLength(pos);
+        onDist = onTrack.getLength(pos) / onTrack.length;
     }
 
     public override void reloadEntity()

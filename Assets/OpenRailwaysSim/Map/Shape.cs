@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using UnityEngine;
 
 /// <summary>
 /// 平面曲線と縦断曲線を設定する軌道
+/// - 同一Shapeで平面交差してはいけない。
 /// </summary>
 [Serializable]
 public class Shape : Track
@@ -25,6 +27,7 @@ public class Shape : Track
     public List<float> verticalCurveLength;
     public List<float> verticalCurveRadius;
 
+    public float flatLength;
     public BoxCollider[] colliders = new BoxCollider[0];
 
     public Shape(Map map, Vector3 pos) : base(map, pos)
@@ -35,6 +38,7 @@ public class Shape : Track
         cantRotation = new List<bool>();
         verticalCurveLength = new List<float>();
         verticalCurveRadius = new List<float>();
+        flatLength = 0f;
     }
 
     public Shape(Map map, Vector3 pos, Quaternion rot) : base(map, pos, rot)
@@ -45,6 +49,7 @@ public class Shape : Track
         cantRotation = new List<bool>();
         verticalCurveLength = new List<float>();
         verticalCurveRadius = new List<float>();
+        flatLength = 0f;
     }
 
     protected Shape(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -55,6 +60,7 @@ public class Shape : Track
         cantRotation = (List<bool>)info.GetValue(KEY_CANT_ROTATION, typeof(List<bool>));
         verticalCurveLength = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_LENGTH, typeof(List<float>));
         verticalCurveRadius = (List<float>)info.GetValue(KEY_VERTICAL_CURVE_RADIUS, typeof(List<float>));
+        flatLength = curveLength.Sum();
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -206,11 +212,7 @@ public class Shape : Track
     /// <param name="a">位置(0-1)</param>
     public override Vector3 getPoint(float a)
     {
-        var l1 = 0f;
-        foreach (var l_ in curveLength)
-            l1 += l_;
-
-        return getPointFlat(LengthToFlatLength(a * length) / l1);
+        return getPointFlat(LengthToFlatLength(a * length) / flatLength);
     }
 
     /// <summary>
@@ -241,10 +243,6 @@ public class Shape : Track
         var p = pos;
         var r = rot;
 
-        var l1 = 0f;
-        foreach (var l_ in curveLength)
-            l1 += l_;
-
         // 平面曲線を計算
         var rad = 0f;
         var l2 = 0f;
@@ -253,11 +251,11 @@ public class Shape : Track
         float l3;
         for (var n = 0; n < curveLength.Count; n++)
         {
-            b = l1 * a <= l2 + curveLength[n];
-            c = b ? (l1 * a - l2) / curveLength[n] : 1f;
+            b = flatLength * a <= l2 + curveLength[n];
+            c = b ? (flatLength * a - l2) / curveLength[n] : 1f;
             l3 = curveLength[n] * c;
             if ((rad = curveRadius[n]) == 0f)
-                p += r * Vector3.forward * l3;
+                p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Vector3.forward * l3;
             else
             {
                 var d1 = l3 / Mathf.Abs(rad);
@@ -276,8 +274,8 @@ public class Shape : Track
         l2 = 0f;
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
-            b = l1 * a <= l2 + verticalCurveLength[n];
-            c = b ? (l1 * a - l2) / verticalCurveLength[n] : 1f;
+            b = flatLength * a <= l2 + verticalCurveLength[n];
+            c = b ? (flatLength * a - l2) / verticalCurveLength[n] : 1f;
             l3 = verticalCurveLength[n] * c;
             if ((rad = verticalCurveRadius[n]) == 0f)
                 p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * l3;
@@ -307,7 +305,7 @@ public class Shape : Track
                 break;
         }
         if (!b)
-            p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * (l1 * a - l2);
+            p.y += Mathf.Tan(-r.eulerAngles.x * Mathf.Deg2Rad) * (flatLength * a - l2);
 
         return p;
     }
@@ -318,11 +316,7 @@ public class Shape : Track
     /// <param name="a">位置(0-1)</param>
     public override Quaternion getRotation(float a)
     {
-        var l1 = 0f;
-        foreach (var l_ in curveLength)
-            l1 += l_;
-
-        return getRotationFlat(LengthToFlatLength(a * length) / l1);
+        return getRotationFlat(LengthToFlatLength(a * length) / flatLength);
     }
 
     /// <summary>
@@ -353,10 +347,6 @@ public class Shape : Track
     {
         var r = rot;
 
-        var l1 = 0f;
-        foreach (var l_ in curveLength)
-            l1 += l_;
-
         // 平面曲線を計算
         var rad = 0f;
         var l2 = 0f;
@@ -365,8 +355,8 @@ public class Shape : Track
         float l3;
         for (var n = 0; n < curveLength.Count; n++)
         {
-            b = l1 * a <= l2 + curveLength[n];
-            c = b ? (l1 * a - l2) / curveLength[n] : 1f;
+            b = flatLength * a <= l2 + curveLength[n];
+            c = b ? (flatLength * a - l2) / curveLength[n] : 1f;
             l3 = curveLength[n] * c;
             if ((rad = curveRadius[n]) != 0f)
                 r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, l3 * Mathf.Rad2Deg / rad, 0f);
@@ -382,8 +372,8 @@ public class Shape : Track
         l2 = 0f;
         for (var n = 0; n < verticalCurveLength.Count; n++)
         {
-            b = l1 * a <= l2 + verticalCurveLength[n];
-            c = b ? (l1 * a - l2) / verticalCurveLength[n] : 1f;
+            b = flatLength * a <= l2 + verticalCurveLength[n];
+            c = b ? (flatLength * a - l2) / verticalCurveLength[n] : 1f;
             l3 = verticalCurveLength[n] * c;
             if ((rad = verticalCurveRadius[n]) != 0f)
             {
@@ -423,25 +413,26 @@ public class Shape : Track
     {
         var c = new List<Vector3>();
         var d = new List<float>();
+        var p = this.pos;
+        var r = rot;
         var l = 0f;
+
         for (var n = 0; n < curveLength.Count; n++)
         {
-            var rad = curveRadius[n];
-            var p = getPointFlat(l);
-            // TODO 勾配に対応
-            var r = getRotationFlat(l);
             var r1 = Quaternion.Inverse(r);
-            float l1;
+
+            var rad = curveRadius[n];
             if (rad == 0f)
             {
-                l1 = (r1 * (pos - p)).z;
-                c.Add(r * (pos - p));
-                d.Add(l + l1);
+                var l3 = Mathf.Clamp((r1 * (pos - p)).z, 0f, curveLength[n]);
+                c.Add(p + Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Vector3.forward * l3);
+                d.Add(l + l3);
+                p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Vector3.forward * curveLength[n];
             }
             else
             {
                 var a = r1 * (pos - p);
-                var b = r1 * (getPointFlat(1f) - p);
+                var b = r1 * (getPointFlat((l + curveLength[n]) / flatLength) - p);
                 if (rad < 0f)
                 {
                     rad = -rad;
@@ -449,22 +440,31 @@ public class Shape : Track
                     b.x = -b.x;
                 }
                 var A = Mathf.Atan(a.z / (rad - a.x));
-                var A1 = Mathf.Atan(b.z / (rad - b.x));
-                if (A1 < 0f)
-                    A1 = Mathf.PI + A1;
-                if (b.z < 0f)
-                    A1 += Mathf.PI;
+                if (A != 0f)
+                {
+                    var A1 = Mathf.Atan(b.z / (rad - b.x));
+                    if (A1 != 0f)
+                    {
+                        if (A1 < 0f)
+                            A1 = Mathf.PI + A1;
+                        if (b.z < 0f)
+                            A1 += Mathf.PI;
 
-                if (A < 0f)
-                    A = Mathf.PI + A;
-                if (a.z < 0f)
-                    A += Mathf.PI;
+                        if (A < 0f)
+                            A = Mathf.PI + A;
+                        if (a.z < 0f)
+                            A += Mathf.PI;
 
-                l1 = A * length / A1;
-                var l3 = l1 / curveLength[n];
-                var d1 = l3 / Mathf.Abs(rad);
-                c.Add(r * new Vector3((1f - Mathf.Cos(d1)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * l3, Mathf.Sin(d1) * Mathf.Abs(rad)));
-                d.Add(l + l1);
+                        var l3 = Mathf.Clamp(curveLength[n] * A / A1, 0f, curveLength[n]);
+                        var d1 = l3 / Mathf.Abs(rad);
+                        var d2 = curveLength[n] / Mathf.Abs(rad);
+                        c.Add(p + Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d1)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * l3, Mathf.Sin(d1) * Mathf.Abs(rad)));
+                        d.Add(l + l3);
+
+                        p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d2)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * curveLength[n], Mathf.Sin(d2) * Mathf.Abs(rad));
+                        r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, curveLength[n] * Mathf.Rad2Deg / rad, 0f);
+                    }
+                }
             }
             l += curveLength[n];
         }
@@ -494,11 +494,7 @@ public class Shape : Track
     /// <param name="a">位置(0-1)</param>
     public float getCant(float a)
     {
-        var l1 = 0f;
-        foreach (var l_ in curveLength)
-            l1 += l_;
-
-        return getCantFlat(LengthToFlatLength(a * length) / l1);
+        return getCantFlat(LengthToFlatLength(a * length) / flatLength);
     }
 
     /// <summary>
@@ -507,14 +503,10 @@ public class Shape : Track
     /// <param name="a">平面における位置(0-1)</param>
     public float getCantFlat(float a)
     {
-        var l1 = 0f;
-        foreach (var l_ in curveLength)
-            l1 += l_;
-
         var l2 = 0f;
         for (var n = 0; n < curveLength.Count; n++)
         {
-            if (l1 * a <= l2 + curveLength[n])
+            if (flatLength * a <= l2 + curveLength[n])
                 return cant[n];
             l2 += curveLength[n];
         }
@@ -564,12 +556,8 @@ public class Shape : Track
             l2 += verticalCurveLength[n];
         }
 
-        var l1 = 0f;
-        foreach (var l_ in curveLength)
-            l1 += l_;
-
-        l6 = (l1 - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
-        return l2 + (l1 - l2) * (l - l7) / l6;*/
+        l6 = (flatLength - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+        return l2 + (flatLength - l2) * (l - l7) / l6;*/
         return l;
     }
 
@@ -615,12 +603,8 @@ public class Shape : Track
             l2 += verticalCurveLength[n];
         }
 
-        var l1 = 0f;
-        foreach (var l_ in curveLength)
-            l1 += l_;
-
-        l6 = (l1 - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
-        return l7 + (length - l7) * (l - l2) / (l1 - l2);*/
+        l6 = (flatLength - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+        return l7 + (length - l7) * (l - l2) / (flatLength - l2);*/
         return l;
     }
 
@@ -629,11 +613,9 @@ public class Shape : Track
     /// </summary>
     public void reloadLength()
     {
-        var l = 0f;
+        flatLength = curveLength.Sum();
 
-        var l1 = 0f;
-        foreach (var l_ in curveLength)
-            l1 += l_;
+        var l = 0f;
 
         var vr = rot;
         var rad = 0f;
@@ -660,7 +642,7 @@ public class Shape : Track
             }
         }
 
-        l += (l1 - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
+        l += (flatLength - l2) / Mathf.Cos(vr.eulerAngles.x * Mathf.Deg2Rad);
         length = l;
     }
 }
