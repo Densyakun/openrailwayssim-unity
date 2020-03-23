@@ -16,7 +16,7 @@ public class TextEntity : MonoBehaviour
 
     void Update()
     {
-        if (Main.INSTANCE.grid.activeSelf)
+        if (Main.INSTANCE.grid.activeSelf && !Main.INSTANCE.pausePanel.isShowing() && !Main.INSTANCE.runPanel.isShowing())
         {
             if ((Quaternion.Inverse(Camera.main.transform.rotation) * (obj.pos - Camera.main.transform.position)).z > 0)
             {

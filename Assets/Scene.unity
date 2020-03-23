@@ -427,7 +427,7 @@ MonoBehaviour:
     type: 3}
   directControllerModel: {fileID: 1508862306689808, guid: 02258fb8490206645af66160cce62b23,
     type: 3}
-  mapPinFont: {fileID: 12800000, guid: f018cbb18c9f3664fa825b7bdfa92eb8, type: 3}
+  mapPinFont: {fileID: 12800000, guid: 9679893eb91eecc40bb453f9b35b63f7, type: 3}
   canvas: {fileID: 1056666633}
   titlePanel: {fileID: 1166821556}
   selectMapPanel: {fileID: 772577678}
