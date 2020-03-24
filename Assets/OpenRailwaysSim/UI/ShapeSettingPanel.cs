@@ -129,12 +129,12 @@ public class ShapeSettingPanel : GamePanel
 
     public void load()
     {
-        curveLength = lastCurveLength = Main.editingTracks[0].curveLength;
-        curveRadius = lastCurveRadius = Main.editingTracks[0].curveRadius;
-        cant = lastCant = Main.editingTracks[0].cant;
-        cantRotation = lastCantRotation = Main.editingTracks[0].cantRotation;
-        verticalCurveLength = lastVerticalCurveLength = Main.editingTracks[0].verticalCurveLength;
-        verticalCurveRadius = lastVerticalCurveRadius = Main.editingTracks[0].verticalCurveRadius;
+        curveLength = lastCurveLength = Main.editingTrack.curveLength;
+        curveRadius = lastCurveRadius = Main.editingTrack.curveRadius;
+        cant = lastCant = Main.editingTrack.cant;
+        cantRotation = lastCantRotation = Main.editingTrack.cantRotation;
+        verticalCurveLength = lastVerticalCurveLength = Main.editingTrack.verticalCurveLength;
+        verticalCurveRadius = lastVerticalCurveRadius = Main.editingTrack.verticalCurveRadius;
         reloadSegmentPanels();
     }
 
@@ -182,10 +182,10 @@ public class ShapeSettingPanel : GamePanel
                     cantRotationL.Add(cantRotation[n]);
                 }
             }
-            Main.editingTracks[0].curveLength = lengthL;
-            Main.editingTracks[0].curveRadius = radiusL;
-            Main.editingTracks[0].cant = cantL;
-            Main.editingTracks[0].cantRotation = cantRotationL;
+            Main.editingTrack.curveLength = lengthL;
+            Main.editingTrack.curveRadius = radiusL;
+            Main.editingTrack.cant = cantL;
+            Main.editingTrack.cantRotation = cantRotationL;
 
             lengthL = new List<float>();
             radiusL = new List<float>();
@@ -206,11 +206,11 @@ public class ShapeSettingPanel : GamePanel
                     radiusL.Add(verticalCurveRadius[n]);
                 }
             }
-            Main.editingTracks[0].verticalCurveLength = lengthL;
-            Main.editingTracks[0].verticalCurveRadius = radiusL;
+            Main.editingTrack.verticalCurveLength = lengthL;
+            Main.editingTrack.verticalCurveRadius = radiusL;
 
-            Main.editingTracks[0].reloadLength();
-            Main.editingTracks[0].reloadEntity();
+            Main.editingTrack.reloadLength();
+            Main.editingTrack.reloadEntity();
         }
         catch (FormatException) { }
         catch (OverflowException) { }
@@ -220,13 +220,11 @@ public class ShapeSettingPanel : GamePanel
     {
         reflect();
 
-        Main.gauge = Main.editingTracks[0].gauge;
-        if (Main.editingTracks[0].curveLength.Count == 0)
+        Main.gauge = Main.editingTrack.gauge;
+        if (Main.editingTrack.curveLength.Count == 0)
             Main.INSTANCE.cancelEditingTracks();
         else
             Main.INSTANCE.trackEdited0();
-        Main.editingTracks.Clear();
-        Main.editingRot = null;
 
         if (!Input.GetKeyDown(KeyCode.Escape))
             show(false);
@@ -234,15 +232,15 @@ public class ShapeSettingPanel : GamePanel
 
     public void cancel()
     {
-        Main.editingTracks[0].curveLength = lastCurveLength;
-        Main.editingTracks[0].curveRadius = lastCurveRadius;
-        Main.editingTracks[0].cant = lastCant;
-        Main.editingTracks[0].cantRotation = lastCantRotation;
-        Main.editingTracks[0].verticalCurveLength = lastVerticalCurveLength;
-        Main.editingTracks[0].verticalCurveRadius = lastVerticalCurveRadius;
+        Main.editingTrack.curveLength = lastCurveLength;
+        Main.editingTrack.curveRadius = lastCurveRadius;
+        Main.editingTrack.cant = lastCant;
+        Main.editingTrack.cantRotation = lastCantRotation;
+        Main.editingTrack.verticalCurveLength = lastVerticalCurveLength;
+        Main.editingTrack.verticalCurveRadius = lastVerticalCurveRadius;
 
-        Main.editingTracks[0].reloadLength();
-        Main.editingTracks[0].reloadEntity();
+        Main.editingTrack.reloadLength();
+        Main.editingTrack.reloadEntity();
 
         show(false);
     }

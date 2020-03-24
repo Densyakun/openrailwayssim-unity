@@ -103,12 +103,11 @@ public class Main : MonoBehaviour
     public static ModeEnum mode = ModeEnum.NONE;
 
     private float tick = 0f; // 時間を進ませた時の余り
-    public static List<Shape> editingTracks = new List<Shape>();
+    public static Shape editingTrack;
     public static Quaternion? editingRot;
     public static Coupler editingCoupler;
     public static MapPin editingMapPin;
     public static Structure editingStructure;
-    public static Shape mainTrack;
     public static MapObject focused;
     public static float focusedDist;
     public static List<MapObject> selectingObjs = new List<MapObject>();
@@ -300,10 +299,10 @@ public class Main : MonoBehaviour
                     removeSelectingObjs();
                 if (Input.GetKeyDown(KeyCode.G))
                     playingPanel.setGuide(!playingPanel.guideToggle.isOn);
-                if (Input.GetKeyDown(KeyCode.R) && mode == ModeEnum.CONSTRUCT_TRACK && editingRot != null && editingTracks.Any())
+                if (Input.GetKeyDown(KeyCode.R) && mode == ModeEnum.CONSTRUCT_TRACK && editingRot != null && editingTrack != null)
                 {
                     editingRot *= Quaternion.AngleAxis(180f, Vector3.up);
-                    editingTracks[0].rot = (Quaternion)editingRot;
+                    editingTrack.rot = (Quaternion)editingRot;
                 }
 
                 if (!CameraMover.INSTANCE.dragging && !EventSystem.current.IsPointerOverGameObject())
@@ -336,7 +335,7 @@ public class Main : MonoBehaviour
             var entity = hit.collider.GetComponent<MapEntity>();
             if (entity == null && hit.collider.transform.parent)
                 entity = hit.collider.transform.parent.GetComponent<MapEntity>();
-            if (entity != null && (editingTracks.Any() ? editingTracks.Any(track => track.entity && entity.gameObject != track.entity.gameObject) : true))
+            if (entity != null && (editingTrack == null ? true : editingTrack.entity && entity.gameObject != editingTrack.entity.gameObject))
             {
                 if (focused != entity.obj)
                 {
@@ -398,33 +397,29 @@ public class Main : MonoBehaviour
                 {
                     if (Input.GetMouseButtonUp(0))
                     {
-                        if (editingTracks.Any())
+                        if (editingTrack != null)
                             cancelEditingTracks();
                         else if (focused != null)
                         {
                             if (focused is Shape)
                             {
-                                mainTrack = ((Shape)focused);
-                                editingRot = mainTrack.getRotation(focusedDist);
-                                editingTracks.Clear();
-                                editingTracks.Add(new Shape(playingmap, p));
+                                editingRot = ((Shape)focused).getRotation(focusedDist);
+                                editingTrack = new Shape(playingmap, p);
                             }
                         }
                         else
                         {
-                            mainTrack = null;
-                            editingTracks.Clear();
-                            editingTracks.Add(new Shape(playingmap, p));
+                            editingTrack = new Shape(playingmap, p);
                         }
 
-                        if (editingTracks.Any())
+                        if (editingTrack != null)
                         {
-                            editingTracks[0].gauge = gauge;
+                            editingTrack.gauge = gauge;
 
                             if (editingRot != null)
-                                editingTracks[0].rot = (Quaternion)editingRot;
-                            editingTracks[0].enableCollider = false;
-                            editingTracks[0].generate();
+                                editingTrack.rot = (Quaternion)editingRot;
+                            editingTrack.enableCollider = false;
+                            editingTrack.generate();
 
                             shapeSettingPanel.show(true);
                             setPanelPosToMousePos(shapeSettingPanel);
@@ -650,19 +645,16 @@ public class Main : MonoBehaviour
 
     public void trackEdited0()
     {
-        foreach (var track in editingTracks)
-        {
-            if (mainTrack != null)
-                track.connectingTrack(mainTrack);
+        foreach (var obj in playingmap.objs)
+            if (obj is Track)
+                editingTrack.connectingTrack((Track)obj);
 
-            playingmap.addObject(track);
-            track.enableCollider = true;
-            track.reloadCollider();
+        playingmap.addObject(editingTrack);
+        editingTrack.enableCollider = true;
+        editingTrack.reloadCollider();
 
-            mainTrack = track;
-        }
-
-        mainTrack = editingTracks.Last();
+        editingTrack = null;
+        editingRot = null;
     }
 
     public void selectObj(MapObject obj)
@@ -715,10 +707,8 @@ public class Main : MonoBehaviour
     {
         shapeSettingPanel.show(false);
 
-        foreach (var track in editingTracks)
-            track.entity.Destroy();
-        editingTracks.Clear();
-
+        editingTrack.entity.Destroy();
+        editingTrack = null;
         editingRot = null;
     }
 }
