@@ -456,13 +456,13 @@ public class Shape : Track
                             A += Mathf.PI;
 
                         var l3 = Mathf.Clamp(curveLength[n] * A / A1, 0f, curveLength[n]);
-                        var d1 = l3 / Mathf.Abs(rad);
-                        var d2 = curveLength[n] / Mathf.Abs(rad);
-                        c.Add(p + Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d1)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * l3, Mathf.Sin(d1) * Mathf.Abs(rad)));
+                        var d1 = l3 / rad;
+                        var d2 = curveLength[n] / rad;
+                        c.Add(p + Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d1)) * curveRadius[n], Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * l3, Mathf.Sin(d1) * rad));
                         d.Add(l + l3);
 
-                        p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d2)) * rad, Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * curveLength[n], Mathf.Sin(d2) * Mathf.Abs(rad));
-                        r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, curveLength[n] * Mathf.Rad2Deg / rad, 0f);
+                        p += Quaternion.Euler(0f, r.eulerAngles.y, 0f) * new Vector3((1f - Mathf.Cos(d2)) * curveRadius[n], Mathf.Sin(-r.eulerAngles.x * Mathf.Deg2Rad) * curveLength[n], Mathf.Sin(d2) * rad);
+                        r = Quaternion.Euler(0f, r.eulerAngles.y, 0f) * Quaternion.Euler(r.eulerAngles.x, curveLength[n] * Mathf.Rad2Deg / curveRadius[n], 0f);
                     }
                 }
             }
