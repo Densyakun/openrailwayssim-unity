@@ -277,8 +277,8 @@ public class Main : MonoBehaviour
             }
             else
             {
-                playingmap.Update();
                 tick += Time.deltaTime;
+                playingmap.Update();
                 var t = Mathf.FloorToInt(tick);
                 if (t != 0)
                 {

@@ -79,9 +79,9 @@ public class PermanentCoupler : MapObject
     /// </summary>
     public void snapTo()
     {
-        if (lastMoved == Time.time)
+        if (lastMoved == map.time)
             return;
-        lastMoved = Time.time;
+        lastMoved = map.time;
 
         body1.snapToBogieFrame();
         body2.snapToBogieFrame();

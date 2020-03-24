@@ -112,6 +112,7 @@ public class MapManager
                     map = (Map)formatter.Deserialize(stream);
                     map.mapname = mapname;
                     map.info = info;
+                    map.init();
                 }
                 catch (EndOfStreamException)
                 {

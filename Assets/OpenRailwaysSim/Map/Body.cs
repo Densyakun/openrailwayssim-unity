@@ -121,9 +121,9 @@ public class Body : MapObject
     /// </summary>
     public void snapToBogieFrame()
     {
-        if (lastMoved == Time.time)
+        if (lastMoved == map.time)
             return;
-        lastMoved = Time.time;
+        lastMoved = map.time;
 
         // 運転台の操作を反映
         if (Main.INSTANCE.runPanel.body == this)

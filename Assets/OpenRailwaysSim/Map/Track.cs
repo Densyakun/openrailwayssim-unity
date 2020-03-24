@@ -5,6 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// 軌道（直線）
+/// - 同一Trackと接続してはいけない。
 /// </summary>
 [Serializable]
 public class Track : MapObject

@@ -60,9 +60,6 @@ public class Map : ISerializable
         if (info == null)
             throw new ArgumentNullException("info");
         objs = (List<MapObject>)info.GetValue(KEY_OBJECTS, typeof(List<MapObject>));
-        foreach (var obj in objs)
-            if (obj != null)
-                obj.map = this;
         time = info.GetSingle(KEY_TIME);
         cameraPos = ((SerializableVector3)info.GetValue(KEY_CAMERA_POS, typeof(SerializableVector3))).toVector3();
         cameraRot = ((SerializableVector3)info.GetValue(KEY_CAMERA_ROT, typeof(SerializableVector3))).toVector3();
@@ -76,6 +73,13 @@ public class Map : ISerializable
         info.AddValue(KEY_TIME, time);
         info.AddValue(KEY_CAMERA_POS, new SerializableVector3(cameraPos));
         info.AddValue(KEY_CAMERA_ROT, new SerializableVector3(cameraRot));
+    }
+
+    public void init()
+    {
+        foreach (var obj in objs)
+            if (obj != null)
+                obj.map = this;
     }
 
     public void addObject(MapObject obj)

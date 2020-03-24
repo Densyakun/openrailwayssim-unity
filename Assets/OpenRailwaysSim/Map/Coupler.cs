@@ -79,9 +79,9 @@ public class Coupler : MapObject
     /// </summary>
     public void snapTo()
     {
-        if (lastMoved == Time.time)
+        if (lastMoved == map.time)
             return;
-        lastMoved = Time.time;
+        lastMoved = map.time;
 
         body.snapToBogieFrame();
         pos = body.pos + body.rot * new Vector3(0, height - body.bogieHeight, (body.carLength / 2 - length) * (isFront ? 1 : -1));

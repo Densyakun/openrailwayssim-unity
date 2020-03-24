@@ -144,6 +144,7 @@ public class Axle : MapObject
     [NonSerialized]
     public BogieFrame bogieFrame;
     public float lastMoved = -1f;
+    //public float lastMoved1 = -1f;
 
     public Axle(Map map, Track onTrack, float onDist) : base(map)
     {
@@ -214,9 +215,9 @@ public class Axle : MapObject
     /// </summary>
     public void move()
     {
-        if (lastMoved == Time.time)
+        if (lastMoved == map.time)
             return;
-        lastMoved = Time.time;
+        lastMoved = map.time;
 
         float w = 0f;
         if (bogieFrame != null)
@@ -259,7 +260,16 @@ public class Axle : MapObject
     /// </summary>
     public void reloadOnDist()
     {
+        // 処理の順番の関係か、速度を実際の速度に設定するとほとんど動かなくなる
+        /*if (lastMoved1 == map.time)
+            return;
+        lastMoved1 = map.time;
+
+        var t = onTrack;
+        var d = onDist;*/
         onDist = onTrack.getLength(pos) / onTrack.length;
+        //if (onTrack == t)
+        //    speed = (onDist - d) * 36f / Time.deltaTime / 10f;
     }
 
     public override void reloadEntity()
