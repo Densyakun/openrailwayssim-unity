@@ -15,16 +15,46 @@ public class Body : MapObject
     public const string KEY_BOGIE_CENTER_DIST = "BCD";
     public const string KEY_CAR_LENGTH = "CAR_LENGTH";
     public const string KEY_BOGIEFRAMES = "BOGIEFRAMES";
+    public const string KEY_RUNNING_RESISTANCE_C = "RUNNING_RESISTANCE_C";
+    public const string KEY_FRONT_CAB = "FRONT_CAB";
+    public const string KEY_BACK_CAB = "BACK_CAB";
 
     public const float COLLIDER_WIDTH = 2.95f;
     public const float COLLIDER_HEIGHT = 0.16f;
     public const float COLLIDER_DEPTH = 19f;
 
+    /// <summary>
+    /// 車両重量
+    /// </summary>
     public float carWeight;
+    /// <summary>
+    /// 台車の高さ
+    /// </summary>
     public float bogieHeight;
+    /// <summary>
+    /// 台車間距離
+    /// </summary>
     public float bogieCenterDist;
+    /// <summary>
+    /// 連結面間距離
+    /// </summary>
     public float carLength;
+    /// <summary>
+    /// 台車
+    /// </summary>
     public List<BogieFrame> bogieFrames { get; private set; }
+    /// <summary>
+    /// 走行抵抗の定数C。車両あたりの空気抵抗に依存する値
+    /// </summary>
+    public float runningResistanceC;
+    /// <summary>
+    /// 前方の運転台
+    /// </summary>
+    public Cab frontCab;
+    /// <summary>
+    /// 後方の運転台
+    /// </summary>
+    public Cab backCab;
 
 
     // Direct Controller
@@ -57,6 +87,7 @@ public class Body : MapObject
         carLength = 19.5f;
         foreach (var bf in this.bogieFrames = bogieFrames)
             bf.body = this;
+        runningResistanceC = 0.00000863125f;
 
         this.motors = new List<Axle>();
         reverser = 0;
@@ -74,6 +105,7 @@ public class Body : MapObject
         bogieFrames = (List<BogieFrame>)info.GetValue(KEY_BOGIEFRAMES, typeof(List<BogieFrame>));
         foreach (var bf in bogieFrames)
             bf.body = this;
+        try { runningResistanceC = info.GetSingle(KEY_RUNNING_RESISTANCE_C); } catch { runningResistanceC = 0.0001381f; }
 
         motors = (List<Axle>)info.GetValue(KEY_MOTORS, typeof(List<Axle>));
         reverser = info.GetInt32(KEY_REVERSER);
@@ -90,8 +122,7 @@ public class Body : MapObject
         info.AddValue(KEY_BOGIE_CENTER_DIST, bogieCenterDist);
         info.AddValue(KEY_CAR_LENGTH, carLength);
         info.AddValue(KEY_BOGIEFRAMES, bogieFrames);
-        foreach (var bf in bogieFrames)
-            bf.body = this;
+        info.AddValue(KEY_RUNNING_RESISTANCE_C, runningResistanceC);
 
         info.AddValue(KEY_MOTORS, motors);
         info.AddValue(KEY_REVERSER, reverser);
@@ -133,17 +164,17 @@ public class Body : MapObject
             float w = 0f;
             foreach (var axle in motors)
             {
-                if (w == 0)
+                if (w == 0f)
                     w = axle.getTrainLoad() / motors.Count;
                 var a = (float)notch;
-                if (a < 0)
+                if (a < 0f)
                 {
-                    if (axle.speed < 0)
+                    if (axle.speed < 0f)
                         axle.inputPower(-a / brakeNotchs, w, true);
-                    else
+                    else if (0f < axle.speed)
                         axle.inputPower(a / brakeNotchs, w, true);
                 }
-                else if (a > 0 && reverser != 0)
+                else if (a > 0f && reverser != 0)
                     axle.inputPower((reverser == 1 ? a : -a) / powerNotchs, w);
             }
         }

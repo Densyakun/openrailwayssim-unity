@@ -72,7 +72,7 @@ public class RunPanel : GamePanel
             {
                 foreach (var axle in body.motors)
                     a += axle.speed;
-                a /= body.motors.Count;
+                a *= 3.6f / body.motors.Count;
             }
             speedText.text = speedText_DEF + ": " + (body.motors.Count == 0 ? "NaN" : Mathf.Abs(a).ToString("F1") + " km/h");
             notchText.text = notchText_DEF + ": " + body.notch;

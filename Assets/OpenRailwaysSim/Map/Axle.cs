@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using UnityEngine;
 
 /// <summary>
-/// 車軸
+/// 輪軸
 /// </summary>
 [Serializable]
 public class Axle : MapObject
@@ -13,17 +13,28 @@ public class Axle : MapObject
     public const string KEY_ON_DIST = "ON_DIST";
     public const string KEY_SPEED = "SPEED";
     public const string KEY_WHEEL_DIA = "WHEEL_DIA";
+    public const string KEY_ROT_X = "ROT_X";
+
     public const string KEY_TM_OUTPUT = "TM_OUTPUT";
     public const string KEY_GEAR_RATIO = "GEAR_RATIO";
+
     public const string KEY_STARTING_RESISTANCE = "STARTING_RESISTANCE";
     public const string KEY_RUNNING_RESISTANCE_A = "RUNNING_RESISTANCE_A";
     public const string KEY_RUNNING_RESISTANCE_B = "RUNNING_RESISTANCE_B";
-    public const string KEY_ROT_X = "ROT_X";
 
+    /// <summary>
+    /// コライダーの幅
+    /// </summary>
     public const float COLLIDER_WIDTH = 2.3f;
 
+    /// <summary>
+    /// 走行している軌道
+    /// </summary>
     public Track onTrack { get; protected set; }
     protected float _onDist = 0f;
+    /// <summary>
+    /// 走行位置
+    /// </summary>
     public float onDist
     {
         get { return _onDist; }
@@ -131,14 +142,42 @@ public class Axle : MapObject
                 _onDist = value;
         }
     }
+    /// <summary>
+    /// 車軸の速度 m/s
+    /// </summary>
     public float speed;
+    /// <summary>
+    /// 車輪の直径
+    /// </summary>
     public float wheelDia;
-    public float tm_output;
-    public float gearRatio;
-    public float startingResistance;
-    public float runningResistanceA;
-    public float runningResistanceB;
+    /// <summary>
+    /// 車軸の向きX
+    /// </summary>
     public float rotX;
+
+    // 速度制御
+    /// <summary>
+    /// 主電動機出力(定格) kW
+    /// </summary>
+    public float tm_output;
+    /// <summary>
+    /// 駆動装置の歯車比
+    /// </summary>
+    public float gearRatio;
+
+    // 列車抵抗
+    /// <summary>
+    /// 出発抵抗 (N/t)
+    /// </summary>
+    public float startingResistance;
+    /// <summary>
+    /// 走行抵抗の定数A。輪軸あたりの車軸と軸受の摩擦に依存する値
+    /// </summary>
+    public float runningResistanceA;
+    /// <summary>
+    /// 走行抵抗の定数B。輪軸あたりの車輪とレールの摩擦に依存する値
+    /// </summary>
+    public float runningResistanceB;
 
     public GameObject modelObj;
     [NonSerialized]
@@ -152,18 +191,25 @@ public class Axle : MapObject
         this.onDist = onDist;
         speed = 0f;
         wheelDia = 0.86f;
+        rotX = 0f;
+        Vector3 c = onTrack is Shape ?
+            ((Shape)onTrack).getRotationCanted(onDist).eulerAngles :
+            onTrack is Curve ?
+            ((Curve)onTrack).getRotationCanted(onDist).eulerAngles :
+            onTrack.rot.eulerAngles;
+        pos = (onTrack is Shape ?
+            ((Shape)onTrack).getPointCanted(onDist) :
+            onTrack is Curve ?
+            ((Curve)onTrack).getPointCanted(onDist) :
+            onTrack.getPoint(onDist)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2f;
+        rot = Quaternion.Euler(c);
+
         tm_output = 220f;
         gearRatio = 6.06f;
+
         startingResistance = 30f;
         runningResistanceA = 0.019890625f;
         runningResistanceB = 0.000015625f;
-        rotX = 0f;
-        Vector3 a = onTrack is Curve
-            ? ((Curve)onTrack).getRotationCanted(onDist).eulerAngles
-            : onTrack.rot.eulerAngles;
-        pos = (onTrack is Curve ? ((Curve)onTrack).getPointCanted(onDist) : onTrack.getPoint(onDist)) + Quaternion.Euler(a) * Vector3.up * wheelDia / 2f;
-        a.x = rotX;
-        rot = Quaternion.Euler(a);
     }
 
     protected Axle(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -172,12 +218,14 @@ public class Axle : MapObject
         _onDist = info.GetSingle(KEY_ON_DIST);
         speed = info.GetSingle(KEY_SPEED);
         wheelDia = info.GetSingle(KEY_WHEEL_DIA);
+        rotX = info.GetSingle(KEY_ROT_X);
+
         tm_output = info.GetSingle(KEY_TM_OUTPUT);
         gearRatio = info.GetSingle(KEY_GEAR_RATIO);
+
         startingResistance = info.GetSingle(KEY_STARTING_RESISTANCE);
         runningResistanceA = info.GetSingle(KEY_RUNNING_RESISTANCE_A);
         runningResistanceB = info.GetSingle(KEY_RUNNING_RESISTANCE_B);
-        rotX = info.GetSingle(KEY_ROT_X);
     }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -187,12 +235,14 @@ public class Axle : MapObject
         info.AddValue(KEY_ON_DIST, _onDist);
         info.AddValue(KEY_SPEED, speed);
         info.AddValue(KEY_WHEEL_DIA, wheelDia);
+        info.AddValue(KEY_ROT_X, rotX);
+
         info.AddValue(KEY_TM_OUTPUT, tm_output);
         info.AddValue(KEY_GEAR_RATIO, gearRatio);
+
         info.AddValue(KEY_STARTING_RESISTANCE, startingResistance);
         info.AddValue(KEY_RUNNING_RESISTANCE_A, runningResistanceA);
         info.AddValue(KEY_RUNNING_RESISTANCE_B, runningResistanceB);
-        info.AddValue(KEY_ROT_X, rotX);
     }
 
     public override void generate()
@@ -219,30 +269,28 @@ public class Axle : MapObject
             return;
         lastMoved = map.time;
 
-        float w = 0f;
-        if (bogieFrame != null)
+        // 走行抵抗
+        /*if (bogieFrame != null)
         {
-            var body = bogieFrame.body;
-            if (body != null)
+            if (bogieFrame.body != null)
             {
-                w = bogieFrame.body.carWeight;
-                int d = 0;
+                var e = 0;
                 foreach (var bf in bogieFrame.body.bogieFrames)
-                    d += bf.axles.Count;
-                w /= d;
-                float a = -Physics.gravity.y * runningResistanceA;
-                a += runningResistanceB * speed;
-                a *= Time.deltaTime * 36f / 100f;
+                    e += bf.axles.Count;
+                var w = bogieFrame.body.carWeight / e;
+                var a = -Physics.gravity.y * (runningResistanceA + runningResistanceB * speed * 3.6f + bogieFrame.body.runningResistanceC * speed * speed * 3.6f * 3.6f / w / e) * Time.deltaTime * w / 1000f;
                 if (speed < 0f)
                     speed = Mathf.Min(speed + a, 0f);
                 else
                     speed = Mathf.Max(speed - a, 0f);
             }
-        }
-        float b = speed * 10f * Time.deltaTime / 36f;
+        }*/
+
+        var b = speed * Time.deltaTime;
         onDist += b / onTrack.length;
         rotX += b * 360f / Mathf.PI * wheelDia;
-        Vector3 c = onTrack is Shape ?
+
+        Vector3 d = onTrack is Shape ?
             ((Shape)onTrack).getRotationCanted(onDist).eulerAngles :
             onTrack is Curve ?
             ((Curve)onTrack).getRotationCanted(onDist).eulerAngles :
@@ -251,8 +299,8 @@ public class Axle : MapObject
             ((Shape)onTrack).getPointCanted(onDist) :
             onTrack is Curve ?
             ((Curve)onTrack).getPointCanted(onDist) :
-            onTrack.getPoint(onDist)) + Quaternion.Euler(c) * Vector3.up * wheelDia / 2f;
-        rot = Quaternion.Euler(c);
+            onTrack.getPoint(onDist)) + Quaternion.Euler(d) * Vector3.up * wheelDia / 2f;
+        rot = Quaternion.Euler(d);
     }
 
     /// <summary>
@@ -269,7 +317,7 @@ public class Axle : MapObject
         var d = onDist;*/
         onDist = onTrack.getLength(pos) / onTrack.length;
         //if (onTrack == t)
-        //    speed = (onDist - d) * 36f / Time.deltaTime / 10f;
+        //    speed = (onDist - d) / Time.deltaTime;
     }
 
     public override void reloadEntity()
@@ -335,23 +383,22 @@ public class Axle : MapObject
     public void inputPower(float power, float weight, bool brake = false)
     {
         var a = tm_output * wheelDia * Time.deltaTime * power / 2f / weight / gearRatio;
-        if (speed > 0f == a > 0f)
+        if (brake)
         {
-            var b = a > 0f ? a : -a;
-            b -= (1f - Mathf.Clamp(Mathf.Abs(speed), 0f, 3f) / 3f) * startingResistance * Time.deltaTime * 36f / 100000f / weight;
-            if (a > 0f)
-                speed += b;
+            if (speed > 0f)
+                speed = Mathf.Max(0f, speed + a);
             else
-                speed -= b;
+                speed = Mathf.Min(0f, speed + a);
         }
         else
         {
-            if (brake)
+            if (speed > 0f == a > 0f)
             {
-                if (speed > 0f)
-                    speed = Mathf.Max(speed + a, 0f);
+                var b = (1f - Mathf.Clamp(Mathf.Abs(speed * 3.6f), 0f, 3f) / 3f) * startingResistance * Time.deltaTime / weight / 1000f;
+                if (a > 0f)
+                    speed = Mathf.Max(0f, speed + a - b);
                 else
-                    speed = Mathf.Min(speed + a, 0f);
+                    speed = Mathf.Min(0f, speed + a + b);
             }
             else
                 speed += a;
