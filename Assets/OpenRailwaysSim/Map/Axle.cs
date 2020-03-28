@@ -278,7 +278,7 @@ public class Axle : MapObject
                 foreach (var bf in bogieFrame.body.bogieFrames)
                     e += bf.axles.Count;
                 var w = bogieFrame.body.carWeight / e;
-                var a = -Physics.gravity.y * (runningResistanceA + runningResistanceB * speed * 3.6f + bogieFrame.body.runningResistanceC * speed * speed * 3.6f * 3.6f / w / e) * Time.deltaTime * w / 1000f;
+                var a = -Physics.gravity.y * (runningResistanceA + runningResistanceB * speed * 3.6f + bogieFrame.body.runningResistanceC * speed * speed * 3.6f * 3.6f / w / e) * Time.deltaTime / bogieFrame.body.carWeight;
                 if (speed < 0f)
                     speed = Mathf.Min(speed + a, 0f);
                 else
