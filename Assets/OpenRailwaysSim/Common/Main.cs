@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -105,6 +104,7 @@ public class Main : MonoBehaviour
     private float tick = 0f; // 時間を進ませた時の余り
     public static Shape editingTrack;
     public static Quaternion? editingRot;
+    public static Body editingBody;
     public static Coupler editingCoupler;
     public static MapPin editingMapPin;
     public static Structure editingStructure;
@@ -141,19 +141,20 @@ public class Main : MonoBehaviour
     public Canvas canvas;
     public TitlePanel titlePanel;
     public SelectMapPanel selectMapPanel;
-    public SettingPanel settingPanel;
     public AddMapPanel addMapPanel;
     public GamePanel loadingMapPanel;
+    public UnsupportedMapPanel unsupportedMapPanel;
+    public DeleteMapPanel deleteMapPanel;
     public PlayingPanel playingPanel;
     public GameObject timePanel;
     public Text timeText;
     public PausePanel pausePanel;
+    public SettingPanel settingPanel;
     public TitleBackPanel titleBackPanel;
-    public UnsupportedMapPanel unsupportedMapPanel;
-    public DeleteMapPanel deleteMapPanel;
-    public ShapeSettingPanel shapeSettingPanel;
-    public CouplerSettingPanel couplerSettingPanel;
     public RunPanel runPanel;
+    public ShapeSettingPanel shapeSettingPanel;
+    public BodySettingPanel bodySettingPanel;
+    public CouplerSettingPanel couplerSettingPanel;
     public MapPinSettingPanel mapPinSettingPanel;
     public StructureSettingPanel structureSettingPanel;
 
@@ -209,37 +210,27 @@ public class Main : MonoBehaviour
                     if (shapeSettingPanel.isShowing())
                     {
                         a = false;
-                        cancelEditingTracks();
+                        shapeSettingPanel.cancel();
+                    }
+                    else if (bodySettingPanel.isShowing())
+                    {
+                        a = false;
+                        bodySettingPanel.cancel();
                     }
                     else if (couplerSettingPanel.isShowing())
                     {
                         a = false;
-                        couplerSettingPanel.show(false);
-                        if (editingCoupler != null)
-                        {
-                            editingCoupler.entity.Destroy();
-                            editingCoupler = null;
-                        }
+                        couplerSettingPanel.cancel();
                     }
                     else if (mapPinSettingPanel.isShowing())
                     {
                         a = false;
-                        mapPinSettingPanel.show(false);
-                        if (editingMapPin != null)
-                        {
-                            editingMapPin.entity.Destroy();
-                            editingMapPin = null;
-                        }
+                        mapPinSettingPanel.cancel();
                     }
                     else if (structureSettingPanel.isShowing())
                     {
                         a = false;
-                        structureSettingPanel.show(false);
-                        if (editingStructure != null)
-                        {
-                            editingStructure.entity.Destroy();
-                            editingStructure = null;
-                        }
+                        structureSettingPanel.cancel();
                     }
 
                     if (mode != ModeEnum.NONE)
@@ -259,7 +250,7 @@ public class Main : MonoBehaviour
 
                         selectingObjs.Clear();
 
-                        playingPanel.a();
+                        playingPanel.reloadInteractable();
                     }
 
                     if (a)
@@ -398,7 +389,7 @@ public class Main : MonoBehaviour
                     if (Input.GetMouseButtonUp(0))
                     {
                         if (editingTrack != null)
-                            cancelEditingTracks();
+                            shapeSettingPanel.cancel();
                         else if (focused != null)
                         {
                             if (focused is Shape)
@@ -426,7 +417,7 @@ public class Main : MonoBehaviour
                         }
                     }
                     else if (Input.GetMouseButtonUp(1))
-                        cancelEditingTracks();
+                        shapeSettingPanel.cancel();
                 }
                 else if (mode == ModeEnum.PLACE_AXLE)
                 {
@@ -643,20 +634,6 @@ public class Main : MonoBehaviour
         return GetIntersectionPointCoordinates(A1.x, A1.z, A2.x, A2.z, B1.x, B1.z, B2.x, B2.z);
     }
 
-    public void trackEdited0()
-    {
-        foreach (var obj in playingmap.objs)
-            if (obj is Track)
-                editingTrack.connectingTrack((Track)obj);
-
-        playingmap.addObject(editingTrack);
-        editingTrack.enableCollider = true;
-        editingTrack.reloadCollider();
-
-        editingTrack = null;
-        editingRot = null;
-    }
-
     public void selectObj(MapObject obj)
     {
         var s = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
@@ -687,7 +664,7 @@ public class Main : MonoBehaviour
             }
         }
 
-        playingPanel.a();
+        playingPanel.reloadInteractable();
     }
 
     public void removeSelectingObjs()
@@ -700,15 +677,6 @@ public class Main : MonoBehaviour
         }
 
         selectingObjs.Clear();
-        playingPanel.a();
-    }
-
-    public void cancelEditingTracks()
-    {
-        shapeSettingPanel.show(false);
-
-        editingTrack.entity.Destroy();
-        editingTrack = null;
-        editingRot = null;
+        playingPanel.reloadInteractable();
     }
 }

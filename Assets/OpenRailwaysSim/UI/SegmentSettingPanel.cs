@@ -1,4 +1,5 @@
-﻿using UnityEngine.UI;
+﻿using System;
+using UnityEngine.UI;
 
 /// <summary>
 /// 線形の平面曲線を設定する画面
@@ -22,6 +23,7 @@ public class SegmentSettingPanel : GamePanel
     public Text cantRotationText;
     public Toggle cantRotationToggle;
 
+    [NonSerialized]
     public int n = -1;
 
     public void addButton()

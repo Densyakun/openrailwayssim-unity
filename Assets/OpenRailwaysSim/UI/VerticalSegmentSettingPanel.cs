@@ -1,4 +1,5 @@
-﻿using UnityEngine.UI;
+﻿using System;
+using UnityEngine.UI;
 
 /// <summary>
 /// 線形の縦断曲線を設定する画面
@@ -16,6 +17,7 @@ public class VerticalSegmentSettingPanel : GamePanel
     public Text radiusText;
     public InputField radiusInput;
 
+    [NonSerialized]
     public int n = -1;
 
     public void addButton()

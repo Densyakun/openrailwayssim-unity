@@ -59,15 +59,30 @@ public class Body : MapObject
 
     // Direct Controller
     public const string KEY_MOTORS = "MOTORS";
-    public const string KEY_REVERSER = "REVERSER";
-    public const string KEY_NOTCH = "NOTCH";
+    public const string KEY_POWER = "POWER";
+    public const string KEY_BRAKE = "BRAKE";
     public const string KEY_POWER_NOTCHS = "POWER_NOTCHS";
     public const string KEY_BRAKE_NOTCHS = "BRAKE_NOTCHS";
 
+    /// <summary>
+    /// 主電動機
+    /// </summary>
     public List<Axle> motors;
-    public int reverser;
-    public int notch;
+    /// <summary>
+    /// 電動の入力
+    /// </summary>
+    public float power;
+    /// <summary>
+    /// ブレーキの入力
+    /// </summary>
+    public float brake;
+    /// <summary>
+    /// 力行段数
+    /// </summary>
     public int powerNotchs;
+    /// <summary>
+    /// ブレーキ段数
+    /// </summary>
     public int brakeNotchs;
 
 
@@ -90,8 +105,8 @@ public class Body : MapObject
         runningResistanceC = 0.00000863125f;
 
         this.motors = new List<Axle>();
-        reverser = 0;
-        notch = 0;
+        power = 0f;
+        brake = 0f;
         powerNotchs = 5;
         brakeNotchs = 8;
     }
@@ -106,10 +121,12 @@ public class Body : MapObject
         foreach (var bf in bogieFrames)
             bf.body = this;
         try { runningResistanceC = info.GetSingle(KEY_RUNNING_RESISTANCE_C); } catch { runningResistanceC = 0.0001381f; }
+        try { (frontCab = (Cab)info.GetValue(KEY_FRONT_CAB, typeof(Cab))).body = this; } catch { }
+        try { (backCab = (Cab)info.GetValue(KEY_BACK_CAB, typeof(Cab))).body = this; } catch { }
 
         motors = (List<Axle>)info.GetValue(KEY_MOTORS, typeof(List<Axle>));
-        reverser = info.GetInt32(KEY_REVERSER);
-        notch = info.GetInt32(KEY_NOTCH);
+        try { power = info.GetInt32(KEY_POWER); } catch { power = 0f; }
+        try { brake = info.GetInt32(KEY_BRAKE); } catch { brake = 0f; }
         powerNotchs = info.GetInt32(KEY_POWER_NOTCHS);
         brakeNotchs = info.GetInt32(KEY_BRAKE_NOTCHS);
     }
@@ -123,10 +140,12 @@ public class Body : MapObject
         info.AddValue(KEY_CAR_LENGTH, carLength);
         info.AddValue(KEY_BOGIEFRAMES, bogieFrames);
         info.AddValue(KEY_RUNNING_RESISTANCE_C, runningResistanceC);
+        info.AddValue(KEY_FRONT_CAB, frontCab);
+        info.AddValue(KEY_BACK_CAB, backCab);
 
         info.AddValue(KEY_MOTORS, motors);
-        info.AddValue(KEY_REVERSER, reverser);
-        info.AddValue(KEY_NOTCH, notch);
+        info.AddValue(KEY_POWER, power);
+        info.AddValue(KEY_BRAKE, brake);
         info.AddValue(KEY_POWER_NOTCHS, powerNotchs);
         info.AddValue(KEY_BRAKE_NOTCHS, brakeNotchs);
     }
@@ -156,26 +175,30 @@ public class Body : MapObject
             return;
         lastMoved = map.time;
 
-        // 運転台の操作を反映
-        if (Main.INSTANCE.runPanel.body == this)
-            Main.INSTANCE.runPanel.controlOnUpdate();
-        if (motors.Count != 0 && notch != 0)
+        if (motors.Count != 0)
         {
+            // 運転台の操作を反映
+            if (Main.INSTANCE.runPanel.cab != null && Main.INSTANCE.runPanel.cab.body == this)
+                Main.INSTANCE.runPanel.controlOnUpdate();
+
             float w = 0f;
-            foreach (var axle in motors)
+            if (power != 0)
             {
-                if (w == 0f)
-                    w = axle.getTrainLoad() / motors.Count;
-                var a = (float)notch;
-                if (a < 0f)
+                foreach (var axle in motors)
                 {
-                    if (axle.speed < 0f)
-                        axle.inputPower(-a / brakeNotchs, w, true);
-                    else if (0f < axle.speed)
-                        axle.inputPower(a / brakeNotchs, w, true);
+                    if (w == 0f)
+                        w = axle.getTrainLoad() / motors.Count;
+                    axle.inputPower(power, w);
                 }
-                else if (a > 0f && reverser != 0)
-                    axle.inputPower((reverser == 1 ? a : -a) / powerNotchs, w);
+            }
+            if (brake != 0)
+            {
+                foreach (var axle in motors)
+                {
+                    if (w == 0f)
+                        w = axle.getTrainLoad() / motors.Count;
+                    axle.inputPower(brake, w, true);
+                }
             }
         }
 

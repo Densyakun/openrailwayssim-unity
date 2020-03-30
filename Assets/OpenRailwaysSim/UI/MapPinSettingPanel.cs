@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -17,6 +18,9 @@ public class MapPinSettingPanel : GamePanel
 
     private string lastTitle;
     private string lastDescription;
+
+    [NonSerialized]
+    public bool isNew;
 
     void Update()
     {
@@ -70,7 +74,8 @@ public class MapPinSettingPanel : GamePanel
     public void save()
     {
         reflect();
-        Main.playingmap.addObject(Main.editingMapPin);
+        if (isNew)
+            Main.playingmap.addObject(Main.editingMapPin);
         Main.editingMapPin = null;
 
         if (!Input.GetKeyDown(KeyCode.Escape))
@@ -79,10 +84,16 @@ public class MapPinSettingPanel : GamePanel
 
     public void cancel()
     {
-        titleInput.text = lastTitle;
-        descriptionInput.text = lastDescription;
-        reflect();
+        if (isNew)
+            Main.editingMapPin.entity.Destroy();
+        else
+        {
+            titleInput.text = lastTitle;
+            descriptionInput.text = lastDescription;
+            reflect();
+        }
 
         show(false);
+        Main.editingMapPin = null;
     }
 }

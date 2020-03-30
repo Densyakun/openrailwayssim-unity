@@ -33,6 +33,9 @@ public class ShapeSettingPanel : GamePanel
     private List<float> lastVerticalCurveLength;
     private List<float> lastVerticalCurveRadius;
 
+    [NonSerialized]
+    public bool isNew;
+
     void Update()
     {
         reflect();
@@ -221,28 +224,48 @@ public class ShapeSettingPanel : GamePanel
         reflect();
 
         Main.gauge = Main.editingTrack.gauge;
-        if (Main.editingTrack.curveLength.Count == 0)
-            Main.INSTANCE.cancelEditingTracks();
-        else
-            Main.INSTANCE.trackEdited0();
 
-        if (!Input.GetKeyDown(KeyCode.Escape))
-            show(false);
+        if (Main.editingTrack.curveLength.Count == 0)
+            cancel();
+        else
+        {
+            foreach (var obj in Main.playingmap.objs)
+                if (obj is Track)
+                    Main.editingTrack.connectingTrack((Track)obj);
+
+            if (isNew)
+                Main.playingmap.addObject(Main.editingTrack);
+            Main.editingTrack.enableCollider = true;
+            Main.editingTrack.reloadCollider();
+
+            Main.editingTrack = null;
+            Main.editingRot = null;
+
+            if (!Input.GetKeyDown(KeyCode.Escape))
+                show(false);
+        }
     }
 
     public void cancel()
     {
-        Main.editingTrack.curveLength = lastCurveLength;
-        Main.editingTrack.curveRadius = lastCurveRadius;
-        Main.editingTrack.cant = lastCant;
-        Main.editingTrack.cantRotation = lastCantRotation;
-        Main.editingTrack.verticalCurveLength = lastVerticalCurveLength;
-        Main.editingTrack.verticalCurveRadius = lastVerticalCurveRadius;
+        if (isNew)
+            Main.editingTrack.entity.Destroy();
+        else
+        {
+            Main.editingTrack.curveLength = lastCurveLength;
+            Main.editingTrack.curveRadius = lastCurveRadius;
+            Main.editingTrack.cant = lastCant;
+            Main.editingTrack.cantRotation = lastCantRotation;
+            Main.editingTrack.verticalCurveLength = lastVerticalCurveLength;
+            Main.editingTrack.verticalCurveRadius = lastVerticalCurveRadius;
 
-        Main.editingTrack.reloadLength();
-        Main.editingTrack.reloadEntity();
+            Main.editingTrack.reloadLength();
+            Main.editingTrack.reloadEntity();
+        }
 
         show(false);
+        Main.editingTrack = null;
+        Main.editingRot = null;
     }
 
     private void reloadSegmentPanels()

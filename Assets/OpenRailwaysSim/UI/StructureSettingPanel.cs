@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -14,6 +15,9 @@ public class StructureSettingPanel : GamePanel
     public InputField pathInput;
 
     private string lastPath;
+
+    [NonSerialized]
+    public bool isNew;
 
     void Update()
     {
@@ -50,7 +54,8 @@ public class StructureSettingPanel : GamePanel
     public void save()
     {
         reflect();
-        Main.playingmap.addObject(Main.editingStructure);
+        if (isNew)
+            Main.playingmap.addObject(Main.editingStructure);
         Main.editingStructure = null;
 
         if (!Input.GetKeyDown(KeyCode.Escape))
@@ -59,9 +64,15 @@ public class StructureSettingPanel : GamePanel
 
     public void cancel()
     {
-        pathInput.text = lastPath;
-        reflect();
+        if (isNew)
+            Main.editingStructure.entity.Destroy();
+        else
+        {
+            pathInput.text = lastPath;
+            reflect();
+        }
 
         show(false);
+        Main.editingStructure = null;
     }
 }

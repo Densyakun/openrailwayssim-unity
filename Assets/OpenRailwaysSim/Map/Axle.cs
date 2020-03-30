@@ -380,13 +380,16 @@ public class Axle : MapObject
         return w;
     }
 
+    /// <summary>
+    /// 主電動機に電力を与える。powerには-1~1までの値を入れる。ブレーキを掛ける場合はpowerを正数にして、brakeをtrueにする。
+    /// </summary>
     public void inputPower(float power, float weight, bool brake = false)
     {
         var a = tm_output * wheelDia * Time.deltaTime * power / 2f / weight / gearRatio;
         if (brake)
         {
             if (speed > 0f)
-                speed = Mathf.Max(0f, speed + a);
+                speed = Mathf.Max(0f, speed - a);
             else
                 speed = Mathf.Min(0f, speed + a);
         }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -12,6 +13,9 @@ public class CouplerSettingPanel : GamePanel
     public Toggle isFrontToggle;
 
     private bool lastIsFront;
+
+    [NonSerialized]
+    public bool isNew;
 
     void Update()
     {
@@ -47,7 +51,8 @@ public class CouplerSettingPanel : GamePanel
     public void save()
     {
         reflect();
-        Main.playingmap.addObject(Main.editingCoupler);
+        if (isNew)
+            Main.playingmap.addObject(Main.editingCoupler);
         Main.editingCoupler = null;
 
         if (!Input.GetKeyDown(KeyCode.Escape))
@@ -56,10 +61,16 @@ public class CouplerSettingPanel : GamePanel
 
     public void cancel()
     {
-        isFrontToggle.isOn = lastIsFront;
-        reflect();
+        if (isNew)
+            Main.editingCoupler.entity.Destroy();
+        else
+        {
+            isFrontToggle.isOn = lastIsFront;
+            reflect();
+        }
 
         show(false);
+        Main.editingCoupler = null;
     }
 
     public void onEndEdit()
