@@ -96,6 +96,9 @@ public class Shape : Track
 
     public override void reloadRailRenderers()
     {
+        if (curveLength.Count == 0)
+            return;
+
         if (railRenderers != null)
             foreach (var r in railRenderers)
                 GameObject.Destroy(r.gameObject);
