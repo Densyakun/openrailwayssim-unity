@@ -57,6 +57,7 @@ public class PlayingPanel : GamePanel
             {
                 Main.editingTrack = (Shape)obj;
 
+                Main.INSTANCE.shapeSettingPanel.isNew = false;
                 Main.INSTANCE.shapeSettingPanel.show(true);
                 Main.INSTANCE.shapeSettingPanel.transform.position = new Vector3(
                     Mathf.Clamp(Input.mousePosition.x, 0,
@@ -71,6 +72,7 @@ public class PlayingPanel : GamePanel
             {
                 Main.editingBody = (Body)obj;
 
+                Main.INSTANCE.bodySettingPanel.isNew = false;
                 Main.INSTANCE.bodySettingPanel.show(true);
                 Main.INSTANCE.bodySettingPanel.transform.position = new Vector3(
                     Mathf.Clamp(Input.mousePosition.x, 0,
@@ -85,6 +87,7 @@ public class PlayingPanel : GamePanel
             {
                 Main.editingCoupler = (Coupler)obj;
 
+                Main.INSTANCE.couplerSettingPanel.isNew = false;
                 Main.INSTANCE.couplerSettingPanel.show(true);
                 Main.INSTANCE.couplerSettingPanel.transform.position = new Vector3(
                     Mathf.Clamp(Input.mousePosition.x, 0,
@@ -99,6 +102,7 @@ public class PlayingPanel : GamePanel
             {
                 Main.editingMapPin = (MapPin)obj;
 
+                Main.INSTANCE.mapPinSettingPanel.isNew = false;
                 Main.INSTANCE.mapPinSettingPanel.show(true);
                 Main.INSTANCE.mapPinSettingPanel.transform.position = new Vector3(
                     Mathf.Clamp(Input.mousePosition.x, 0,
@@ -113,6 +117,7 @@ public class PlayingPanel : GamePanel
             {
                 Main.editingStructure = (Structure)obj;
 
+                Main.INSTANCE.structureSettingPanel.isNew = false;
                 Main.INSTANCE.structureSettingPanel.show(true);
                 Main.INSTANCE.structureSettingPanel.transform.position = new Vector3(
                     Mathf.Clamp(Input.mousePosition.x, 0,
@@ -139,6 +144,7 @@ public class PlayingPanel : GamePanel
         Main.editingBody = b;
         b.generate();
 
+        Main.INSTANCE.bodySettingPanel.isNew = true;
         Main.INSTANCE.bodySettingPanel.show(true);
         Main.INSTANCE.bodySettingPanel.transform.position = new Vector3(
             Mathf.Clamp(Input.mousePosition.x, 0,
@@ -158,6 +164,7 @@ public class PlayingPanel : GamePanel
             Main.editingCoupler = c;
             c.generate();
 
+            Main.INSTANCE.couplerSettingPanel.isNew = true;
             Main.INSTANCE.couplerSettingPanel.show(true);
             Main.INSTANCE.couplerSettingPanel.transform.position = new Vector3(
                 Mathf.Clamp(Input.mousePosition.x, 0,

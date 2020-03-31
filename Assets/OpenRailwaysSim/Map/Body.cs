@@ -175,30 +175,27 @@ public class Body : MapObject
             return;
         lastMoved = map.time;
 
-        if (motors.Count != 0)
-        {
-            // 運転台の操作を反映
-            if (Main.INSTANCE.runPanel.cab != null && Main.INSTANCE.runPanel.cab.body == this)
-                Main.INSTANCE.runPanel.controlOnUpdate();
+        // 運転台の操作を反映
+        if (Main.INSTANCE.runPanel.cab != null && Main.INSTANCE.runPanel.cab.body == this)
+            Main.INSTANCE.runPanel.controlOnUpdate();
 
-            float w = 0f;
-            if (power != 0)
+        float w = 0f;
+        if (power != 0)
+        {
+            foreach (var axle in motors)
             {
-                foreach (var axle in motors)
-                {
-                    if (w == 0f)
-                        w = axle.getTrainLoad() / motors.Count;
-                    axle.inputPower(power, w);
-                }
+                if (w == 0f)
+                    w = axle.getTrainLoad() / motors.Count;
+                axle.inputPower(power, w);
             }
-            if (brake != 0)
+        }
+        if (brake != 0)
+        {
+            foreach (var axle in motors)
             {
-                foreach (var axle in motors)
-                {
-                    if (w == 0f)
-                        w = axle.getTrainLoad() / motors.Count;
-                    axle.inputPower(brake, w, true);
-                }
+                if (w == 0f)
+                    w = axle.getTrainLoad() / motors.Count;
+                axle.inputPower(brake, w, true);
             }
         }
 

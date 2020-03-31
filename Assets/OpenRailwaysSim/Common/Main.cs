@@ -416,6 +416,7 @@ public class Main : MonoBehaviour
                             editingTrack.enableCollider = false;
                             editingTrack.generate();
 
+                            shapeSettingPanel.isNew = true;
                             shapeSettingPanel.show(true);
                             setPanelPosToMousePos(shapeSettingPanel);
                         }
@@ -438,6 +439,7 @@ public class Main : MonoBehaviour
                     {
                         editingMapPin = new MapPin(playingmap, p);
                         editingMapPin.generate();
+                        mapPinSettingPanel.isNew = true;
                         mapPinSettingPanel.show(true);
                         setPanelPosToMousePos(mapPinSettingPanel);
                     }
@@ -448,6 +450,7 @@ public class Main : MonoBehaviour
                     {
                         editingStructure = new Structure(playingmap, p);
                         editingStructure.generate();
+                        structureSettingPanel.isNew = true;
                         structureSettingPanel.show(true);
                         setPanelPosToMousePos(structureSettingPanel);
                     }
