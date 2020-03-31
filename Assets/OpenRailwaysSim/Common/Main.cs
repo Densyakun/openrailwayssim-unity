@@ -102,6 +102,7 @@ public class Main : MonoBehaviour
     public static ModeEnum mode = ModeEnum.NONE;
 
     private float tick = 0f; // 時間を進ませた時の余り
+    private Color ambientLight;
     public static Shape editingTrack;
     public static Quaternion? editingRot;
     public static Body editingBody;
@@ -162,6 +163,7 @@ public class Main : MonoBehaviour
     {
         INSTANCE = this;
         ssdir = Path.Combine(Application.persistentDataPath, "screenshots");
+        ambientLight = RenderSettings.ambientLight;
 
         drawDistance = PlayerPrefs.GetInt(KEY_DRAW_DISTANCE, DEFAULT_DRAW_DISTANCE);
         bgmVolume = PlayerPrefs.GetFloat(KEY_BGM_VOLUME, DEFAULT_BGM_VOLUME);
@@ -584,8 +586,7 @@ public class Main : MonoBehaviour
     {
         var t = playingmap.time / Map.TIME_OF_DAY;
         sun.transform.eulerAngles = new Vector3(t * 360f - 90f, -90f);
-        sun.shadowStrength = sun.intensity = sunGradient.Evaluate(t).grayscale;
-        RenderSettings.ambientLight *= (1f - Mathf.Abs(t * 2f - 1f)) / RenderSettings.ambientLight.grayscale;
+        RenderSettings.ambientLight = ambientLight * (sun.shadowStrength = sun.intensity = sunGradient.Evaluate(t).grayscale);
     }
 
     public void reloadBGM()
