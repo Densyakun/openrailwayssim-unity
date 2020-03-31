@@ -13,7 +13,7 @@ public class SettingPanel : GamePanel
     public static string cameraMoveSpeedText_DEF = "カメラ移動速度";
     public static string dragRotSpeedText_DEF = "マウスでのカメラ回転速度";
     public static string antialiasingText_DEF = "アンチエイリアシング";
-    public static string aoText_DEF = "アンビエントオクルージョン(AO)";
+    public static string aoText_DEF = "アンビエント オクルージョン (AO)";
     public static string motionBlurText_DEF = "モーションブラー";
     public static string bloomText_DEF = "ブルーム";
     public static string vignetteText_DEF = "Vignette";

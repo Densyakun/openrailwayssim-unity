@@ -153,6 +153,7 @@ public class Main : MonoBehaviour
     public SettingPanel settingPanel;
     public TitleBackPanel titleBackPanel;
     public RunPanel runPanel;
+    public TimeSettingPanel timeSettingPanel;
     public ShapeSettingPanel shapeSettingPanel;
     public BodySettingPanel bodySettingPanel;
     public CouplerSettingPanel couplerSettingPanel;
@@ -201,7 +202,8 @@ public class Main : MonoBehaviour
             if (playingmap != null &&
                 !settingPanel.isShowing() &&
                 !titleBackPanel.isShowing() &&
-                !runPanel.isShowing())
+                !runPanel.isShowing() &&
+                !timeSettingPanel.isShowing())
             {
                 var b = EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.GetComponent<InputField>() != null;
                 if (b)
@@ -278,7 +280,7 @@ public class Main : MonoBehaviour
                     reloadLighting();
                     tick -= t;
                 }
-                timeText.text = playingmap.getHours() + ":" + string.Format("{0:00}", playingmap.getMinutes()) + ":" + string.Format("{0:00}", playingmap.getSeconds());
+                timeText.text = getTimeText();
 
                 var p = INSTANCE.mainCamera.transform.position;
                 grid.transform.position = new Vector3(Mathf.RoundToInt(p.x), 0, Mathf.RoundToInt(p.z));
@@ -679,5 +681,10 @@ public class Main : MonoBehaviour
 
         selectingObjs.Clear();
         playingPanel.reloadInteractable();
+    }
+
+    public string getTimeText()
+    {
+        return playingmap.getHours() + ":" + string.Format("{0:00}", playingmap.getMinutes()) + ":" + string.Format("{0:00}", playingmap.getSeconds());
     }
 }
