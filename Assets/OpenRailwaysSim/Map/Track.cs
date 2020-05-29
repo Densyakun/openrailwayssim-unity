@@ -31,6 +31,7 @@ public class Track : MapObject
     public const float LOD_DISTANCE = 0.03f;
 
     public static float defaultGauge = 1.435f;
+    public static float jointInterval = 25f;
 
     public float length;
     public float gauge;

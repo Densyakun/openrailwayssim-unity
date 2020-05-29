@@ -138,6 +138,7 @@ public class Main : MonoBehaviour
     public GameObject permanentCouplerModel;
     public GameObject directControllerModel;
     public Font mapPinFont;
+    public AudioClip jointClip;
 
     public Canvas canvas;
     public TitlePanel titlePanel;
@@ -477,7 +478,7 @@ public class Main : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #elif !UNITY_WEBPLAYER
-		Application.Quit ();
+        Application.Quit();
 #endif
     }
 
