@@ -334,7 +334,8 @@ public class Axle : MapObject
         if (entity == null)
             return;
 
-        source = entity.gameObject.AddComponent<AudioSource>();
+        if (!source)
+            source = entity.gameObject.AddComponent<AudioSource>();
 
         if (modelObj == null)
         {
