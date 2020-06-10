@@ -44,6 +44,11 @@ public class PlayingPanel : GamePanel
         Main.mode = Main.mode == Main.ModeEnum.PLACE_STRUCTURE ? Main.ModeEnum.NONE : Main.ModeEnum.PLACE_STRUCTURE;
     }
 
+    public void PlaceStopTargetButton()
+    {
+        Main.mode = Main.mode == Main.ModeEnum.PLACE_STOPTARGET ? Main.ModeEnum.NONE : Main.ModeEnum.PLACE_STOPTARGET;
+    }
+
     public void RemoveButton()
     {
         Main.INSTANCE.removeSelectingObjs();

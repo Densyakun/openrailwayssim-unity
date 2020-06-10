@@ -94,7 +94,11 @@ public class Main : MonoBehaviour
         /// <summary>
         /// ストラクチャーの設置
         /// </summary>
-        PLACE_STRUCTURE
+        PLACE_STRUCTURE,
+        /// <summary>
+        /// 停止位置の設置
+        /// </summary>
+        PLACE_STOPTARGET
     }
     /// <summary>
     /// 現在の操作モード
@@ -454,6 +458,15 @@ public class Main : MonoBehaviour
                         structureSettingPanel.isNew = true;
                         structureSettingPanel.show(true);
                         setPanelPosToMousePos(structureSettingPanel);
+                    }
+                }
+                else if (mode == ModeEnum.PLACE_STOPTARGET)
+                {
+                    if (Input.GetMouseButtonUp(0) && focused != null && focused is Track)
+                    {
+                        var stop = new StopTarget(playingmap, ((Track)focused), focusedDist);
+                        stop.generate();
+                        playingmap.addObject(stop);
                     }
                 }
             }
