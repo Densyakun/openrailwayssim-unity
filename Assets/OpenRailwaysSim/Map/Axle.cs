@@ -182,7 +182,6 @@ public class Axle : MapObject
     public GameObject modelObj;
     [NonSerialized]
     public BogieFrame bogieFrame;
-    public AudioSource source;
     public float lastMoved = -1f;
     //public float lastMoved1 = -1f;
 
@@ -296,7 +295,15 @@ public class Axle : MapObject
         // TODO 軌道を接続する位置での音が再生されないバグ
         //Debug.Log((int)((onDist * onTrack.length - b) / Track.jointInterval) + ", " + (int)(onDist * onTrack.length / Track.jointInterval));
         if ((int)((onDist * onTrack.length - b) / Track.jointInterval) != (int)(onDist * onTrack.length / Track.jointInterval))
-            source.PlayOneShot(Main.INSTANCE.jointClip);
+        {
+            var obj = new GameObject();
+            obj.transform.position = entity.gameObject.transform.position;
+            var source = obj.AddComponent<AudioSource>();
+            source.spatialBlend = 1f;
+            source.clip = Main.INSTANCE.jointClip;
+            source.Play();
+            GameObject.Destroy(obj, source.clip.length);
+        }
 
         // 実体を更新
         Vector3 d = onTrack is Shape ?
@@ -333,9 +340,6 @@ public class Axle : MapObject
     {
         if (entity == null)
             return;
-
-        if (!source)
-            source = entity.gameObject.AddComponent<AudioSource>();
 
         if (modelObj == null)
         {
