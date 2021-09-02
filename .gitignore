@@ -36,3 +36,8 @@ sysinfo.txt
 # added by densyakun
 .idea/
 Assets/Plugins*
+
+
+# Added by cargo
+
+/target
